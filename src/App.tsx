@@ -1,13 +1,14 @@
-import './App.css'
+import { Routes, Route } from 'react-router-dom'
+import LearnStructure from './features/kiosk/learn-structure/LearnStructure'
+import OrderStart from './features/kiosk/learn-order/OrderStart'
 
 function App() {
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <h1 className="text-4xl font-bold text-blue-500">
-        TailwindCSS 테스트 성공! 🎉
-      </h1>
-    </div>
+    <Routes>
+      <Route path="/teachmap/kioskstructure" element={<LearnStructure />} />
+      <Route path="/teachmap/kioskorder" element={<OrderStart />} />
+    </Routes>
   )
 }
 
