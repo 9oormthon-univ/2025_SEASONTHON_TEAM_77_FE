@@ -6,6 +6,7 @@ import SignupForm from './features/login/SignupForm'
 import Payment from './features/kiosk/learn-payment/Payment'
 import MyPage from './features/mypage/MyPage'
 import Home from './features/home/Home'
+import TeachMap from './features/kiosk/TeachMap'
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
       <Route path="/signup" element={<SignupForm />} />
       <Route path="/mypage" element={<MyPage />} />
       <Route path="/" element={<Home />} />
+      <Route path="/teachmap" element={<TeachMap />} />
     </Routes>
   )
 }
