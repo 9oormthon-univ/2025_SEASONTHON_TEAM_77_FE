@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import LearnStructure from './features/kiosk/learn-structure/LearnStructure'
 import OrderStart from './features/kiosk/learn-order/OrderStart'
-import LearnMenu from './features/kiosk/learn-menu/LearnMenu'
+import LearnMenu from './features/kiosk/learn-menu/CategoryExplain'
 
 function App() {
 

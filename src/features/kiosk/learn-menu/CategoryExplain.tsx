@@ -2,13 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import HeaderBar from '../../../components/HeaderBar';
-import KioskFrame from '../learn-menu/KioskFrame';
+import KioskFrame, { type Category } from './KioskFrame';
 import { CategorySteps } from './CategoryData';
 
-const LearnStructure: React.FC = () => {
+const CategoryExplain: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
   const [step, setStep] = useState<number | null>(null); // 0~4
   const navigate = useNavigate();
+
+const stepToCategory = (step: number | null): Category | null => {
+  if (step === null) return null;
+  if (step === 0) return null; // 1단계는 강제 없음(원하면 '커피'로 바꿀 수 있음)
+  const map: Category[] = ['커피', '음료', '디저트', '푸드'];
+  return map[step - 1] ?? null;
+};
 
   // 키오스크 진입 시 0단계부터 시작
   useEffect(() => {
@@ -66,9 +73,10 @@ const LearnStructure: React.FC = () => {
       {/* 키오스크 화면 */}
       {page === 'kiosk' && (
         <>
-          <KioskFrame>
-            {/* TODO: 탭/메뉴/합계 UI는 여기에 children으로 추가 */}
-          </KioskFrame>
+        <KioskFrame
+          forcedActiveCategory={stepToCategory(step)}
+          disableTabClicks={step !== null}
+        />
 
           {/* 하단 반투명 오버레이 */}
           <AnimatePresence>
@@ -151,4 +159,4 @@ const LearnStructure: React.FC = () => {
   );
 };
 
-export default LearnStructure;
+export default CategoryExplain;

@@ -1,15 +1,25 @@
 import React, { useState } from 'react'
 
+export const CATEGORIES = ['커피', '음료', '디저트', '푸드'] as const
+export type Category = typeof CATEGORIES[number]
+
 type KioskFrameProps = {
   className?: string
   children?: React.ReactNode // 외부에서 완전히 대체하고 싶으면 children 전달
+  forcedActiveCategory?: Category | null
+  disableTabClicks?: boolean
 }
 
-const CATEGORIES = ['커피', '음료', '디저트', '푸드'] as const
-type Category = typeof CATEGORIES[number]
-
-export default function KioskFrame({ className, children }: KioskFrameProps) {
+export default function KioskFrame({
+  className,
+  children,
+  forcedActiveCategory = null,
+  disableTabClicks = false,
+}: KioskFrameProps) {
   const [category, setCategory] = useState<Category>('커피')
+
+  // ✅ 실제 사용할 활성 탭: 외부 강제값이 우선
+  const activeCategory: Category = (forcedActiveCategory ?? category) as Category
 
   return (
     <div className={`absolute inset-0 w-full h-[797px] bg-[#F6F5F4] ${className ?? ''}`}>
@@ -27,11 +37,14 @@ export default function KioskFrame({ className, children }: KioskFrameProps) {
                 <div className="px-[10px]">
                   <div className="flex items-center gap-3 bg-white px-3 pt-8">
                     {CATEGORIES.map((c) => {
-                      const active = c === category
+                      const active = c === activeCategory
                       return (
                         <button
                           key={c}
-                          onClick={() => setCategory(c)}
+                          onClick={() => {
+                            if (disableTabClicks) return; // ✅ 잠금 시 무시
+                            setCategory(c)
+                          }}
                           className={[
                             'text-sm transition-colors',
                             'px-[14px] py-[10px] rounded-[32px] border',
@@ -68,35 +81,33 @@ export default function KioskFrame({ className, children }: KioskFrameProps) {
                 </div>
 
                 {/* 하단 합계/버튼 바 */}
-                  <div className="rounded-b-[34px] bg-[#444444] text-white px-4 pt-3 pb-4 shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
-                    {/* 합계 정보 */}
-                    <div className="mb-3 flex w-full max-w-[320px] items-center justify-center text-[13px]">
-                        {/* 왼쪽 영역 */}
-                        <div className="flex flex-1 justify-between px-4">
-                            <span className="opacity-90">총수량</span>
-                            <span className="opacity-90">0개</span>
-                        </div>
-
-                        {/* 가운데 구분선 */}
-                        <div className="w-px h-4 bg-gray-300 opacity-60" />
-
-                        {/* 오른쪽 영역 */}
-                        <div className="flex flex-1 justify-between px-4">
-                            <span className="opacity-90">합계</span>
-                            <span className="font-medium">0원</span>
-                        </div>
+                <div className="rounded-b-[34px] bg-[#444444] text-white px-4 pt-3 pb-4 shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
+                  {/* 합계 정보 */}
+                  <div className="mb-3 flex w-full max-w-[320px] items-center justify-center text-[13px]">
+                    {/* 왼쪽 영역 */}
+                    <div className="flex flex-1 justify-between px-4">
+                      <span className="opacity-90">총수량</span>
+                      <span className="opacity-90">0개</span>
                     </div>
-                    {/* 버튼 */}
-                    <div className="flex items-center gap-[10px]">
-                      <button className="flex-1 h-[34px] rounded-[32px] bg-white text-black text-[14px] font-medium">
-                        이전
-                      </button>
-                      <button className="flex-[1] h-[34px] rounded-[32px] bg-[#FFC845] text-black text-[14px] font-medium">
-                        주문하기
-                      </button>
+                    {/* 가운데 구분선 */}
+                    <div className="w-px h-4 bg-gray-300 opacity-60" />
+                    {/* 오른쪽 영역 */}
+                    <div className="flex flex-1 justify-between px-4">
+                      <span className="opacity-90">합계</span>
+                      <span className="font-medium">0원</span>
                     </div>
                   </div>
+                  {/* 버튼 */}
+                  <div className="flex items-center gap-[10px]">
+                    <button className="flex-1 h-[34px] rounded-[32px] bg-white text-black text-[14px] font-medium">
+                      이전
+                    </button>
+                    <button className="flex-[1] h-[34px] rounded-[32px] bg-[#FFC845] text-black text-[14px] font-medium">
+                      주문하기
+                    </button>
+                  </div>
                 </div>
+              </div>
             )}
           </div>
         </div>
