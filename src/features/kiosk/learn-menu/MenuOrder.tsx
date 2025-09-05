@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import HeaderBar from '../../../components/HeaderBar';
@@ -16,6 +16,37 @@ const stepToCategory = (step: number | null): Category | null => {
 
 type Phase = 'intro' | 'kiosk' | 'complete';
 type KioskPhase = 'modal' | 'flow';
+
+// g{group}-{type}-{nn} 형식 파서 (예: g1-kiosk-03)
+const parseStepId = (id: string | undefined) => {
+  if (!id) return { group: null as number | null, stepNo: null as number | null };
+  const m = id.match(/^g(\d+)-(?:kiosk|explain)-(\d+)$/);
+  if (!m) return { group: null, stepNo: null };
+  return { group: Number(m[1]), stepNo: Number(m[2]) };
+};
+
+// 규칙에 따른 하이라이트/모달 대상 메뉴명 결정
+const getHighlightTarget = (id?: string) => {
+  const { group, stepNo } = parseStepId(id);
+  if (group == null || stepNo == null) return null;
+
+  // 이름은 itemsByCategory에 있는 실제 카드명과 일치/포함되어야 함
+  // 커피: '아이스 아메리카노', 음료: '복숭아 아이스티', 디저트: '초코쿠키'(아이템에 추가 필요)
+  if (group === 1 && stepNo >= 3 && stepNo <= 9) return '아이스 아메리카노';
+  if (group === 2 && stepNo >= 3 && stepNo <= 5) return '복숭아 아이스티';
+  if (group === 3 && stepNo === 4) return '초코 쿠키';
+  return null;
+};
+
+const getModalTarget = (id?: string) => {
+  const { group, stepNo } = parseStepId(id);
+  if (group == null || stepNo == null) return null;
+
+  if (group === 1 && stepNo >= 4 && stepNo <= 9) return '아이스 아메리카노';
+  if (group === 2 && stepNo >= 4 && stepNo <= 5) return '복숭아 아이스티';
+  // group 3: 없음
+  return null;
+};
 
 const MenuOrder: React.FC = () => {
   const [page, setPage] = useState<Phase>('intro');
@@ -48,6 +79,20 @@ const MenuOrder: React.FC = () => {
   };
 
   const current = step !== null ? LearnMenuFlow[step] : null;
+
+  // kiosk 단계 자동 진행(2초)
+  useEffect(() => {
+    if (kioskPhase === 'flow' && current?.type === 'kiosk') {
+      const t = setTimeout(() => nextStep(), 2000);
+      return () => clearTimeout(t);
+    }
+  }, [kioskPhase, current?.type, step]); // step이 바뀔 때마다 새 타이머
+
+  // current = LearnMenuFlow[step]
+  const forcedTotals = current?.ui?.totals ?? null;
+  // 이미 쓰던 하이라이트/모달도 ui에 있으면 우선 사용
+  const highlightTarget = current?.ui?.highlightIncludes ?? getHighlightTarget(current?.id);
+  const modalTarget     = current?.ui?.optionModalForIncludes ?? getModalTarget(current?.id);
 
   return (
     <div className="relative w-full h-screen">
@@ -89,8 +134,13 @@ const MenuOrder: React.FC = () => {
         <>
           <KioskFrame
             itemsByCategory={itemsByCategory}
-            forcedActiveCategory={stepToCategory(step)}
+            forcedActiveCategory={current?.ui?.tab ?? stepToCategory(step)}
             disableTabClicks={false}
+            highlightItemIncludes={highlightTarget}
+            optionModalForIncludes={modalTarget}
+            currentStepId={current?.id ?? null}
+            forcedTotals={forcedTotals}
+            forceScroll={current?.ui?.scrollTo ?? null}
           />
 
           {/* 주문 리스트 모달 */}
@@ -152,8 +202,7 @@ const MenuOrder: React.FC = () => {
                   <p className="text-sm text-white font-medium leading-[140%]">
                     {current.description}
                   </p>
-                </div>ㄴ
-
+                </div>
                 <button
                   onClick={nextStep}
                   className="absolute -translate-y-1/2 right-[22px] w-8 h-8"
@@ -172,7 +221,8 @@ const MenuOrder: React.FC = () => {
               <motion.div
                 key={step}
                 className="absolute inset-0 z-30"
-                onClick={nextStep}
+                // 필요하면 클릭 즉시 이동도 사용 가능:
+                // onClick={nextStep}
               />
             )}
           </AnimatePresence>
@@ -190,7 +240,7 @@ const MenuOrder: React.FC = () => {
             <div
               className="w-64 h-64 mt-28"
               style={{
-                backgroundImage: 'url(/src/assets/character/3.png)',
+                backgroundImage: 'url(/src/assets/character/5.png)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',

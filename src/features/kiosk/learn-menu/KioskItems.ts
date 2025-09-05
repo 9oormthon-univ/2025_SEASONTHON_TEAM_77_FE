@@ -18,6 +18,8 @@ export const itemsByCategory: Record<Category, KioskItem[]> = {
     { name: '메론 케이크', imageUrl: '/src/assets/menu/melon_cake.png', price: 4200 },
     { name: '머핀', imageUrl: '/src/assets/menu/muffin.png', price: 3600 },
     { name: '브라우니', imageUrl: '/src/assets/menu/brownie.png', price: 3800 },
+    { name: '화이트 쿠키', imageUrl: '/src/assets/menu/white_cookie.png', price: 4200 },
+    { name: '초코 쿠키', imageUrl: '/src/assets/menu/choco_cookie.png', price: 4200 },
   ],
   푸드: [], // 현재 학습 플로우에서는 사용 안 함
 };

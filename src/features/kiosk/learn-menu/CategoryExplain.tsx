@@ -45,7 +45,7 @@ const stepToCategory = (step: number | null): Category | null => {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           >
             <div
-              className="w-96 h-96"
+              className="w-[323px] h-[323px]"
               style={{
                 backgroundImage: 'url(/src/assets/character/4.png)',
                 backgroundSize: 'cover',
@@ -127,9 +127,9 @@ const stepToCategory = (step: number | null): Category | null => {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           >
             <div
-              className="w-64 h-64 mt-28"
+              className="w-[240px] h-[240px] mt-28"
               style={{
-                backgroundImage: 'url(/src/assets/character/3.png)',
+                backgroundImage: 'url(/src/assets/character/5.png)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
