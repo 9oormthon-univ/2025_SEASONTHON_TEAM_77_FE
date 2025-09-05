@@ -22,8 +22,7 @@ export default function MyPage() {
         {},
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`
           },
         }
       );
@@ -55,11 +54,11 @@ export default function MyPage() {
 
       {/* 로그아웃 박스 */}
       <label 
-            className="w-full block text-base font-normal text-gray-700 text-left mb-2"
-            style={{
-              fontFamily: 'Pretendard',
-            }}
-          >계정 정보</label>
+        className="w-full block text-base font-normal text-gray-700 text-left mb-2"
+        style={{
+          fontFamily: 'Pretendard',
+        }}
+      >계정 정보</label>
       <div
         className="w-full h-18 bg-white rounded-xl px-6 py-4 cursor-pointer"
         onClick={() => setShowModal(true)}

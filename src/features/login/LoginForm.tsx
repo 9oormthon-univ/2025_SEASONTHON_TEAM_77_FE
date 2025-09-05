@@ -30,10 +30,9 @@ const LoginForm: React.FC = () => {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('loginId', loginId);
-      console.log(accessToken, refreshToken, loginId);
 
       // 로그인 성공 후 메인 페이지 등으로 이동
-      navigate('/teachmap');
+      navigate('/');
     } catch (error) {
       alert('로그인 실패! 아이디 또는 비밀번호를 확인해주세요.');
     }
