@@ -410,7 +410,7 @@ const LearnStructure: React.FC = () => {
             exit={{ opacity: 0 }}
           >
             <div 
-              className="w-64 h-64 mt-28"
+              className="w-60 h-60 mt-28"
               style={{
                 backgroundImage: 'url(/src/assets/character/3.png)',
                 backgroundSize: 'cover',
