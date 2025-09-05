@@ -1,13 +1,24 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 export const CATEGORIES = ['커피', '음료', '디저트', '푸드'] as const
 export type Category = typeof CATEGORIES[number]
 
+/** 간단 아이템 타입 (API 연동 시 name, imageUrl, price 등 확장 가능) */
+export type KioskItem = {
+  name: string
+  imageUrl?: string
+  price?: number
+}
+
 type KioskFrameProps = {
   className?: string
-  children?: React.ReactNode // 외부에서 완전히 대체하고 싶으면 children 전달
+  children?: React.ReactNode
   forcedActiveCategory?: Category | null
   disableTabClicks?: boolean
+  /** 카테고리별 아이템 목록(없으면 스켈레톤만 표시) */
+  itemsByCategory?: Partial<Record<Category, KioskItem[]>>
+  /** 아이템 클릭 시 부모에게 알림 */
+  onSelectItem?: (item: KioskItem, category: Category) => void
 }
 
 export default function KioskFrame({
@@ -15,11 +26,21 @@ export default function KioskFrame({
   children,
   forcedActiveCategory = null,
   disableTabClicks = false,
+  itemsByCategory,
+  onSelectItem,
 }: KioskFrameProps) {
   const [category, setCategory] = useState<Category>('커피')
 
-  // ✅ 실제 사용할 활성 탭: 외부 강제값이 우선
+  // 외부에서 카테고리를 강제 지정하면 동기화
+  useEffect(() => {
+    if (forcedActiveCategory) setCategory(forcedActiveCategory)
+  }, [forcedActiveCategory])
+
+  // 실제 활성 탭(외부 강제값이 우선)
   const activeCategory: Category = (forcedActiveCategory ?? category) as Category
+
+  // 렌더할 목록(없으면 스켈레톤)
+  const items = itemsByCategory?.[activeCategory]
 
   return (
     <div className={`absolute inset-0 w-full h-[797px] bg-[#F6F5F4] ${className ?? ''}`}>
@@ -42,7 +63,7 @@ export default function KioskFrame({
                         <button
                           key={c}
                           onClick={() => {
-                            if (disableTabClicks) return; // ✅ 잠금 시 무시
+                            if (disableTabClicks) return
                             setCategory(c)
                           }}
                           className={[
@@ -51,6 +72,7 @@ export default function KioskFrame({
                             active
                               ? 'bg-[#FFC845] border-transparent text-[#111111]'
                               : 'bg-white border-[#ECECEC] text-[#111111]',
+                            disableTabClicks ? 'cursor-default' : '',
                           ].join(' ')}
                         >
                           {c}
@@ -60,44 +82,65 @@ export default function KioskFrame({
                   </div>
                 </div>
 
-                {/* 스크롤 영역 (메뉴 그리드 틀만) */}
+                {/* 스크롤 영역 */}
                 <div className="mt-6 flex-1 overflow-y-auto px-[22px]">
                   <div className="grid grid-cols-2 gap-[9px]">
-                    {Array.from({ length: 8 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="rounded-[16px] bg-[#F6F5F4] p-[10px] flex flex-col items-center justify-start"
-                      >
-                        {/* 이미지 자리 */}
-                        <div className="w-full aspect-[3/4] rounded-[14px] bg-white/60 flex items-center justify-center">
-                          <div className="h-16 w-12 rounded bg-white shadow-inner" />
-                        </div>
-                        {/* 이름/가격 자리 */}
-                        <div className="mt-2 h-10 w-4/5 rounded bg-white/60" />
-                        <div className="mt-1 h-4 w-3/5 rounded bg-white/60" />
-                      </div>
-                    ))}
+                    {/* 아이템이 있으면 아이템 렌더, 없으면 스켈레톤 */}
+                    {items && items.length > 0
+                      ? items.map((it, i) => (
+                          <button
+                            key={`${it.name}-${i}`}
+                            onClick={() => onSelectItem?.(it, activeCategory)}
+                            className="rounded-[16px] bg-[#F6F5F4] p-[10px] flex flex-col items-center justify-start"
+                          >
+                            {/* 이미지 자리(옵션) */}
+                            <div className="w-full rounded-[14px] flex items-center justify-center overflow-hidden">
+                              {it.imageUrl ? (
+                                // 실제 이미지가 있으면 표시
+                                <img src={it.imageUrl} alt={it.name} className="w-[112px] h-[112px] object-cover" />
+                              ) : (
+                                <span className="text-[14px] text-[#444444]">{it.name}</span>
+                              )}
+                            </div>
+                            {/* 이름/가격 */}
+                            <div className="w-full text-center">
+                              <div className="text-[14px] text-[#444444]">{it.name}</div>
+                              {typeof it.price === 'number' && (
+                                <div className="mt-1 text-[14px] text-[#444444]">
+                                  {it.price.toLocaleString()}원
+                                </div>
+                              )}
+                            </div>
+                          </button>
+                        ))
+                      : Array.from({ length: 8 }).map((_, i) => (
+                          <div
+                            key={i}
+                            className="rounded-[16px] bg-[#F6F5F4] p-[10px] flex flex-col items-center justify-start"
+                          >
+                            <div className="w-full aspect-[3/4] rounded-[14px] bg-white/60 flex items-center justify-center">
+                              <div className="h-16 w-12 rounded bg-white shadow-inner" />
+                            </div>
+                            <div className="mt-2 h-10 w-4/5 rounded bg-white/60" />
+                            <div className="mt-1 h-4 w-3/5 rounded bg-white/60" />
+                          </div>
+                        ))}
                   </div>
                 </div>
 
                 {/* 하단 합계/버튼 바 */}
                 <div className="rounded-b-[34px] bg-[#444444] text-white px-4 pt-3 pb-4 shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
-                  {/* 합계 정보 */}
                   <div className="mb-3 flex w-full max-w-[320px] items-center justify-center text-[13px]">
-                    {/* 왼쪽 영역 */}
                     <div className="flex flex-1 justify-between px-4">
                       <span className="opacity-90">총수량</span>
                       <span className="opacity-90">0개</span>
                     </div>
-                    {/* 가운데 구분선 */}
                     <div className="w-px h-4 bg-gray-300 opacity-60" />
-                    {/* 오른쪽 영역 */}
                     <div className="flex flex-1 justify-between px-4">
                       <span className="opacity-90">합계</span>
                       <span className="font-medium">0원</span>
                     </div>
                   </div>
-                  {/* 버튼 */}
                   <div className="flex items-center gap-[10px]">
                     <button className="flex-1 h-[34px] rounded-[32px] bg-white text-black text-[14px] font-medium">
                       이전
@@ -119,7 +162,6 @@ export default function KioskFrame({
         <div className="w-[133px] h-[125px] bg-[#F9F9F9] rounded-lg border-2 border-gray-300 flex items-start justify-center py-[27px] px-[14px]">
           <div className="w-3/4 h-2 bg-black rounded-full" />
         </div>
-
         <div className="flex flex-col gap-3">
           {/* 바코드 인식기 */}
           <div className="w-[93px] h-[57px] bg-black rounded-lg flex items-center justify-center border-2 border-gray-300">
@@ -127,7 +169,6 @@ export default function KioskFrame({
               <div className="w-3 h-3 bg-black rounded-full opacity-80 blur-[0.5px]" />
             </div>
           </div>
-
           {/* 카드 리더기 */}
           <div className="w-[93px] h-[57px] bg-black rounded-lg flex items-center justify-center border-2 border-gray-300">
             <div className="w-3/4 h-1 bg-[#747474] rounded-full" />
