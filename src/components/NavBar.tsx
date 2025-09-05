@@ -27,7 +27,7 @@ const NavBar: React.FC = () => {
     },
     {
       label: "티치맵",
-      path: "/techmap",
+      path: "/teachmap",
       icon: (isActive: boolean) => (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
           <g clip-path="url(#clip0_2736_3541)">
