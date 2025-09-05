@@ -29,6 +29,8 @@ const LoginForm: React.FC = () => {
       // 예시: 토큰 저장 (필요에 따라 localStorage, 쿠키 등으로)
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('loginId', loginId);
+      console.log(accessToken, refreshToken, loginId);
 
       // 로그인 성공 후 메인 페이지 등으로 이동
       navigate('/teachmap');
