@@ -19,11 +19,13 @@ const stepsData = [
         id: '1',
         title: "키오스크 전체 구성",
         navigateUrl: "/teachmap/kioskstructure",
+        time: "05:03",
       },
       {
         id: '2',
         title: "주문시작 및 장소 선택",
         navigateUrl: "/teachmap/kioskorder",
+        time: "05:03",
       },
     ],
   },
@@ -37,16 +39,19 @@ const stepsData = [
         id: '3',
         title: "카테고리 설명",
         navigateUrl: "/teachmap/kioskmenu",
+        time: "05:03",
       },
       {
         id: '4',
         title: "메뉴 주문",
         navigateUrl: "/teachmap/kioskmenuorder",
+        time: "05:03",
       },
       {
         id: '5',
         title: "주문 메뉴 확인",
         navigateUrl: "/teachmap/kioskmenuordercheck",
+        time: "05:03",
       },
     ],
   },
@@ -60,6 +65,7 @@ const stepsData = [
         id: '6',
         title: "포인트 적립 및 결제 수단 선택",
         navigateUrl: "/teachmap/kioskpayment",
+        time: "05:03",
       },
     ],
   },
@@ -86,7 +92,6 @@ export default function TeachMap() {
       for (const step of stepsData) {
         try {
           const completedSubstepIds: string[] = await kioskAPI.getProgress(step.step);
-          console.log(`단계 ${step.step} 완료된 substeps:`, completedSubstepIds);
           
           // 완료된 substep들을 true로 설정
           completedSubstepIds.forEach(substepId => {

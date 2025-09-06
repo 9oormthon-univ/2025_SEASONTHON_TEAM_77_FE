@@ -5,6 +5,7 @@ import { paymentSteps } from './PaymentData';
 import HeaderBar from '../../../components/HeaderBar';
 import PointInput from './PointInput';
 import { kioskAPI } from '../../../shared/api';
+import cursor from '../../../assets/cursor.gif';
 
 const Payment: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
@@ -52,6 +53,17 @@ const Payment: React.FC = () => {
     }
   };
 
+  const handlePrevStep = () => {
+    if (substep > 0) {
+      setSubstep(substep - 1);
+    } else if (step > 0) {
+      setStep(step - 1);
+      // 이전 step의 마지막 substep으로 이동
+      const prevStepData = paymentSteps[step - 1];
+      setSubstep(prevStepData.substeps.length - 1);
+    }
+  };
+
   return (
     <div className="relative w-full h-screen">
       <HeaderBar title="티치맵" backTo="/teachmap" />
@@ -65,9 +77,13 @@ const Payment: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            onClick={() => {
+              setPage('kiosk');
+              setStep(0);
+            }}
           >
             <div 
-              className="w-72 h-72 mb-10 mt-10"
+              className="w-[254px] h-[254px] mb-3 mt-10"
               style={{
                 backgroundImage: 'url(/src/assets/character/4.png)',
                 backgroundSize: 'cover',
@@ -76,36 +92,28 @@ const Payment: React.FC = () => {
               }}
             ></div>
             <h3 
-              className="text-xl mb-6 text-center text-black"
+              className="text-2xl mb-[97px] text-center text-black"
               style={{
                 fontFamily: 'Pretendard',
                 fontWeight: '600',
                 lineHeight: '140%',
               }}
             >
-              거의 다 마무리되었어요.
+              메뉴를 다 담았으면,<br />
+              결제를 해볼까요?
             </h3>
             <p 
-              className="text-base mb-20 text-center text-black"
+              className="text-base text-center text-[#9A9A9A]"
               style={{
                 fontFamily: 'Pretendard',
-                fontWeight: '500',
+                fontWeight: '400',
                 lineHeight: '160%',
                 letterSpacing: '-0.4px',
               }}
             >
-              원하는 메뉴를 모두 담았으면, <br />
-              이제는 결제를 하러 가볼까요?
+              화면을 터치하면 학습이 시작돼요
             </p>
-            <button
-              onClick={() => {
-                setPage('kiosk');
-                setStep(0);
-              }}
-              className="w-[327px] h-[52px] py-4 bg-[#FFC845] mt-10 flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300"
-            >
-              시작하기
-            </button>
+            <img src={cursor} alt="cursor" className="absolute top-[610px] right-[59px] w-[58px] h-[58px] cursor-pointer" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -116,18 +124,40 @@ const Payment: React.FC = () => {
             <>
               {step === 0 && (
                 <div 
-                  className="flex flex-col items-center justify-center w-[319px] h-[569px] mt-[67px] py-[132px] px-[16px] border-2 border-gray-300 bg-black-300"
+                  className="flex flex-col items-center justify-start w-[319px] h-[569px] mt-[67px] px-[16px] border-2 border-gray-300 bg-black bg-opacity-30"
                   style={{
                     boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.04)',
                     borderRadius: '36px',
                   }}
                 >
-                  <PointInput onSkip={() => setStep((prev) => prev + 1)} onCollect={() => setSubstep((prev) => prev + 1)} />
+                  <div className="text-xl font-bold text-[#111111] text-center mt-[38px]">
+                    주문 내역을 확인하고<br />
+                    <span className="text-[#FFC845]">결제하기</span>를 누르세요
+                  </div>
+                  <div className="absolute top-[152px] left-1/2 z-50 transform -translate-x-1/2">
+                    <PointInput 
+                      onSkip={() => setStep((prev) => prev + 1)} 
+                      onCollect={() => setSubstep((prev) => prev + 1)} 
+                    />
+                  </div>
+                  <div className="mt-[381px] w-[315px] h-[94px] rounded-b-[34px] bg-[#444444] text-white px-4 pt-3 pb-[82px] shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
+                    <div className="mb-3 flex w-full max-w-[320px] items-center justify-center text-[13px]">
+                        <div className="flex flex-1 justify-between px-4">
+                        <span className="opacity-90">총수량</span>
+                        <span className="opacity-90">3개</span>
+                        </div>
+                        <div className="w-px h-4 bg-gray-300 opacity-60" />
+                        <div className="flex flex-1 justify-between px-4">
+                        <span className="opacity-90">합계</span>
+                        <span className="font-medium">11,400원</span>
+                        </div>
+                    </div>
+                  </div>
                 </div>
               )}
               {step === 1 && (
                 <div 
-                  className="flex flex-col items-center justify-center w-[319px] h-[569px] mt-[67px] py-[132px] px-[16px] border-2 border-gray-300 bg-white"
+                  className="flex flex-col items-center justify-start w-[319px] h-[569px] mt-[67px] pt-[60px] px-[16px] border-2 border-gray-300 bg-white"
                   style={{
                     boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.04)',
                     borderRadius: '36px',
@@ -179,20 +209,23 @@ const Payment: React.FC = () => {
                       <p className="text-sm text-black">카카오페이</p>
                     </div>
                   </div>
-                  {/* <div 
-                    className="flex flex-end bottom-0 left-0 w-full h-[147px] bg-[#444444] px-[20px]"
-                    style={{
-                      borderRadius: '0 0 34px 34px',
-                    }}
-                  >
-                    <div className="w-full text-right text-white mt-3 mb-3 gap-1">
-                      <div className="flex justify-between text-xs"><span>주문 금액</span><span>11,400원</span></div>
-                      <div className="flex justify-between text-xs"><span>할인 금액</span><span>0원</span></div>
-                      <div className="flex justify-between text-base font-semibold mt-1"><span>총 결제금액</span><span>11,400원</span></div>
+                  <div className="mt-[111px] w-[315px] h-[147px] rounded-b-[34px] bg-[#444444] text-white px-4 pt-3 pb-[82px] shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
+                    <div className="flex flex-col w-full items-center justify-center">
+                        <div className="w-full flex flex-1 justify-between text-xs mb-2">
+                          <span className="opacity-90">주문금액</span>
+                          <span className="opacity-90">11,400원</span>
+                        </div>
+                        <div className="w-full flex flex-1 justify-between text-xs mb-2">
+                          <span className="opacity-90">할인금액</span>
+                          <span className="opacity-90">0원</span>
+                        </div>
+                        <div className="w-full flex flex-1 justify-between text-base font-medium mb-4">
+                          <span className="opacity-90">총 결제금액</span>
+                          <span className="font-medium">11,400원</span>
+                        </div>
                     </div>
-
-                    <button className="w-full bg-[#FFC845] py-2 rounded-full mb-4 text-black">결제 취소</button>
-                  </div> */}
+                    <button className="w-full bg-[#FFC845] py-[6px] rounded-full text-black text-sm">결제 취소</button>
+                  </div>
                 </div>
               )}
               {step === 2 && (
@@ -279,23 +312,28 @@ const Payment: React.FC = () => {
               <>
                 {/* 반투명 배경 */}
                 <motion.div
-                  className="fixed bottom-0 left-0 w-full h-[153px] bg-[rgba(17,17,17,0.80)] z-40 p-6"
+                  className="fixed bottom-0 left-0 w-full h-[192px] bg-[rgba(17,17,17,0.80)] z-40 py-[10px] px-6"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   >
-                    <div className="flex flex-col items-start justify-center w-4/5">
-                      <h1 
-                        className="text-3xl text-[#FFC845] mb-2"
-                        style={{
-                          fontFamily: 'Pretendard',
-                          fontWeight: '600',
-                          lineHeight: '140%',
-                        }}
-                      >
-                        {`${paymentSteps[step].title}`}
-                      </h1>
-                      <h4 className="text-base text-white"
+                    <div className="flex flex-col items-start justify-center w-[327px]">
+                      <div className="flex flex-row justify-between w-full items-center">
+                        <h1 
+                          className="text-3xl text-[#FFC845] mb-1"
+                          style={{
+                            fontFamily: 'Pretendard',
+                            fontWeight: '600',
+                            lineHeight: '140%',
+                          }}
+                        >
+                          {`${paymentSteps[step].title}`}
+                        </h1>
+                        {currentStepData.substeps.length > 1 && (
+                          <p className="text-base text-white font-light">{substep + 1}/{currentStepData.substeps.length}</p>
+                        )}
+                      </div>
+                      <h4 className="text-lg text-white"
                         style={{
                           fontFamily: 'Pretendard',
                           fontWeight: '600',
@@ -304,18 +342,32 @@ const Payment: React.FC = () => {
                           {currentSubstepText}
                       </h4>
                     </div>
-                  <button
-                    onClick={handleNextStep}
-                    className="absolute top-1/2 right-10"
-                    style={{
-                      backgroundImage: 'url(/src/assets/next.svg)',
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      backgroundRepeat: 'no-repeat',
-                      width: '32px',
-                      height: '32px',
-                    }}
-                  />
+                    <div className="absolute bottom-[10px] flex flex-row gap-6 w-[327px] items-center justify-center mt-6">
+                        {(step !== 0 || substep !== 0) && (
+                          <button
+                            onClick={handlePrevStep}
+                            style={{
+                              backgroundImage: 'url(/src/assets/prev.svg)',
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                              backgroundRepeat: 'no-repeat',
+                              width: '43px',
+                              height: '42px',
+                            }}
+                          />
+                        )}
+                        <button
+                          onClick={handleNextStep}
+                          style={{
+                            backgroundImage: 'url(/src/assets/next.svg)',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat',
+                            width: '42px',
+                            height: '42px',
+                          }}
+                        />
+                    </div>
                 </motion.div>
               </>
             )}
@@ -380,7 +432,7 @@ const Payment: React.FC = () => {
               </button>
               <button
                 className="flex-1 bg-[#ececec] text-base text-black py-2 rounded-full rounded-[36px]"
-                onClick={() => void 0}
+                onClick={() => setShowModal(false)}
               >
                   아니오
               </button>

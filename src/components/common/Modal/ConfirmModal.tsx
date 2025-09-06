@@ -23,13 +23,13 @@ export default function ConfirmModal({
         <p className="text-lg font-semibold mb-6">{title}</p>
         <div className="flex justify-between gap-2">
           <button
-            className="flex-1 bg-[#ececec] text-base text-black py-2 rounded-full"
+            className="flex-1 bg-[#ececec] text-base text-black py-[10px] px-[20px] rounded-full"
             onClick={onClose}
           >
             {cancelText}
           </button>
           <button
-            className="flex-1 bg-[#FFD845] text-base text-black py-2 rounded-full"
+            className="flex-1 bg-[#FFD845] text-base text-black py-[10px] px-[20px] rounded-full"
             onClick={onConfirm}
           >
             {confirmText}
