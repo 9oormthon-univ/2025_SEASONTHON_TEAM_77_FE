@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { authAPI } from '../../shared/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import HeaderBar from '../../components/HeaderBar';
 
@@ -40,8 +40,8 @@ const SignupForm = () => {
 
   const handleCheckId = async () => {
     try {
-      const response = await axios.get(`http://3.36.238.38:8080/api/v1.0/user/check-id?loginId=${loginId}`);
-      if (response.data === false) {
+      const data = await authAPI.checkId(loginId);
+      if (data === false) {
         setCheckResult('valid');
         setStep(2);
       } else {
@@ -54,7 +54,7 @@ const SignupForm = () => {
 
   const handleSignup = async () => {
     try {
-      await axios.post('http://3.36.238.38:8080/api/v1.0/user/signup', {
+      await authAPI.signup({
         loginId,
         password,
         username,

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { authAPI } from '../../shared/api';
 
 const LoginForm: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
@@ -19,12 +19,9 @@ const LoginForm: React.FC = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://3.36.238.38:8080/api/v1.0/user/login', {
-        loginId,
-        password,
-      });
+      const data = await authAPI.login(loginId, password);
 
-      const { accessToken, refreshToken } = response.data;
+      const { accessToken, refreshToken } = data;
 
       // 예시: 토큰 저장 (필요에 따라 localStorage, 쿠키 등으로)
       localStorage.setItem('accessToken', accessToken);
