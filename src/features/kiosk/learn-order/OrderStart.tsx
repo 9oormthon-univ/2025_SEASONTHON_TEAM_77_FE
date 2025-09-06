@@ -330,7 +330,7 @@ const OrderStart: React.FC = () => {
             <div className="flex items-center justify-center mt-20 gap-2">
               <button
                 onClick={() => setPage('intro')}
-                className="w-[159px] h-[52px] py-4 bg-[#F6F6F6] flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300 border-2 border-[#ffc845]"
+                className="w-[159px] h-[52px] py-4 bg-[#F6F6F6] flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300 border border-[#ffc845]"
               >
                 첫 화면으로
               </button>
