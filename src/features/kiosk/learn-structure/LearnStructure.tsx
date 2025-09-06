@@ -88,20 +88,35 @@ const LearnStructure: React.FC = () => {
             <img src="/src/assets/kiosk_initial.svg" alt="kiosk_bg" className="w-[319px] h-[569px] mt-[67px]" />
             <div className="flex justify-center items-center gap-11 px-13 mt-4">
               {/* 영수증 출력기 */}
-              <div className="w-[133px] h-[125px] bg-[#F9F9F9] rounded-lg border-2 border-gray-300 flex items-start justify-center py-[27px] px-[14px]">
+              <div 
+                onClick={handleNextStep}
+                className={`w-[133px] h-[125px] bg-[#F9F9F9] rounded-lg border-2 border-gray-300 flex items-start justify-center py-[27px] px-[14px] ${
+                  step === 4 ? "z-50 cursor-pointer" : "z-20"
+                }`}
+              >
                 <div className="w-3/4 h-2 bg-black rounded-full" />
               </div>
 
               <div className="flex flex-col gap-3">
                 {/* 바코드 인식기 */}
-                <div className="w-[93px] h-[57px] bg-black rounded-lg flex items-center justify-center border-2 border-gray-300">
+                <div 
+                  onClick={handleNextStep}
+                  className={`w-[93px] h-[57px] bg-black rounded-lg flex items-center justify-center border-2 border-gray-300 ${
+                    step === 3 ? "z-50 cursor-pointer" : "z-20"
+                  }`}
+                >
                   <div className="w-[63px] h-[39px] bg-[#f9f9f9] rounded flex items-center justify-center">
                     <div className="w-3 h-3 bg-black rounded-full opacity-80 blur-[0.5px]" />
                   </div>
                 </div>
 
                 {/* 카드 리더기 */}
-                <div className="w-[93px] h-[57px] bg-black rounded-lg flex items-center justify-center border-2 border-gray-300">
+                <div 
+                  onClick={handleNextStep}
+                  className={`w-[93px] h-[57px] bg-black rounded-lg flex items-center justify-center border-2 border-gray-300 ${
+                    step === 1 || step === 2 ? "z-50 cursor-pointer" : "z-20"
+                  }`}
+                >
                   <div className="w-3/4 h-1 bg-[#747474] rounded-full" />
                 </div>
               </div>
@@ -109,11 +124,11 @@ const LearnStructure: React.FC = () => {
           </div>
 
           <AnimatePresence>
-            {step !== null && (
+            {step !== null && step === 0 && (
               <>
                 {/* 반투명 배경 */}
                 <motion.div
-                  className="fixed bottom-0 left-0 w-full h-[153px] bg-[rgba(17,17,17,0.80)] z-40 p-6"
+                  className="fixed bottom-0 left-0 w-full h-[153px] bg-[rgba(17,17,17,0.80)] z-30 p-6"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -127,7 +142,7 @@ const LearnStructure: React.FC = () => {
                           lineHeight: '140%',
                         }}
                       >
-                        {`${step + 1}. ${structureSteps[step].title}`}
+                        1. 키오스크 화면
                       </h1>
                       <h4 className="text-base text-white"
                         style={{
@@ -135,7 +150,8 @@ const LearnStructure: React.FC = () => {
                           fontWeight: '600',
                           lineHeight: '140%',
                         }}>
-                          {structureSteps[step]?.description}
+                          이 화면에서, 어떤 메뉴가 있는지 확인하고 <br />
+                          자신의 원하는 메뉴를 담을 수 있습니다.
                       </h4>
                     </div>
                   <button
@@ -153,6 +169,163 @@ const LearnStructure: React.FC = () => {
                 </motion.div>
               </>
             )}
+            {step !== null && step > 0 && (
+              <>
+                <motion.div
+                  className="fixed inset-0 w-full h-screen bg-[rgba(17,17,17,0.80)] z-30 p-6"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                />
+              </>
+              )}
+              {/* 흰색 원 배경 + 텍스트 */}
+              {step === 1 && (
+                <div className="absolute top-[576px] left-[24px] w-4/5 h-[221px] flex flex-col items-start justify-start z-40">
+                  <h1 
+                    className="text-3xl text-[#FFC845] mb-2"
+                    style={{
+                      fontFamily: 'Pretendard',
+                      fontWeight: '600',
+                      lineHeight: '140%',
+                    }}
+                  >
+                    2. 카드 리더기
+                  </h1>
+                  <h4 className="text-base text-white"
+                    style={{
+                      fontFamily: 'Pretendard',
+                      fontWeight: '600',
+                      lineHeight: '140%',
+                    }}>
+                      모든 메뉴를 선택한 뒤 결제를 해야 할 때<br />
+                      카드를 꽂아 결제하는 부분이에요.
+                  </h4>
+                  <button
+                    onClick={handleNextStep}
+                    className="absolute top-[35px] right-0"
+                    style={{
+                      backgroundImage: 'url(/src/assets/next.svg)',
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      backgroundRepeat: 'no-repeat',
+                      width: '32px',
+                      height: '32px',
+                    }}
+                  />
+                  <div className="absolute top-[134px] left-[179px] w-[148px] h-[81px] bg-[#D9D9D9] rounded-full z-40"/>
+                </div>
+              )}
+
+              {step === 2 && (
+                <div className="absolute top-[576px] left-[24px] w-4/5 h-[221px] flex flex-col items-start justify-start z-40">
+                  <h1 
+                    className="text-3xl text-[#FFC845] mb-2"
+                    style={{
+                      fontFamily: 'Pretendard',
+                      fontWeight: '600',
+                      lineHeight: '140%',
+                    }}
+                  >
+                    2. 카드 리더기
+                  </h1>
+                  <h4 className="text-base text-white"
+                    style={{
+                      fontFamily: 'Pretendard',
+                      fontWeight: '600',
+                      lineHeight: '140%',
+                    }}>
+                      카드에서 딸깍 소리가 날 때까지 안쪽으로<br />
+                      잘 밀어 넣어주세요!
+                  </h4>
+                  <button
+                    onClick={handleNextStep}
+                    className="absolute top-[35px] right-0"
+                    style={{
+                      backgroundImage: 'url(/src/assets/next.svg)',
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      backgroundRepeat: 'no-repeat',
+                      width: '32px',
+                      height: '32px',
+                    }}
+                  />
+                  <div className="absolute top-[134px] left-[179px] w-[148px] h-[81px] bg-[#D9D9D9] rounded-full z-40"/>
+                </div>
+              )}
+              {step === 3 && (
+                <div className="absolute top-[517px] left-[24px] w-4/5 h-[280px] flex flex-col items-start justify-start z-40">
+                  <h1 
+                    className="text-3xl text-[#FFC845] mb-2"
+                    style={{
+                      fontFamily: 'Pretendard',
+                      fontWeight: '600',
+                      lineHeight: '140%',
+                    }}
+                  >
+                    3. 바코드 인식기
+                  </h1>
+                  <h4 className="text-base text-white"
+                    style={{
+                      fontFamily: 'Pretendard',
+                      fontWeight: '600',
+                      lineHeight: '140%',
+                    }}>
+                      쿠폰으로 결제를 원할 때 핸드폰에 뜨는<br />
+                      바코드(쿠폰) 화면을 이곳에 갖다댑니다.
+                  </h4>
+                  <button
+                    onClick={handleNextStep}
+                    className="absolute top-[35px] right-0"
+                    style={{
+                      backgroundImage: 'url(/src/assets/next.svg)',
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      backgroundRepeat: 'no-repeat',
+                      width: '32px',
+                      height: '32px',
+                    }}
+                  />
+                  <div className="absolute top-[123px] left-[179px] w-[148px] h-[81px] bg-[#D9D9D9] rounded-full z-40"/>
+                </div>
+              )}
+              {step === 4 && (
+                <div className="absolute top-[469px] left-[24px] w-4/5 h-[328px] flex flex-col items-start justify-start z-40">
+                  <h1 
+                    className="text-3xl text-[#FFC845] mb-2"
+                    style={{
+                      fontFamily: 'Pretendard',
+                      fontWeight: '600',
+                      lineHeight: '140%',
+                    }}
+                  >
+                    4. 영수증 출력기
+                  </h1>
+                  <h4 className="text-base text-white"
+                    style={{
+                      fontFamily: 'Pretendard',
+                      fontWeight: '600',
+                      lineHeight: '140%',
+                    }}>
+                      영수증이나 주문 번호를 받을 때 이 곳에서<br />
+                      용지가 나옵니다! 챙겨서 자신의 주문번호를<br />
+                      확인해주세요!
+                  </h4>
+                  <button
+                    onClick={handleNextStep}
+                    className="absolute top-[35px] right-0"
+                    style={{
+                      backgroundImage: 'url(/src/assets/next.svg)',
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      backgroundRepeat: 'no-repeat',
+                      width: '32px',
+                      height: '32px',
+                    }}
+                  />
+                  <div className="absolute top-[157px] left-[6px] w-[180px] h-[180px] bg-[#D9D9D9] rounded-full z-40"/>
+                </div>
+              )}
           </AnimatePresence>
 
           <AnimatePresence>
@@ -237,7 +410,7 @@ const LearnStructure: React.FC = () => {
             exit={{ opacity: 0 }}
           >
             <div 
-              className="w-64 h-64 mt-28"
+              className="w-60 h-60 mt-28"
               style={{
                 backgroundImage: 'url(/src/assets/character/3.png)',
                 backgroundSize: 'cover',
