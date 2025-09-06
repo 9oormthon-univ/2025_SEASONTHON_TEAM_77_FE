@@ -3,12 +3,12 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 export const CATEGORIES = ['커피', '음료', '디저트', '푸드'] as const
 export type Category = typeof CATEGORIES[number]
 
-/** 간단 아이템 타입 (API 연동 시 name, imageUrl, price 등 확장 가능) */
 export type KioskItem = {
-  name: string
-  imageUrl?: string
-  price?: number
-}
+  productId?: number;
+  name: string;
+  imageUrl?: string;
+  price?: number;
+};
 
 type KioskFrameProps = {
   className?: string

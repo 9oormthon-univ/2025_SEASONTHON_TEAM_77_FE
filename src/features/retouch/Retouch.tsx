@@ -4,10 +4,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import HeaderBar from '../../components/HeaderBar';
 import KioskFrame, { type Category, type KioskItem } from '../kiosk/learn-menu/KioskFrame';
 import { itemsByCategory } from '../kiosk/learn-menu/KioskItems';
+import { submitRetouchResult, type RetouchResult } from '../../shared/api/retouch';
 
 type IntroPhase = 'bg1' | 'modal' | 'bg2';
 
 type CartItem = {
+  productId?: number;
   name: string;
   price: number;
   qty: number;
@@ -42,10 +44,35 @@ const [page, setPage] = useState<
     };
   }, [page]);
 
+  const [resultData, setResultData] = useState<RetouchResult | null>(null);
+
   const handleIntroBgClick = () => {
     if (introPhase === 'bg1') setIntroPhase('modal');
     else if (introPhase === 'bg2') setPage('kiosk');
   };
+
+  const handlePay = async () => {
+  if (bottomTotals.qty === 0) return;
+
+  const submittedProducts = cart.map(ci => ({
+    productId: ci.productId,
+    productName: ci.name,
+    quantity: ci.qty,
+  }));
+
+  try {
+    const data = await submitRetouchResult({
+      testId: 7,       // 실제 테스트 ID로 교체
+      duration: 180,   // 타이머 연동 시 실제값으로 교체
+      submittedProducts,
+    });
+    setResultData(data);
+    setPage('review'); // 기존 useEffect가 2초 후 wrongCheck로 이동 처리
+  } catch (err) {
+    console.error(err);
+    // TODO: 에러 토스트/알림
+  }
+};
 
   const totals = useMemo(() => {
     let qty = 0;
@@ -93,17 +120,19 @@ const [page, setPage] = useState<
     setHighlightName(null);
   };
 
-  const confirmOptionModal = () => {
-    if (!pendingModalItem) return;
-    addToCart({
-      name: pendingModalItem.name,
-      price: pendingModalItem.price ?? 0,
-      qty: modalQty,
-      size: modalSize,
-    });
-    setPendingModalItem(null);
-    window.setTimeout(() => setHighlightName(null), 600);
-  };
+const confirmOptionModal = () => {
+  if (!pendingModalItem) return;
+  addToCart({
+    productId: (pendingModalItem as any).productId, // itemsByCategory에 id를 넣으면 자동 전달
+    name: pendingModalItem.name,
+    price: pendingModalItem.price ?? 0,
+    qty: modalQty,
+    size: modalSize,
+  });
+  setPendingModalItem(null);
+  window.setTimeout(() => setHighlightName(null), 600);
+};
+
 
   // 주문서 이동: 키오스크 하단의 "주문하기" 클릭 시
   const goOrderSheet = () => {
@@ -131,6 +160,30 @@ const [page, setPage] = useState<
     const t = window.setTimeout(() => setPage('wrongCheck'), 2000);
     return () => window.clearTimeout(t);
     }, [page]);
+
+    // 결과 요약 계산
+    const productResults = resultData?.productResults ?? [];
+    const correctCount = productResults.filter(p => p.correct).length;
+    const wrongCount = productResults.length > 0 ? productResults.length - correctCount : 0;
+
+    // 소요시간 포맷 (초 → "m분 ss초")
+    const fmtDuration = (sec: number | undefined) => {
+    if (!sec && sec !== 0) return '-';
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}분 ${s.toString().padStart(2, '0')}초`;
+    };
+
+    // 단계별 뒤로가기
+    const goBack = () => {
+    if (page === 'orderSheet') {
+        // 주문서 → 메뉴 선택 화면
+        setPage('kiosk');
+    } else if (page === 'kiosk') {
+        // 메뉴 선택 화면 → 키오스크 인트로(초기 배경/모달 단계)
+        setPage('kioskIntro');
+    }
+    };
 
   return (
     <div className="relative w-full h-screen">
@@ -397,12 +450,15 @@ const [page, setPage] = useState<
                 </div>
             </div>
             <div className="flex items-center gap-[10px]">
-                <button className="flex-1 h-[34px] rounded-[32px] bg-white text-black text-[14px] font-medium">
+                <button 
+                className="flex-1 h-[34px] rounded-[32px] bg-white text-black text-[14px] font-medium"
+                onClick={goBack}
+                >
                 이전
                 </button>
                 <button
                 className="flex-[1] h-[34px] rounded-[32px] bg-[#FFC845] text-black text-[14px] font-medium"
-                onClick={() => setPage('review')}
+                onClick={handlePay} 
                 >
                 결제하기
                 </button>
@@ -456,28 +512,36 @@ const [page, setPage] = useState<
             </div>
             <div className="mt-2 mb-[30px] h-px bg-[#F0F0F0]" />
 
-            {/* 요약 */}
+            {/* 요약 (API 바인딩) */}
             <div className="space-y-3 mb-[67px]">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                <img src="/src/assets/check_icon.png" alt="닫기" className="w-6 h-6" />
+                <img src="/src/assets/check_icon.png" alt="정답" className="w-6 h-6" />
                 <span className="text-[16px] font-bold text-[#111]">정답</span>
                 </div>
-                <span className="text-[16px] font-bold text-[#111]">2개</span>
+                <span className="text-[16px] font-bold text-[#111]">
+                {correctCount}개
+                </span>
             </div>
+
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                <img src="/src/assets/warning_icon.png" alt="닫기" className="w-6 h-6" />
+                <img src="/src/assets/warning_icon.png" alt="오답" className="w-6 h-6" />
                 <span className="text-[16px] font-bold text-[#111]">오답</span>
                 </div>
-                <span className="text-[16px] text-[#111] font-bold">1개</span>
+                <span className="text-[16px] text-[#111] font-bold">
+                {wrongCount}개
+                </span>
             </div>
+
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                <img src="/src/assets/time_icon.png" alt="닫기" className="w-6 h-6" />
+                <img src="/src/assets/time_icon.png" alt="소요시간" className="w-6 h-6" />
                 <span className="text-[16px] font-bold text-[#111]">소요시간</span>
                 </div>
-                <span className="text-[16px] font-bold text-[#111]">5분 17초</span>
+                <span className="text-[16px] font-bold text-[#111]">
+                {fmtDuration(resultData?.duration)}
+                </span>
             </div>
             </div>
 
@@ -489,18 +553,53 @@ const [page, setPage] = useState<
                 <div className="text-center">사이즈 선택</div>
                 <div className="text-end">수량 선택</div>
             </div>
-            <div className="grid grid-cols-[1.2fr,0.8fr,0.9fr,0.9fr] items-center text-[12px] font-normal pt-3">
-                <div className="truncate text-[#000000]">레몬아메리카노</div>
-                <div className="grid place-items-center">
-                <img src="/src/assets/check_icon.png" alt="닫기" className="w-5 h-5" />
+            {(resultData?.productResults ?? []).length === 0 ? (
+            <div className="text-center text-[#777] py-4 text-[12px]">표시할 결과가 없습니다.</div>
+            ) : (
+            (resultData?.productResults ?? []).map((p, i) => {
+                // 판정 매핑
+                const menuOk = (p.status ?? '').toUpperCase() !== 'MISSING' && (p.submittedQuantity ?? 0) > 0;
+                // 백엔드에 사이즈 정보가 아직 없으므로, 임시로 '정답 여부'를 사이즈 판정으로 사용
+                const sizeOk = !!p.correct;
+                const qtyOk = (p.submittedQuantity ?? 0) === (p.correctQuantity ?? -1);
+
+                return (
+                <div
+                    key={`${p.productName}-${i}`}
+                    className="grid grid-cols-[1.2fr,0.8fr,0.9fr,0.9fr] items-center text-[12px] font-normal pt-3"
+                >
+                    <div className="truncate text-[#000000]">{p.productName}</div>
+
+                    {/* 메뉴 선택 */}
+                    <div className="grid place-items-center">
+                    <img
+                        src={menuOk ? '/src/assets/check_icon.png' : '/src/assets/warning_icon.png'}
+                        alt={menuOk ? '정답' : '오답'}
+                        className="w-5 h-5"
+                    />
+                    </div>
+
+                    {/* 사이즈 선택 (임시 매핑: correct → 체크, 아니면 경고) */}
+                    <div className="grid place-items-center">
+                    <img
+                        src={sizeOk ? '/src/assets/check_icon.png' : '/src/assets/warning_icon.png'}
+                        alt={sizeOk ? '정답' : '오답'}
+                        className="w-5 h-5"
+                    />
+                    </div>
+
+                    {/* 수량 선택 */}
+                    <div className="grid place-items-center ml-3">
+                    <img
+                        src={qtyOk ? '/src/assets/check_icon.png' : '/src/assets/warning_icon.png'}
+                        alt={qtyOk ? '정답' : '오답'}
+                        className="w-5 h-5"
+                    />
+                    </div>
                 </div>
-                <div className="grid place-items-center">
-                <img src="/src/assets/warning_icon.png" alt="닫기" className="w-5 h-5" />
-                </div>
-                <div className="grid place-items-center ml-3">
-                <img src="/src/assets/check_icon.png" alt="닫기" className="w-5 h-5" />
-                </div>
-            </div>
+                );
+            })
+            )}
             </div>
         </div>
 
