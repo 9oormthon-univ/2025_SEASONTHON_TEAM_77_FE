@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import HeaderBar from '../../../components/HeaderBar';
 import KioskFrame, { type Category } from './KioskFrame';
 import { CategorySteps } from './CategoryData';
+import { itemsByCategory } from './KioskItems';
 
 const CategoryExplain: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
@@ -74,8 +75,9 @@ const stepToCategory = (step: number | null): Category | null => {
       {page === 'kiosk' && (
         <>
         <KioskFrame
+          itemsByCategory={itemsByCategory}
           forcedActiveCategory={stepToCategory(step)}
-          disableTabClicks={step !== null}
+          disableTabClicks={step !== null && step !== 0}
         />
 
           {/* 하단 반투명 오버레이 */}
