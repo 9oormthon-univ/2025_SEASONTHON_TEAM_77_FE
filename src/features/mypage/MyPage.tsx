@@ -16,18 +16,25 @@ export default function MyPage() {
   const handleLogout = async () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
+    
+      if (!accessToken) {
+        alert("로그인 정보가 없습니다.");
+        navigate("/login");
+        return;
+      }
 
       const response = await axios.post(
         "http://3.36.238.38:8080/api/v1.0/user/logout",
         {},
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': "application/json",
           },
         }
       );
   
-      console.log("로그아웃 응답:", response.data); // 🔍 확인
+      console.log("로그아웃 응답:", response.data); // 확인
       if (response.data === "로그아웃 완료") {
         localStorage.clear();
         navigate("/login");

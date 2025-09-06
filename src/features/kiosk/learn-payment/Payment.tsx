@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { paymentSteps } from './PaymentData';
@@ -9,7 +9,14 @@ const Payment: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
   const [step, setStep] = useState<number>(0);
   const [substep, setSubstep] = useState<number>(0);
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (step === 3) {
+      setShowModal(true);
+    }
+  }, [step]);
 
   const currentStepData = paymentSteps[step];
   const currentSubstepText = currentStepData?.substeps?.[substep]?.description || '';
@@ -191,7 +198,7 @@ const Payment: React.FC = () => {
               )}
               {step === 3 && (
                 <div 
-                  className="flex flex-col items-center justify-center w-[319px] h-[569px] mt-[67px] py-[132px] px-[16px] border-2 border-gray-300 bg-black-300"
+                  className="flex flex-col items-center justify-center w-[319px] h-[569px] mt-[67px] py-[132px] px-[16px] border-2 border-gray-300 bg-black bg-opacity-30"
                   style={{
                     boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.04)',
                     borderRadius: '36px',
@@ -204,6 +211,26 @@ const Payment: React.FC = () => {
                   <p className="text-sm text-black mb-10">결제 오류 시 마그네틱을 아래로 향하게 긁어주세요.</p>
                   <img src="/src/assets/payment/group.svg" className="w-[30px] h-[30px] mb-10" />
                   <img src="/src/assets/payment/pay.svg" className="w-[127px] h-[100px]" />
+                </div>
+              )}
+              {step === 4 &&  (
+                <div 
+                  className="flex flex-col items-center justify-center w-[319px] h-[569px] mt-[67px] py-[132px] px-[16px] border-2 border-gray-300 bg-white"
+                  style={{
+                    boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.04)',
+                    borderRadius: '36px',
+                  }}
+                >
+                  <div className="text-center mb-7">
+                    <p className="text-black text-xl">주문이 완료되었습니다!</p>
+                  </div>
+                  <div className="text-center mb-7">
+                    <p className="text-[#ffc845] text-sm">주문번호</p>
+                    <p className="text-[#ffc845] text-[64px]">712</p>
+                  </div>
+                  <p className="text-sm text-black mb-10 text-center">신용카드를 뽑은 후<br />
+                  출력된 영수증을 받아가세요.</p>
+                  <img src="/src/assets/payment/receipt.svg" className="w-[184px] h-[173px]" />
                 </div>
               )}
               <div className="flex justify-center items-center gap-11 px-13 mt-4">
@@ -320,6 +347,31 @@ const Payment: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* 모달 */}
+      {showModal && (
+        <div className="fixed inset-0 w-full h-screen bg-black bg-opacity-50 z-50 flex justify-center items-center">
+          <div className="bg-white rounded-[16px] px-5 py-7 w-[80%] max-w-[300px] text-center">
+            <p className="text-lg font-semibold mb-6">영수증을 출력하시겠어요?</p>
+            <div className="flex justify-between gap-2">
+              <button
+                className="flex-1 bg-[#FFD845] text-base text-black py-2 rounded-full rounded-[36px]"
+                onClick={() => {
+                  setShowModal(false);
+                  handleNextStep();
+                }}
+              >
+                예 
+              </button>
+              <button
+                className="flex-1 bg-[#ececec] text-base text-black py-2 rounded-full rounded-[36px]"
+                onClick={() => void 0}
+              >
+                  아니오
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
