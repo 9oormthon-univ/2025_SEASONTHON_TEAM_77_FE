@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import HeaderBar from '../../components/HeaderBar';
 import KioskFrame, { type Category, type KioskItem } from '../kiosk/learn-menu/KioskFrame';
 import { itemsByCategory } from '../kiosk/learn-menu/KioskItems';
-import { submitRetouchResult, type RetouchResult } from '../../shared/api/retouch';
+import { fetchRetouchTest, submitRetouchResult, type RetouchResult, type ProductResult } from '../../shared/api/retouch';
 
 type IntroPhase = 'bg1' | 'modal' | 'bg2';
 
@@ -45,34 +45,43 @@ const [page, setPage] = useState<
   }, [page]);
 
   const [resultData, setResultData] = useState<RetouchResult | null>(null);
+  const [testTitle, setTestTitle] = useState<string>('');
+  const [testLoading, setTestLoading] = useState(false);
+  const [testError, setTestError] = useState<string | null>(null);
+  const TEST_ID = 1;
+  const [testId, setTestId] = useState<number | null>(null);
 
   const handleIntroBgClick = () => {
     if (introPhase === 'bg1') setIntroPhase('modal');
     else if (introPhase === 'bg2') setPage('kiosk');
   };
 
-  const handlePay = async () => {
-  if (bottomTotals.qty === 0) return;
+    const handlePay = async () => {
+    if (bottomTotals.qty === 0) return;
+    if (!testId) {                         // ← 보호 로직 추가
+        console.warn('testId가 없습니다. 테스트를 먼저 불러오세요.');
+        return;
+    }
 
-  const submittedProducts = cart.map(ci => ({
-    productId: ci.productId,
-    productName: ci.name,
-    quantity: ci.qty,
-  }));
+    const submittedProducts = cart.map(ci => ({
+        productId: ci.productId,
+        productName: ci.name,
+        quantity: ci.qty,
+    }));
 
-  try {
-    const data = await submitRetouchResult({
-      testId: 7,       // 실제 테스트 ID로 교체
-      duration: 180,   // 타이머 연동 시 실제값으로 교체
-      submittedProducts,
-    });
-    setResultData(data);
-    setPage('review'); // 기존 useEffect가 2초 후 wrongCheck로 이동 처리
-  } catch (err) {
-    console.error(err);
-    // TODO: 에러 토스트/알림
-  }
-};
+    try {
+        const data = await submitRetouchResult({
+        testId: 1,
+        duration: 180,
+        submittedProducts,
+        });
+        setResultData(data);
+        setPage('review');
+    } catch (err) {
+        console.error(err);
+    }
+    };
+
 
   const totals = useMemo(() => {
     let qty = 0;
@@ -140,7 +149,7 @@ const confirmOptionModal = () => {
     setPage('orderSheet');
   };
 
-  // 주문서에서 수량 조절/삭제 (간단 동작)
+  // 주문서에서 수량 조절/삭제
   const changeQty = (idx: number, delta: number) => {
     setCart((prev) => {
       const copy = [...prev];
@@ -184,6 +193,28 @@ const confirmOptionModal = () => {
         setPage('kioskIntro');
     }
     };
+
+    useEffect(() => {
+    if (page !== 'kioskIntro') return;
+    let mounted = true;
+    (async () => {
+        try {
+        setTestLoading(true);
+        setTestError(null);
+        const data = await fetchRetouchTest(TEST_ID);
+        if (!mounted) return;
+        setTestTitle(data?.title ?? '');
+        setTestId(data?.id ?? null); 
+        } catch (e) {
+        if (!mounted) return;
+        setTestError('주문 목록을 불러오지 못했어요.');
+        } finally {
+        if (!mounted) return;
+        setTestLoading(false);
+        }
+    })();
+    return () => { mounted = false; };
+    }, [page]);
 
   return (
     <div className="relative w-full h-screen">
@@ -258,9 +289,13 @@ const confirmOptionModal = () => {
                   <h4 className="text-lg text-black mb-5 font-semibold leading-[140%]">
                     매장 식사
                   </h4>
-                  <ul className="text-sm text-[#444444] mb-5 font-medium leading-[160%] text-left">
-                    <li>• 레몬아메리카노 <span className="text-[#FFC845]">중간 사이즈</span> 1잔</li>
-                  </ul>
+                    <ul className="text-sm text-[#444444] mb-5 font-medium leading-[160%] text-left">
+                    {testLoading && <li>• 불러오는 중...</li>}
+                    {testError && <li>• {testError}</li>}
+                    {!testLoading && !testError && (
+                        <li>• {testTitle || '주문 목록이 없습니다.'}</li>
+                    )}
+                    </ul>
                   <button
                     onClick={() => setIntroPhase('bg2')}
                     className="w-[278px] h-[52px] py-4 bg-[#FFC845] text-black rounded-full hover:scale-105 transition-all duration-300"
@@ -553,15 +588,18 @@ const confirmOptionModal = () => {
                 <div className="text-center">사이즈 선택</div>
                 <div className="text-end">수량 선택</div>
             </div>
-            {(resultData?.productResults ?? []).length === 0 ? (
-            <div className="text-center text-[#777] py-4 text-[12px]">표시할 결과가 없습니다.</div>
+            {((resultData?.productResults?.length ?? 0) === 0) ? (
+            <div className="text-center text-[#777] py-4 text-[12px]">
+                표시할 결과가 없습니다.
+            </div>
             ) : (
-            (resultData?.productResults ?? []).map((p, i) => {
-                // 판정 매핑
-                const menuOk = (p.status ?? '').toUpperCase() !== 'MISSING' && (p.submittedQuantity ?? 0) > 0;
-                // 백엔드에 사이즈 정보가 아직 없으므로, 임시로 '정답 여부'를 사이즈 판정으로 사용
-                const sizeOk = !!p.correct;
-                const qtyOk = (p.submittedQuantity ?? 0) === (p.correctQuantity ?? -1);
+            <>
+            {(resultData?.productResults ?? []).map((p: ProductResult, i: number) => {
+            const menuOk =
+                (p.status ?? '').toUpperCase() !== 'MISSING' &&
+                (p.submittedQuantity ?? 0) > 0;
+            const sizeOk = !!p.correct; // (임시 매핑)
+            const qtyOk = (p.submittedQuantity ?? 0) === (p.correctQuantity ?? -1);
 
                 return (
                 <div
@@ -598,9 +636,10 @@ const confirmOptionModal = () => {
                     </div>
                 </div>
                 );
-            })
+            })}
+            </>
             )}
-            </div>
+        </div>
         </div>
 
         {/* 하단 버튼 */}
