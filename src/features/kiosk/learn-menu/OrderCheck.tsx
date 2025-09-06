@@ -293,7 +293,7 @@ const OrderCheck: React.FC = () => {
                 처음으로
               </button>
               <button
-                onClick={() => navigate('/teachmap')}
+                onClick={() => navigate('/teachmap/kioskpayment')}
                 className="w-[159px] h-[52px] font-semibold bg-[#FFC845] text-black rounded-full hover:scale-105 transition-all duration-300"
               >
                 학습 이어하기
