@@ -20,14 +20,15 @@ type CartItem = {
 function evalFlags(p?: ProductResult) {
   if (!p) return { menuOk: false, sizeOk: false, qtyOk: false };
 
-  // 명세서 기준 status: "정답" | "옵션 틀림" | "수량 틀림" | "추가 상품"
+  // 명세서 기준 status: "정답" | "옵션 틀림" | "수량 틀림" | "추가 상품" | "목록에서 빠짐"
   const s = (p.status || '').trim();
   switch (s) {
-    case '정답':     return { menuOk: true,  sizeOk: true,  qtyOk: true  };
-    case '옵션 틀림': return { menuOk: true,  sizeOk: false, qtyOk: true  };
-    case '수량 틀림': return { menuOk: true,  sizeOk: true,  qtyOk: false };
+    case '정답':         return { menuOk: true,  sizeOk: true,  qtyOk: true  };
+    case '옵션 틀림':     return { menuOk: true,  sizeOk: false, qtyOk: true  };
+    case '수량 틀림':     return { menuOk: true,  sizeOk: true,  qtyOk: false };
+    case '추가 상품':     return { menuOk: false, sizeOk: false, qtyOk: false };
+    case '목록에서 빠짐': return { menuOk: false, sizeOk: false, qtyOk: false };
     default:
-      // 명세서 외 값이 오더라도 최대한 합리적으로 표시
       return {
         menuOk: !!p.correct,
         sizeOk: !!p.correct,
@@ -37,9 +38,9 @@ function evalFlags(p?: ProductResult) {
 }
 
 const Retouch: React.FC = () => {
-const [page, setPage] = useState<
-  'intro' | 'kioskIntro' | 'kiosk' | 'orderSheet' | 'review' | 'wrongCheck' | 'complete'
->('intro');
+  const [page, setPage] = useState<
+    'intro' | 'kioskIntro' | 'kiosk' | 'orderSheet' | 'review' | 'wrongCheck' | 'complete'
+  >('intro');
   const [introPhase, setIntroPhase] = useState<IntroPhase>('bg1');
 
   const [highlightName, setHighlightName] = useState<string | null>(null);
@@ -71,41 +72,63 @@ const [page, setPage] = useState<
   const TEST_ID = 1;
   const [testId, setTestId] = useState<number | null>(null);
   const [expectedProducts, setExpectedProducts] = useState<RetouchTestProduct[]>([]);
+  const [startTs, setStartTs] = useState<number | null>(null);
+
+  // 리트라이 모드(오답 풀기에서 들어왔는지)
+  const [isRetry, setIsRetry] = useState<boolean>(false);
+
+  // 오답 리트라이에서 사이즈 미리선택 하이라이트를 끌지 여부
+  const [sizePreselectEnabled, setSizePreselectEnabled] = useState<boolean>(true);
 
   const handleIntroBgClick = () => {
-    if (introPhase === 'bg1') setIntroPhase('modal');
-    else if (introPhase === 'bg2') setPage('kiosk');
+    if (introPhase === 'bg1') {
+      setIntroPhase('modal');
+    } else if (introPhase === 'bg2') {
+      if (!startTs) setStartTs(Date.now());
+      setPage('kiosk');
+    }
   };
 
-const handlePay = async () => {
-  if (bottomTotals.qty === 0) return;
-  if (!testId) { // 테스트가 아직 안 불렸다면 보호
-    console.warn('testId가 없습니다. 테스트를 먼저 불러오세요.');
-    return;
-  }
+  const handlePay = async () => {
+    if (bottomTotals.qty === 0) return;
+    if (!testId) {
+      console.warn('testId가 없습니다. 테스트를 먼저 불러오세요.');
+      return;
+    }
 
-  const submittedProducts = cart.map((ci) => ({
-    productId: ci.productId,
-    productName: ci.name,
-    quantity: ci.qty,
-    // 온도는 생략 가능. 사이즈만 보내요.
-    productOptions: ci.size
-      ? [{ optionName: '사이즈', optionValue: ci.size }]
-      : undefined,
-  }));
+    // 경과시간(초) 계산: 시작 시각 없으면 0
+    const durationSec =
+      startTs ? Math.max(0, Math.round((Date.now() - startTs) / 1000)) : 0;
 
-  try {
-    const data = await submitRetouchResult({
-      testId,          // ← 하드코딩 1 제거
-      duration: 180,   // TODO: 실제 타이머 값으로 교체
-      submittedProducts,
-    });
-    setResultData(data);
-    setPage('review');
-  } catch (err) {
-    console.error(err);
-  }
-};
+    const submittedProducts = cart.map((ci) => ({
+      productId: ci.productId,
+      productName: ci.name,
+      quantity: ci.qty,
+      productOptions: ci.size
+        ? [{ optionName: '사이즈', optionValue: ci.size }]
+        : undefined,
+    }));
+
+    try {
+      const data = await submitRetouchResult({
+        testId,
+        duration: durationSec,
+        submittedProducts,
+      });
+
+      setResultData({ ...data, duration: durationSec });
+
+      // 리트라이 모드면 바로 학습완료로 이동(주문내역확인 스킵)
+      if (isRetry) {
+        setPage('complete');
+        setIsRetry(false);
+      } else {
+        setPage('review');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const totals = useMemo(() => {
     let qty = 0;
@@ -127,6 +150,7 @@ const handlePay = async () => {
         setPendingModalItem(item);
         setModalSize('S');
         setModalQty(1);
+        setSizePreselectEnabled(true);
       }, 200) as unknown as number;
     } else {
       addToCart({ name: item.name, price: item.price ?? 0, qty: 1 });
@@ -153,39 +177,44 @@ const handlePay = async () => {
     setHighlightName(null);
   };
 
-const confirmOptionModal = () => {
-  if (!pendingModalItem) return;
+  const confirmOptionModal = () => {
+    if (!pendingModalItem) return;
 
-  // 이름 정규화: "아이스 " 접두사 제거
-  const normalizedName = pendingModalItem.name.replace(/^아이스\s*/, '');
+    // 이름 정규화: "아이스 " 접두사 제거
+    const normalizedName = pendingModalItem.name.replace(/^아이스\s*/, '');
 
-  // expectedProducts에서 productId/옵션 힌트 가져오기(이름 기준)
-  const matchedExp = expectedProducts.find(
-    (p) => p.productName === normalizedName
-  );
+    // expectedProducts에서 productId/옵션 힌트 가져오기(이름 기준)
+    const matchedExp = expectedProducts.find(
+      (p) => p.productName === normalizedName
+    );
 
-  const opts: CartItem['productOptions'] = [];
-  if (modalSize) {
-    opts.push({ optionName: '사이즈', optionValue: modalSize });
-  }
+    const opts: CartItem['productOptions'] = [];
+    if (modalSize) {
+      opts.push({ optionName: '사이즈', optionValue: modalSize });
+    }
 
-  addToCart({
-    productId: matchedExp?.id,              // ← 서버 정답 기준 id 채우기
-    name: normalizedName,                   // ← 정답 기준으로 이름도 정규화
-    price: pendingModalItem.price ?? 0,
-    qty: modalQty,
-    size: modalSize,
-    productOptions: opts,
-  });
+    addToCart({
+      productId: matchedExp?.id,
+      name: normalizedName,
+      price: pendingModalItem.price ?? 0,
+      qty: modalQty,
+      size: modalSize,
+      productOptions: opts,
+    });
 
-  setPendingModalItem(null);
-  window.setTimeout(() => setHighlightName(null), 600);
-};
+    setPendingModalItem(null);
+    window.setTimeout(() => setHighlightName(null), 600);
+  };
 
-  // 주문서 이동: 키오스크 하단의 "주문하기" 클릭 시
-  const goOrderSheet = () => {
-    if (totals.qty === 0) return; // 빈 장바구니 보호(원하면 토스트 등)
-    setPage('orderSheet');
+  // 주문하기 클릭 시 동작
+  const goOrder = () => {
+    if (totals.qty === 0) return;
+    // 리트라이 모드에서는 주문내역확인 화면을 건너뛰고 바로 제출 → 학습완료로
+    if (isRetry) {
+      handlePay();
+    } else {
+      setPage('orderSheet');
+    }
   };
 
   // 주문서에서 수량 조절/삭제
@@ -207,37 +236,35 @@ const confirmOptionModal = () => {
     if (page !== 'review') return;
     const t = window.setTimeout(() => setPage('wrongCheck'), 2000);
     return () => window.clearTimeout(t);
-    }, [page]);
+  }, [page]);
 
-    // 결과 요약 계산
-    const productResults = resultData?.productResults ?? [];
-    const correctCount = productResults.filter(p => p.correct).length;
-    const wrongCount = productResults.length > 0 ? productResults.length - correctCount : 0;
+  // 결과 요약 계산
+  const productResults = resultData?.productResults ?? [];
+  const correctCount = productResults.filter(p => p.correct).length;
+  const wrongCount = productResults.length > 0 ? productResults.length - correctCount : 0;
 
-    // 소요시간 포맷 (초 → "m분 ss초")
-    const fmtDuration = (sec: number | undefined) => {
+  // 소요시간 포맷 (초 → "m분 ss초")
+  const fmtDuration = (sec: number | undefined) => {
     if (!sec && sec !== 0) return '-';
     const m = Math.floor(sec / 60);
     const s = sec % 60;
     return `${m}분 ${s.toString().padStart(2, '0')}초`;
-    };
+  };
 
-    // 단계별 뒤로가기
-    const goBack = () => {
+  // 단계별 뒤로가기
+  const goBack = () => {
     if (page === 'orderSheet') {
-        // 주문서 → 메뉴 선택 화면
-        setPage('kiosk');
+      setPage('kiosk');
     } else if (page === 'kiosk') {
-        // 메뉴 선택 화면 → 키오스크 인트로(초기 배경/모달 단계)
-        setPage('kioskIntro');
+      setPage('kioskIntro');
     }
-    };
+  };
 
-    useEffect(() => {
+  useEffect(() => {
     if (page !== 'kioskIntro') return;
     let mounted = true;
     (async () => {
-        try {
+      try {
         setTestLoading(true);
         setTestError(null);
         const data = await fetchRetouchTest(TEST_ID);
@@ -245,16 +272,91 @@ const confirmOptionModal = () => {
         setTestTitle(data?.title ?? '');
         setTestId(data?.id ?? null); 
         setExpectedProducts(data?.testOrder?.products ?? []);
-        } catch (e) {
+      } catch (e) {
         if (!mounted) return;
         setTestError('주문 목록을 불러오지 못했어요.');
-        } finally {
+      } finally {
         if (!mounted) return;
         setTestLoading(false);
-        }
+      }
     })();
     return () => { mounted = false; };
-    }, [page]);
+  }, [page]);
+
+  // 이름으로 키오스크 아이템 찾기(음료/커피 중심)
+  function findKioskItemByName(name: string): KioskItem | null {
+    const normalized = name.replace(/^아이스\s*/, '');
+    const coffee = (itemsByCategory?.커피 ?? []).find(i => i.name.replace(/^아이스\s*/, '') === normalized);
+    if (coffee) return coffee;
+    const drink = (itemsByCategory?.음료 ?? []).find(i => i.name.replace(/^아이스\s*/, '') === normalized);
+    if (drink) return drink;
+    for (const arr of Object.values(itemsByCategory ?? {})) {
+      const list = Array.isArray(arr) ? arr : [];
+      const f = list.find(i => i.name.replace(/^아이스\s*/, '') === normalized);
+      if (f) return f;
+    }
+    return null;
+  }
+
+  // 오답 풀기 클릭 핸들러
+  const handleRetryWrong = () => {
+    if (!resultData) { setPage('kiosk'); return; }
+
+    // 첫 번째로 '완전히 정답이 아닌' 문제
+    const firstWrong = expectedProducts.find((exp) => {
+      const matched = (resultData.productResults ?? []).find(r => r.productName === exp.productName);
+      const { menuOk, sizeOk, qtyOk } = evalFlags(matched);
+      return !(menuOk && sizeOk && qtyOk);
+    });
+
+    // 리트라이 모드 진입 + 장바구니/합계 초기화
+    setIsRetry(true);
+    setCart([]); // ✅ 장바구니 리셋 → 총수량/합계 초기화
+
+    // 오답이 없으면 그냥 키오스크로
+    if (!firstWrong) { setPage('kiosk'); return; }
+
+    const matched = (resultData.productResults ?? []).find(r => r.productName === firstWrong.productName);
+    const { menuOk, sizeOk, qtyOk } = evalFlags(matched);
+
+    // 먼저 키오스크 페이지로 이동
+    setPage('kiosk');
+
+    // 다음 프레임에 모달 오픈(화면 전환 후)
+    setTimeout(() => {
+      if (!menuOk) {
+        // 메뉴 선택 오답 → 모달 띄우지 않음
+        setPendingModalItem(null);
+        return;
+      }
+
+      // 메뉴는 맞음 → 해당 메뉴 모달 자동 오픈
+      const item = findKioskItemByName(firstWrong.productName);
+      if (!item) {
+        setPendingModalItem(null);
+        return;
+      }
+
+      // 수량: 맞았으면 정답 수량, 틀리면 1
+      const correctQty = firstWrong.quantity ?? 1;
+      const qty = qtyOk ? correctQty : 1;
+
+      // 사이즈: 맞았으면 정답, 틀리면 하이라이트 끔
+      const expSize = firstWrong.productOptions?.find(o => o.optionName === '사이즈')?.optionValue as ('S'|'M'|'L'|undefined);
+      let size: 'S'|'M'|'L' = (expSize ?? 'S') as any;
+
+      setPendingModalItem(item);
+      setModalQty(qty);
+
+      if (sizeOk && expSize) {
+        setModalSize(expSize as 'S'|'M'|'L');
+        setSizePreselectEnabled(true);
+      } else {
+        setModalSize(size);
+        setSizePreselectEnabled(false);
+      }
+    }, 0);
+  };
 
   return (
     <div className="relative w-full h-screen">
@@ -329,13 +431,13 @@ const confirmOptionModal = () => {
                   <h4 className="text-lg text-black mb-5 font-semibold leading-[140%]">
                     매장 식사
                   </h4>
-                    <ul className="text-sm text-[#444444] mb-5 font-medium leading-[160%] text-left">
+                  <ul className="text-sm text-[#444444] mb-5 font-medium leading-[160%] text-left">
                     {testLoading && <li>• 불러오는 중...</li>}
                     {testError && <li>• {testError}</li>}
                     {!testLoading && !testError && (
-                        <li>• {testTitle || '주문 목록이 없습니다.'}</li>
+                      <li>• {testTitle || '주문 목록이 없습니다.'}</li>
                     )}
-                    </ul>
+                  </ul>
                   <button
                     onClick={() => setIntroPhase('bg2')}
                     className="w-[278px] h-[52px] py-4 bg-[#FFC845] text-black rounded-full hover:scale-105 transition-all duration-300"
@@ -358,7 +460,7 @@ const confirmOptionModal = () => {
             onSelectItem={handleSelectItem}
             highlightItemIncludes={highlightName}
             forcedTotals={totals}
-            onClickOrder={goOrderSheet}
+            onClickOrder={goOrder}
           />
           {/* 옵션 모달 */}
           <AnimatePresence>
@@ -409,10 +511,10 @@ const confirmOptionModal = () => {
                         {(['S', 'M', 'L'] as const).map((s) => (
                           <button
                             key={s}
-                            onClick={() => setModalSize(s)}
+                            onClick={() => { setModalSize(s); setSizePreselectEnabled(true); }}
                             className={[
                               'px-3 py-2 rounded-2xl text-sm',
-                              modalSize === s ? 'bg-[#FFEEC5] text-[#111]' : 'bg-[#ECECEC] text-[#111]',
+                              (sizePreselectEnabled && modalSize === s) ? 'bg-[#FFEEC5] text-[#111]' : 'bg-[#ECECEC] text-[#111]',
                             ].join(' ')}
                           >
                             {s}
@@ -489,7 +591,7 @@ const confirmOptionModal = () => {
                         >−</button>
                         <span>{ci.qty}</span>
                         <button
-                          className="w-5 h-5 rounded-full bg-[#444] text-white text-[12px] grid place-items-center"
+                          className="w-5 h-5 rounded-full bg-[#444] text-white text-[12px] grid place-items_center"
                           onClick={() => changeQty(idx, +1)}
                         >＋</button>
                       </div>
@@ -513,31 +615,31 @@ const confirmOptionModal = () => {
 
             {/* 하단 합계/버튼 바 */}
             <div className="mt-auto rounded-b-[34px] bg-[#444444] text-white px-4 pt-3 pb-4 shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
-            <div className="mb-3 flex w-full max-w-[320px] items-center justify-center text-[13px]">
+              <div className="mb-3 flex w-full max-w-[320px] items-center justify-center text-[13px]">
                 <div className="flex flex-1 justify-between px-4">
-                <span className="opacity-90">총수량</span>
-                <span className="opacity-90">{bottomTotals.qty}개</span>
+                  <span className="opacity-90">총수량</span>
+                  <span className="opacity-90">{bottomTotals.qty}개</span>
                 </div>
                 <div className="w-px h-4 bg-gray-300 opacity-60" />
                 <div className="flex flex-1 justify-between px-4">
-                <span className="opacity-90">합계</span>
-                <span className="font-medium">{bottomTotals.sum.toLocaleString()}원</span>
+                  <span className="opacity-90">합계</span>
+                  <span className="font-medium">{bottomTotals.sum.toLocaleString()}원</span>
                 </div>
-            </div>
-            <div className="flex items-center gap-[10px]">
+              </div>
+              <div className="flex items-center gap-[10px]">
                 <button 
-                className="flex-1 h-[34px] rounded-[32px] bg-white text-black text-[14px] font-medium"
-                onClick={goBack}
+                  className="flex-1 h-[34px] rounded-[32px] bg-white text-black text-[14px] font-medium"
+                  onClick={goBack}
                 >
-                이전
+                  이전
                 </button>
                 <button
-                className="flex-[1] h-[34px] rounded-[32px] bg-[#FFC845] text-black text-[14px] font-medium"
-                onClick={handlePay} 
+                  className="flex-[1] h-[34px] rounded-[32px] bg-[#FFC845] text-black text-[14px] font-medium"
+                  onClick={handlePay} 
                 >
-                결제하기
+                  결제하기
                 </button>
-            </div>
+              </div>
             </div>
           </div>
         </KioskFrame>
@@ -560,7 +662,7 @@ const confirmOptionModal = () => {
                 backgroundRepeat: 'no-repeat',
               }}
             />
-            <h3 className="text-xl mb-6 text-center text-black font-semibold leading-[140%]">
+            <h3 className="text-xl mb-6 text-center text_black font-semibold leading-[140%]">
               주문이 완료되었어요
             </h3>
             <p className="text-base mb-20 text-center text-black font-medium leading-[160%]">
@@ -571,130 +673,148 @@ const confirmOptionModal = () => {
         )}
       </AnimatePresence>
 
-    {/* 오답 확인 화면 */}
-    <AnimatePresence>
-    {page === 'wrongCheck' && (
-        <motion.div
-        className="absolute inset-0 flex flex-col items-center justify-start pt-10 z-20 bg-[#F6F5F4]"
-        >
-        {/* 카드 */}
-        <div className="w-[320px] mt-8 rounded-2xl bg-white shadow-[0px_2px_4px_rgba(0,0,0,0.04)] px-5 py-8">
-            <div className="text-center mb-5">
-            <div className="text-[18px] font-bold text-[#111]">너무 잘 하셨어요!</div>
-            <div className="text-[18px] font-bold">
-                <span className="text-[#FFC845]">정답과 오답</span>을 확인해보세요
-            </div>
-            </div>
-            <div className="mt-2 mb-[30px] h-px bg-[#F0F0F0]" />
-
-            {/* 요약 (API 바인딩) */}
-            <div className="space-y-3 mb-[67px]">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                <img src="/src/assets/check_icon.png" alt="정답" className="w-6 h-6" />
-                <span className="text-[16px] font-bold text-[#111]">정답</span>
+      {/* 오답 확인 화면 */}
+      <AnimatePresence>
+        {page === 'wrongCheck' && (
+          <motion.div
+            className="absolute inset-0 flex flex-col items-center justify-start pt-10 z-20 bg-[#F6F5F4]"
+          >
+            {/* 카드 */}
+            <div className="w-[320px] mt-8 rounded-2xl bg-white shadow-[0px_2px_4px_rgba(0,0,0,0.04)] px-5 py-8">
+              {/* 상단 안내 */}
+              {wrongCount === 0 ? (
+                <div className="text-center mb-5">
+                  <div className="text-[18px] font-bold text-[#111]">
+                    우와!<br />
+                    모든 문제를 다 맞추셨어요
+                  </div>
                 </div>
-                <span className="text-[16px] font-bold text-[#111]">
-                {correctCount}개
-                </span>
-            </div>
-
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                <img src="/src/assets/warning_icon.png" alt="오답" className="w-6 h-6" />
-                <span className="text-[16px] font-bold text-[#111]">오답</span>
+              ) : (
+                <div className="text-center mb-5">
+                  <div className="text-[18px] font-bold text-[#111]">너무 잘 하셨어요!</div>
+                  <div className="text-[18px] font-bold">
+                    <span className="text-[#FFC845]">정답과 오답을 확인</span>해보세요
+                  </div>
                 </div>
-                <span className="text-[16px] text-[#111] font-bold">
-                {wrongCount}개
-                </span>
-            </div>
+              )}
 
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                <img src="/src/assets/time_icon.png" alt="소요시간" className="w-6 h-6" />
-                <span className="text-[16px] font-bold text-[#111]">소요시간</span>
+              <div className="mt-2 mb-[30px] h-px bg-[#F0F0F0]" />
+
+              {/* 요약 */}
+              <div className="space-y-3 mb_[67px]">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <img src="/src/assets/check_icon.png" alt="정답" className="w-6 h-6" />
+                    <span className="text-[16px] font-bold text-[#111]">정답</span>
+                  </div>
+                  <span className="text-[16px] font-bold text-[#111]">
+                    {correctCount}개
+                  </span>
                 </div>
-                <span className="text-[16px] font-bold text-[#111]">
-                {fmtDuration(resultData?.duration)}
-                </span>
-            </div>
-            </div>
 
-            {/* 상세 표 */}
-            <div className="rounded-lg bg-[#F6F5F4] px-[9px] py-[16px]">
-            <div className="grid grid-cols-[1.2fr,0.8fr,1fr,0.8fr] text-[13px] font-medium text-[#000000]">
-                <div>메뉴명</div>
-                <div className="text-center">메뉴 선택</div>
-                <div className="text-center">사이즈 선택</div>
-                <div className="text-end">수량 선택</div>
-            </div>
-
-            {expectedProducts.length === 0 ? (
-                <div className="text-center text-[#777] py-4 text-[12px]">
-                표시할 결과가 없습니다.
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <img src="/src/assets/warning_icon.png" alt="오답" className="w-6 h-6" />
+                    <span className="text-[16px] font-bold text-[#111]">오답</span>
+                  </div>
+                  <span className="text-[16px] text-[#111] font-bold">
+                    {wrongCount}개
+                  </span>
                 </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <img src="/src/assets/time_icon.png" alt="소요시간" className="w-6 h-6" />
+                    <span className="text-[16px] font-bold text-[#111]">소요시간</span>
+                  </div>
+                  <span className="text-[16px] font-bold text-[#111]">
+                    {fmtDuration(resultData?.duration)}
+                  </span>
+                </div>
+              </div>
+
+              {/* 상세 표 */}
+              <div className="rounded-lg bg-[#F6F5F4] px-[9px] py-[16px] mt-[67px]">
+                <div className="grid grid-cols-[1.2fr,0.8fr,1fr,0.8fr] text-[13px] font-medium text-[#000000]">
+                  <div>메뉴명</div>
+                  <div className="text-center">메뉴 선택</div>
+                  <div className="text-center">사이즈 선택</div>
+                  <div className="text-end">수량 선택</div>
+                </div>
+
+                {expectedProducts.length === 0 ? (
+                  <div className="text-center text-[#777] py-4 text-[12px]">
+                    표시할 결과가 없습니다.
+                  </div>
+                ) : (
+                  <>
+                    {expectedProducts.map((exp, i) => {
+                      const matched: ProductResult | undefined =
+                        (resultData?.productResults ?? []).find(r => r.productName === exp.productName);
+
+                      const { menuOk, sizeOk, qtyOk } = evalFlags(matched);
+
+                      return (
+                        <div
+                          key={`exp-${exp.productName}-${i}`}
+                          className="grid grid-cols-[1.2fr,0.8fr,0.9fr,0.9fr] items-center text-[12px] font-normal pt-3"
+                        >
+                          {/* 메뉴명은 항상 ‘요구한 메뉴명’ */}
+                          <div className="truncate text-[#000000]">{exp.productName}</div>
+
+                          {/* 메뉴 선택 */}
+                          <div className="grid place-items-center">
+                            <img
+                              src={menuOk ? '/src/assets/check_icon.png' : '/src/assets/warning_icon.png'}
+                              alt={menuOk ? '정답' : '오답'}
+                              className="w-5 h-5"
+                            />
+                          </div>
+
+                          {/* 사이즈 선택 */}
+                          <div className="grid place-items-center">
+                            <img
+                              src={sizeOk ? '/src/assets/check_icon.png' : '/src/assets/warning_icon.png'}
+                              alt={sizeOk ? '정답' : '오답'}
+                              className="w-5 h-5"
+                            />
+                          </div>
+
+                          {/* 수량 선택 */}
+                          <div className="grid place-items-center ml-3">
+                            <img
+                              src={qtyOk ? '/src/assets/check_icon.png' : '/src/assets/warning_icon.png'}
+                              alt={qtyOk ? '정답' : '오답'}
+                              className="w-5 h-5"
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* 하단 버튼 */}
+            {wrongCount === 0 ? (
+              <button
+                onClick={() => setPage('complete')}
+                className="mt-[173px] w-[320px] h-[52px] rounded-full bg-[#FFC845] text-black text-[16px] font-semibold"
+              >
+                다음
+              </button>
             ) : (
-                <>
-                {expectedProducts.map((exp, i) => {
-                    // 서버 응답에서 같은 메뉴명 찾기 (없으면 전부 X)
-                    const matched: ProductResult | undefined =
-                    (resultData?.productResults ?? []).find(r => r.productName === exp.productName);
-
-                    const { menuOk, sizeOk, qtyOk } = evalFlags(matched);
-
-                    return (
-                    <div
-                        key={`exp-${exp.productName}-${i}`}
-                        className="grid grid-cols-[1.2fr,0.8fr,0.9fr,0.9fr] items-center text-[12px] font-normal pt-3"
-                    >
-                        {/* 메뉴명은 항상 ‘요구한 메뉴명’ */}
-                        <div className="truncate text-[#000000]">{exp.productName}</div>
-
-                        {/* 메뉴 선택 */}
-                        <div className="grid place-items-center">
-                        <img
-                            src={menuOk ? '/src/assets/check_icon.png' : '/src/assets/warning_icon.png'}
-                            alt={menuOk ? '정답' : '오답'}
-                            className="w-5 h-5"
-                        />
-                        </div>
-
-                        {/* 사이즈 선택 */}
-                        <div className="grid place-items-center">
-                        <img
-                            src={sizeOk ? '/src/assets/check_icon.png' : '/src/assets/warning_icon.png'}
-                            alt={sizeOk ? '정답' : '오답'}
-                            className="w-5 h-5"
-                        />
-                        </div>
-
-                        {/* 수량 선택 */}
-                        <div className="grid place-items-center ml-3">
-                        <img
-                            src={qtyOk ? '/src/assets/check_icon.png' : '/src/assets/warning_icon.png'}
-                            alt={qtyOk ? '정답' : '오답'}
-                            className="w-5 h-5"
-                        />
-                        </div>
-                    </div>
-                    );
-                })}
-                </>
+              <button
+                onClick={handleRetryWrong}
+                className="mt-[173px] w-[320px] h-[52px] rounded-full bg-[#FFC845] text-black text-[16px] font-semibold"
+              >
+                오답 풀기
+              </button>
             )}
-            </div>
-
-        </div>
-
-        {/* 하단 버튼 */}
-        <button
-            onClick={() => setPage('kiosk')}
-            className="mt-[173px] w-[320px] h-[52px] rounded-full bg-[#FFC845] text-black text-[16px] font-semibold"
-        >
-            오답 풀기
-        </button>
-        </motion.div>
-    )}
-    </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 완료 화면 */}
       <AnimatePresence>
@@ -723,7 +843,7 @@ const confirmOptionModal = () => {
             <div className="flex items-center justify-center mt-20 gap-2">
               <button
                 onClick={() => navigate('/teachmap')}
-                className="w-[159px] h-[52px] py-4 bg-[#F6F6F6] text-black rounded-full hover:scale-105 transition-all duration-300"
+                className="w-[159px] h-[52px] py-4 bg-[#F6F6F6] border border-[#FFC845] text-black rounded-full hover:scale-105 transition-all duration-300"
               >
                 다시 풀기
               </button>
