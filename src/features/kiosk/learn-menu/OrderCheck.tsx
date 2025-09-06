@@ -181,7 +181,7 @@ const OrderCheck: React.FC = () => {
             {typeof step === 'number' && (
               <motion.div
                 key={step}
-                className="fixed bottom-0 left-0 w-full h-[153px] bg-[rgba(17,17,17,0.80)] z-40 p-6"
+                className="fixed bottom-0 left-0 w-full h-[182px] bg-[rgba(17,17,17,0.80)] z-40 p-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}

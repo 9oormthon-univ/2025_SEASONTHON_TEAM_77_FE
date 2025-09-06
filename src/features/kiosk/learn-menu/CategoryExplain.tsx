@@ -33,6 +33,15 @@ const stepToCategory = (step: number | null): Category | null => {
     }
   };
 
+  const handleBefore = () => {
+    if (step === null) return;
+    if (step < CategorySteps.length - 1) {
+      setStep(step - 1);
+    } else {
+      setPage('complete');
+    }
+  };
+
   return (
     <div className="relative w-full h-screen">
       <HeaderBar title="티치맵" backTo="/teachmap" />
@@ -41,12 +50,15 @@ const stepToCategory = (step: number | null): Category | null => {
       <AnimatePresence>
         {page === 'intro' && (
           <motion.div
-            className="absolute inset-0 flex flex-col w-full h-screen items-center justify-center z-20"
+            className="absolute inset-0 flex flex-col w-full h-screen items-center z-20 cursor-pointer"
             style={{ background: 'linear-gradient(180deg, #FFEFC8 0%, #F3F3F3 100%)' }}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            onClick={() => setPage('kiosk')}
           >
             <div
-              className="w-[323px] h-[323px]"
+              className="w-[254px] h-[254px] mt-[206px]"
               style={{
                 backgroundImage: 'url(/src/assets/character/4.png)',
                 backgroundSize: 'cover',
@@ -54,19 +66,15 @@ const stepToCategory = (step: number | null): Category | null => {
                 backgroundRepeat: 'no-repeat',
               }}
             />
-            <h3 className="text-xl mb-6 text-center text-black font-semibold leading-[140%]">
-              너무 잘 따라오고 계시네요!
-            </h3>
-            <p className="text-base mb-20 text-center text-black font-medium leading-[160%] tracking-[-0.4px]">
-              이번에는 내가 주문하려는 메뉴가 어디있는지<br />
-              찾고나서 담아볼거에요.
-            </p>
-            <button
-              onClick={() => setPage('kiosk')}
-              className="w-[327px] h-[52px] py-4 bg-[#FFC845] mt-3 flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300"
-            >
-              시작하기
-            </button>
+            <div>
+              <h3 className="text-[26px] mt-6 text-center text-black font-bold leading-[140%]">
+                카테고리마다 어떤 메뉴가<br />
+                있는지 알아볼게요
+              </h3>
+            <div className="text-center pt-[90px] mb-12 text-base font-normal text-[#9A9A9A]">
+              화면을 터치하면 학습이 시작돼요
+            </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -85,35 +93,47 @@ const stepToCategory = (step: number | null): Category | null => {
             {step !== null && (
               <motion.div
                 key={step}
-                className={`fixed bottom-0 left-0 w-full ${
-                    step === 0 ? 'h-[630px]' : 'h-[153px]'
-                } bg-[rgba(17,17,17,0.80)] z-40 p-6`}
+                className={`fixed bottom-0 left-0 w-full h-[182px] bg-[rgba(17,17,17,0.80)] z-40 py-[10px] px-[18px]`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
               >
-                <div className="flex flex-col items-start justify-center w-[85%]">
-                  <h1 className="text-2xl text-[#FFC845] mb-2 font-semibold leading-[140%]">
+                <div className="flex flex-col items-start justify-center">
+                  <h1 className="text-[30px] text-[#FFC845] mb-1 font-bold leading-[140%]">
                     {`${step + 1}. ${CategorySteps[step].title}`}
                   </h1>
-                  <p className="text-sm text-white font-medium leading-[140%]">
+                  <p className="text-lg text-white font-medium leading-[140%]">
                     {CategorySteps[step].description}
                   </p>
                 </div>
 
-                {/* 다음 버튼 */}
-                <button
-                  onClick={handleNext}
-                  className="absolute -translate-y-1/2 right-[22px] w-8 h-8"
-                  style={{
-                    top: step === 0 ? '12%' : '50%',
-                    backgroundImage: 'url(/src/assets/next.svg)',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                  }}
-                  aria-label="다음"
-                />
+                {/* 이전/다음 버튼 */}
+                <div className='absolute bottom-[10px] left-1/2 -translate-x-1/2 flex justify-center gap-6'>
+                  <button
+                    onClick={handleBefore}
+                    className="w-10 h-10"
+                    style={{
+                      top: step === 0 ? '12%' : '50%',
+                      backgroundImage: 'url(/src/assets/before.png)',
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      backgroundRepeat: 'no-repeat',
+                    }}
+                    aria-label="이전"
+                  />
+                  <button
+                    onClick={handleNext}
+                    className="w-10 h-10"
+                    style={{
+                      top: step === 0 ? '12%' : '50%',
+                      backgroundImage: 'url(/src/assets/next.svg)',
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      backgroundRepeat: 'no-repeat',
+                    }}
+                    aria-label="다음"
+                  />
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -143,7 +163,7 @@ const stepToCategory = (step: number | null): Category | null => {
             <div className="flex items-center justify-center mt-20 gap-2">
               <button
                 onClick={() => setPage('intro')}
-                className="w-[159px] h-[52px] py-4 bg-[#F6F6F6] flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300"
+                className="w-[159px] h-[52px] py-4 bg-[#FFFFFF] border border-[#FFC845] flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300"
               >
                 첫 화면으로
               </button>

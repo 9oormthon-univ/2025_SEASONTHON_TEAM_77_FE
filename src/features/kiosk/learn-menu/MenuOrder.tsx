@@ -90,6 +90,18 @@ const MenuOrder: React.FC = () => {
   const highlightTarget = current?.ui?.highlightIncludes ?? getHighlightTarget(current?.id);
   const modalTarget     = current?.ui?.optionModalForIncludes ?? getModalTarget(current?.id);
 
+  // 이전 단계
+  const prevStep = () => {
+    if (step === null) return;
+    if (step > 0) {
+      setStep(step - 1);
+    } else {
+      // 첫 단계에서 '이전' → 모달로 복귀
+      setKioskPhase('modal');
+      setStep(null);
+    }
+  };
+
   return (
     <div className="relative w-full h-screen">
       <HeaderBar title="티치맵" backTo="/teachmap" />
@@ -98,12 +110,15 @@ const MenuOrder: React.FC = () => {
       <AnimatePresence>
         {page === 'intro' && (
           <motion.div
-            className="absolute inset-0 flex flex-col w-full h-screen items-center justify-center z-20"
+            className="absolute inset-0 flex flex-col w-full h-screen items-center z-20 cursor-pointer"
             style={{ background: 'linear-gradient(180deg, #FFEFC8 0%, #F3F3F3 100%)' }}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            onClick={enterKiosk}
           >
             <div
-              className="w-96 h-96"
+              className="w-[254px] h-[254px] mt-[206px]"
               style={{
                 backgroundImage: 'url(/src/assets/character/4.png)',
                 backgroundSize: 'cover',
@@ -111,16 +126,15 @@ const MenuOrder: React.FC = () => {
                 backgroundRepeat: 'no-repeat',
               }}
             />
-            <h3 className="text-xl mb-6 text-center text-black font-semibold">감이 좀 잡히시나요?</h3>
-            <p className="text-base mb-20 text-center text-black font-medium leading-[160%]">
-              자! 이번에는 직접 키오스크 화면에서<br />주문을 해 볼 차례에요.
-            </p>
-            <button
-              onClick={enterKiosk}
-              className="w-[327px] h-[52px] py-4 bg-[#FFC845] text-black rounded-full hover:scale-105 transition-all duration-300"
-            >
-              시작하기
-            </button>
+            <div>
+              <h3 className="text-[26px] mt-6 text-center text-black font-bold leading-[140%]">
+                이번에는 직접 키오스크<br />
+                화면에서 주문해볼거에요
+              </h3>
+            <div className="text-center pt-[90px] mb-12 text-base font-normal text-[#9A9A9A]">
+              화면을 터치하면 학습이 시작돼요
+            </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -148,7 +162,7 @@ const MenuOrder: React.FC = () => {
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 />
                 <motion.div
-                  className="fixed flex flex-col items-center justify-center w-[312px] h-[380px] z-50 bg-white rounded-lg py-8 text-center"
+                  className="fixed flex flex-col items-center justify-center w-[312px] h-[412px] z-50 bg-white rounded-lg py-8 text-center"
                   style={{ top: '50%', left: '50%' }}
                   initial={{ x: '-50%', y: '100%' }}
                   animate={{ x: '-50%', y: '-50%' }}
@@ -160,17 +174,18 @@ const MenuOrder: React.FC = () => {
                     alt="주문 리스트"
                     className="mx-auto w-[120px] h-[120px] mb-7"
                   />
-                  <h4 className="text-lg text-black mb-5 font-semibold leading-[140%]">
-                    자! 주문해야 하는 메뉴 리스트에요
+                  <h4 className="text-lg text-black mb-5 font-bold leading-[140%]">
+                    다음 메뉴를 주문하는 방법을<br />
+                    학습할거에요
                   </h4>
-                  <ul className="text-sm text-[#444444] mb-9 font-medium leading-[160%] tracking-[-0.4px] text-left">
+                  <ul className="text-base text-[#444444] mb-[35px] font-normal leading-[160%] tracking-[-0.4px] text-left">
                     <li>• 아이스아메리카노 1잔</li>
                     <li>• 아이스티 1잔</li>
                     <li>• 초코쿠키 1개</li>
                   </ul>
                   <button
                     onClick={closeKioskModal}
-                    className="w-[278px] h-[52px] py-4 bg-[#FFC845] mt-3 text-black rounded-full hover:scale-105 transition-all duration-300"
+                    className="w-[278px] h-[52px] py-4 bg-[#FFC845] text-black rounded-full hover:scale-105 transition-all duration-300"
                   >
                     확인
                   </button>
@@ -184,7 +199,7 @@ const MenuOrder: React.FC = () => {
             {kioskPhase === 'flow' && step !== null && current?.type === 'explain' && (
               <motion.div
                 key={step}
-                className="fixed bottom-0 left-0 w-full h-[153px] bg-black/80 z-40 p-6"
+                className="fixed bottom-0 left-0 w-full h-[182px] bg-black/80 z-40 p-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
@@ -199,26 +214,48 @@ const MenuOrder: React.FC = () => {
                     {current.description}
                   </p>
                 </div>
+              </motion.div>
+            )}
+              {/* 키오스크 단계 */}
+            {kioskPhase === 'flow' && step !== null && current?.type === 'kiosk' && (
+              <motion.div key={step} className="absolute inset-0 z-30" />
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {/* 하단 고정 이전/다음 버튼 (가운데 정렬) */}
+            {page === 'kiosk' && kioskPhase === 'flow' && step !== null && current?.type === 'explain' && (
+              <motion.div
+                key={`nav-${current?.id ?? step}`}
+                className="fixed inset-x-0 bottom-[10px] z-50 flex justify-center gap-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.18 }}
+              >
+                <button
+                  onClick={prevStep}
+                  className="w-10 h-10"
+                  style={{
+                    backgroundImage: 'url(/src/assets/before.png)',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                  }}
+                  aria-label="이전"
+                />
                 <button
                   onClick={nextStep}
-                  className="absolute -translate-y-1/2 right-[22px] w-8 h-8"
+                  className="w-10 h-10"
                   style={{
-                    top: '50%',
                     backgroundImage: 'url(/src/assets/next.svg)',
                     backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
                   }}
                   aria-label="다음"
                 />
               </motion.div>
-            )}
-
-            {/* 키오스크 단계 */}
-            {kioskPhase === 'flow' && step !== null && current?.type === 'kiosk' && (
-              <motion.div
-                key={step}
-                className="absolute inset-0 z-30"
-                // onClick={nextStep}
-              />
             )}
           </AnimatePresence>
         </>
