@@ -64,7 +64,7 @@ const LoginForm: React.FC = () => {
             type="text"
             value={loginId}
             onChange={(e) => setLoginId(e.target.value)}
-            className="w-full px-4 py-3 border rounded-full bg-white placeholder-gray-400 mb-6 border border-[#C1C1C1] focus:border-2 focus:border-[#FFC845] focus:outline-none"
+            className="w-full px-4 py-3 border rounded-full bg-white placeholder-gray-400 mb-6 border-[#C1C1C1] focus:border-2 focus:border-[#FFC845] focus:outline-none"
             placeholder="teachtouch@gmail.com"
           />
 
@@ -79,7 +79,7 @@ const LoginForm: React.FC = () => {
               type={pwVisible ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border rounded-full bg-white mb-6 border border-[#C1C1C1] focus:border-2 focus:border-[#FFC845] focus:outline-none"
+              className="w-full px-4 py-3 border rounded-full bg-white mb-6 border-[#C1C1C1] focus:border-2 focus:border-[#FFC845] focus:outline-none"
             />
             <button 
               onClick={togglePasswordVisibility}
