@@ -316,27 +316,19 @@ const OrderStart: React.FC = () => {
                 backgroundRepeat: 'no-repeat',
               }}
             ></div>
-            <h3 
-              className="text-xl mb-20 text-center text-black"
-              style={{
-                fontFamily: 'Pretendard',
-                fontWeight: '600',
-                lineHeight: '140%',
-              }}
-            >
-              주문 시작 화면에 대해<br />
-              모든 학습을 완료했어요!
+            <h3 className="text-[26px] mb-20 text-center text-black font-semibold leading-[140%]">
+              주문 시작 화면에 대해<br />모든 학습을 완료했어요!
             </h3>
             <div className="flex items-center justify-center mt-20 gap-2">
               <button
                 onClick={() => setPage('intro')}
-                className="w-[159px] h-[52px] py-4 bg-[#F6F6F6] flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300 border border-[#ffc845]"
+                className="w-[159px] h-[52px] py-4 font-semibold bg-[#F6F6F6] flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300 border border-[#ffc845]"
               >
-                첫 화면으로
+                처음으로
               </button>
               <button
                 onClick={() => navigate('/teachmap/kioskmenu')}
-                className="w-[159px] h-[52px] py-4 bg-[#FFC845] flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300"
+                className="w-[159px] h-[52px] py-4 font-semibold bg-[#FFC845] flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300"
               >
                 학습 이어하기
               </button>
