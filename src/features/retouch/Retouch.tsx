@@ -939,7 +939,7 @@ const proceedAfterSelect = (opt: '매장' | '포장') => {
                 다시 풀기
               </button>
               <button
-                onClick={() => setPage('intro')}
+                onClick={() => navigate('/')}
                 className="w-[159px] h-[52px] py-4 bg-[#FFC845] text-black rounded-full hover:scale-105 transition-all duration-300"
               >
                 나가기
