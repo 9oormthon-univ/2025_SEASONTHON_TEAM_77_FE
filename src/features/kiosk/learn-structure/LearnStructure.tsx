@@ -77,13 +77,7 @@ const LearnStructure: React.FC = () => {
               }}
             ></div>
             <h3 
-              className="text-2xl mb-[97px] font-bold text-center text-black"
-              style={{
-                fontFamily: 'Pretendard',
-                fontWeight: '600',
-                lineHeight: '140%',
-              }}
-            >
+              className="text-[26px] mb-[97px] text-center text-black font-semibold leading-[140%]">
               안녕하세요 티코예요!<br />
               키오스크 구성을 알아볼까요?
             </h3>
