@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../../shared/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import HeaderBar from '../../components/HeaderBar';
+import eyeIcon from '../../assets/eye.svg';
+import eyeOffIcon from '../../assets/eyeslash.svg';
 
 const SignupForm = () => {
   const navigate = useNavigate();
-
   const [step, setStep] = useState(1);
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
@@ -15,6 +16,7 @@ const SignupForm = () => {
   const [birthdate, setBirthdate] = useState('');
   const [gender, setGender] = useState<'male' | 'female' | ''>('');
   const [signupSuccess, setSignupSuccess] = useState(false);
+  const [pwVisible, setPwVisible] = useState(false);
 
   const passwordValid = {
     hasEng: /[a-zA-Z]/.test(password),
@@ -69,6 +71,10 @@ const SignupForm = () => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setPwVisible(!pwVisible);
+  };
+
   return (
     <div className="w-full h-screen flex flex-col">
       <HeaderBar title="티치맵" backTo="/login" />
@@ -96,13 +102,21 @@ const SignupForm = () => {
                 fontFamily: 'Pretendard',
               }}
             >비밀번호</label>
+            <div className="w-full flex relative">
             <input
-              type="password"
+              type={pwVisible ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border rounded-full bg-white placeholder-gray-400 mb-2 border border-[#C1C1C1] focus:border-2 focus:border-[#FFC845] focus:outline-none"
+              className="w-full px-4 py-3 border rounded-full bg-white mb-2 border border-[#C1C1C1] focus:border-2 focus:border-[#FFC845] focus:outline-none"
               placeholder="비밀번호를 입력해주세요"
             />
+            <button 
+              onClick={togglePasswordVisibility}
+              className="absolute right-4 top-4 w-[20px] h-[20px]"
+            >
+              {pwVisible ? <img src={eyeOffIcon} alt="eye-off" /> : <img src={eyeIcon} alt="eye" />}
+            </button>
+          </div>
             <ul className="text-sm flex flex-row gap-2 text-start w-full">
               <li className={passwordValid.hasEng ? 'text-[#0073CB]' : 'text-[#575757]'}>✓ 영문</li>
               <li className={passwordValid.hasNum ? 'text-[#0073CB]' : 'text-[#575757]'}>✓ 숫자</li>
@@ -190,15 +204,26 @@ const SignupForm = () => {
         <AnimatePresence>
           {signupSuccess && (
             <motion.div
-              className="absolute inset-0 flex flex-col items-center justify-center bg-white text-black z-50"
+              className="absolute inset-0 flex flex-col items-center justify-center text-black z-50"
+              style={{
+                background: 'linear-gradient(180deg, #FFEFC8 0%, #F3F3F3 100%)',
+              }}
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ duration: 0.5 }}
             >
-              <h1 className="text-5xl font-bold text-red-600 mb-20">WIP</h1>
-              <p className="text-xl font-normal mb-8">회원가입이 완료되었습니다!</p>
-              <p className="text-base font-light">새로운 시작, 티처터치와 함께하세요.</p>
+              <div 
+              className="w-60 h-60"
+              style={{
+                backgroundImage: 'url(/src/assets/character/3.png)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+              }}
+            ></div>
+              <p className="text-xl font-bold mb-8">회원가입이 완료되었습니다!</p>
+              <p className="text-base font-light">저와 함께 다양한 서비스를 학습해봐요</p>
             </motion.div>
           )}
         </AnimatePresence>
