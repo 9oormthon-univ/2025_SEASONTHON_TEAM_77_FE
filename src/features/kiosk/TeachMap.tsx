@@ -50,7 +50,7 @@ const stepsData = [
       {
         id: '5',
         title: "주문 메뉴 확인",
-        navigateUrl: "/teachmap/kioskmenuordercheck",
+        navigateUrl: "/teachmap/kioskmenuorder",
         time: "05:03",
       },
     ],
