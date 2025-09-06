@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { paymentSteps } from './PaymentData';
 import HeaderBar from '../../../components/HeaderBar';
 import PointInput from './PointInput';
+import { kioskAPI } from '../../../shared/api';
 
 const Payment: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
@@ -17,6 +18,21 @@ const Payment: React.FC = () => {
       setShowModal(true);
     }
   }, [step]);
+
+  useEffect(() => {
+    if (page === 'complete') {
+      const completeLesson = async () => {
+        try {
+          await kioskAPI.completeStep('6');
+          console.log('학습 완료 API 호출 성공');
+        } catch (error) {
+          console.error('학습 완료 API 호출 실패:', error);
+        }
+      };
+      
+      completeLesson();
+    }
+  }, [page]);
 
   const currentStepData = paymentSteps[step];
   const currentSubstepText = currentStepData?.substeps?.[substep]?.description || '';

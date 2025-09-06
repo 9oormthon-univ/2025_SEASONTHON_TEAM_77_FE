@@ -1,14 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { orderStartSteps } from './OrderStartData';
 import HeaderBar from '../../../components/HeaderBar';
+import { kioskAPI } from '../../../shared/api';
 
 const OrderStart: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
   const [step, setStep] = useState<number | null>(null);
   const [selectedOption, setSelectedOption] = useState<'매장' | '포장' | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (page === 'complete') {
+      const completeLesson = async () => {
+        try {
+          await kioskAPI.completeStep('2');
+          console.log('학습 완료 API 호출 성공');
+        } catch (error) {
+          console.error('학습 완료 API 호출 실패:', error);
+        }
+      };
+      
+      completeLesson();
+    }
+  }, [page]);
 
   const handleNextStep = () => {
     if (step === null) return;
