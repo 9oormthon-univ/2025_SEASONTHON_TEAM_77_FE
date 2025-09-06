@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { structureSteps } from './StructureData';
 import HeaderBar from '../../../components/HeaderBar';
+import { kioskAPI } from '../../../shared/api';
 
 const LearnStructure: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
@@ -14,6 +15,21 @@ const LearnStructure: React.FC = () => {
     if (page === 'kiosk') {
       const timer = setTimeout(() => setShowModal(true), 500);
       return () => clearTimeout(timer);
+    }
+  }, [page]);
+
+  useEffect(() => {
+    if (page === 'complete') {
+      const completeLesson = async () => {
+        try {
+          await kioskAPI.completeStep('1'); // 키오스크 전체 구성 stepId
+          console.log('학습 완료 API 호출 성공');
+        } catch (error) {
+          console.error('학습 완료 API 호출 실패:', error);
+        }
+      };
+      
+      completeLesson();
     }
   }, [page]);
 
@@ -33,6 +49,7 @@ const LearnStructure: React.FC = () => {
       <AnimatePresence>
         {page === 'intro' && (
           <motion.div
+            key="step-intro-overlay"
             className="absolute inset-0 flex flex-col w-full h-screen items-center justify-center z-20"
             style={{
               background: 'linear-gradient(180deg, #FFEFC8 0%, #F3F3F3 100%)',
@@ -128,6 +145,7 @@ const LearnStructure: React.FC = () => {
               <>
                 {/* 반투명 배경 */}
                 <motion.div
+                  key="step-0-overlay"
                   className="fixed bottom-0 left-0 w-full h-[153px] bg-[rgba(17,17,17,0.80)] z-30 p-6"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -172,6 +190,7 @@ const LearnStructure: React.FC = () => {
             {step !== null && step > 0 && (
               <>
                 <motion.div
+                  key="step-other-overlay"
                   className="fixed inset-0 w-full h-screen bg-[rgba(17,17,17,0.80)] z-30 p-6"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -181,7 +200,9 @@ const LearnStructure: React.FC = () => {
               )}
               {/* 흰색 원 배경 + 텍스트 */}
               {step === 1 && (
-                <div className="absolute top-[576px] left-[24px] w-4/5 h-[221px] flex flex-col items-start justify-start z-40">
+                <div 
+                  key="step-1-overlay"
+                  className="absolute top-[576px] left-[24px] w-4/5 h-[221px] flex flex-col items-start justify-start z-40">
                   <h1 
                     className="text-3xl text-[#FFC845] mb-2"
                     style={{
@@ -218,7 +239,9 @@ const LearnStructure: React.FC = () => {
               )}
 
               {step === 2 && (
-                <div className="absolute top-[576px] left-[24px] w-4/5 h-[221px] flex flex-col items-start justify-start z-40">
+                <div 
+                  key="step-2-overlay"
+                  className="absolute top-[576px] left-[24px] w-4/5 h-[221px] flex flex-col items-start justify-start z-40">
                   <h1 
                     className="text-3xl text-[#FFC845] mb-2"
                     style={{
@@ -254,7 +277,9 @@ const LearnStructure: React.FC = () => {
                 </div>
               )}
               {step === 3 && (
-                <div className="absolute top-[517px] left-[24px] w-4/5 h-[280px] flex flex-col items-start justify-start z-40">
+                <div 
+                  key="step-3-overlay"
+                  className="absolute top-[517px] left-[24px] w-4/5 h-[280px] flex flex-col items-start justify-start z-40">
                   <h1 
                     className="text-3xl text-[#FFC845] mb-2"
                     style={{
@@ -290,7 +315,9 @@ const LearnStructure: React.FC = () => {
                 </div>
               )}
               {step === 4 && (
-                <div className="absolute top-[469px] left-[24px] w-4/5 h-[328px] flex flex-col items-start justify-start z-40">
+                <div 
+                  key="step-4-overlay"
+                  className="absolute top-[469px] left-[24px] w-4/5 h-[328px] flex flex-col items-start justify-start z-40">
                   <h1 
                     className="text-3xl text-[#FFC845] mb-2"
                     style={{
@@ -332,6 +359,7 @@ const LearnStructure: React.FC = () => {
             {showModal && step === null && (
               <>
                 <motion.div
+                  key="modal-overlay"
                   className="fixed inset-0 bg-[rgba(17,17,17,0.80)] z-40"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -339,6 +367,7 @@ const LearnStructure: React.FC = () => {
                 />
 
                 <motion.div
+                  key="modal-content"
                   className="fixed flex flex-col items-center justify-center w-[312px] h-[380px] z-50 bg-white rounded-lg py-8 text-center"
                   style={{
                     top: '50%',
@@ -401,6 +430,7 @@ const LearnStructure: React.FC = () => {
       <AnimatePresence>
         {page === 'complete' && (
           <motion.div
+            key="step-complete-overlay"
             className="absolute inset-0 flex flex-col w-full h-screen items-center justify-center z-20"
             style={{
               background: 'linear-gradient(180deg, #FFEFC8 0%, #F3F3F3 100%)',
@@ -437,7 +467,7 @@ const LearnStructure: React.FC = () => {
                 첫 화면으로
               </button>
               <button
-                onClick={() => navigate('/teachmap')}
+                onClick={() => navigate('/teachmap/kioskorder')}
                 className="w-[159px] h-[52px] py-4 bg-[#FFC845] flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300"
               >
                 학습 이어하기
