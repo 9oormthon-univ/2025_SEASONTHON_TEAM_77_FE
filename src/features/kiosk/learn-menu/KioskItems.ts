@@ -21,5 +21,9 @@ export const itemsByCategory: Record<Category, KioskItem[]> = {
     { productId: 13, name: '화이트 쿠키', imageUrl: '/src/assets/menu/white_cookie.png', price: 4200 },
     { productId: 14, name: '초코 쿠키', imageUrl: '/src/assets/menu/choco_cookie.png', price: 4200 },
   ],
-  푸드: [], // 현재 학습 플로우에서는 사용 안 함
+  푸드: [
+    { productId: 15, name: '햄치즈 베이글', imageUrl: '/src/assets/menu/ham_cheese_bagel.png', price: 3600 },
+    { productId: 16, name: '불고기 샌드위치', imageUrl: '/src/assets/menu/bulgogi_sandwich.png', price: 4200 },
+    { productId: 17, name: '시금치 샌드위치', imageUrl: '/src/assets/menu/spinach_sandwich.png', price: 5200 },
+  ],
 };
