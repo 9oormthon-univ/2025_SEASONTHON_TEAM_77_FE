@@ -72,13 +72,7 @@ const OrderStart: React.FC = () => {
               }}
             ></div>
             <h3 
-              className="text-2xl mb-[97px] text-center text-black"
-              style={{
-                fontFamily: 'Pretendard',
-                fontWeight: '600',
-                lineHeight: '140%',
-              }}
-            >
+              className="text-[26px] mb-[97px] text-center text-black font-semibold leading-[140%]">
               자! 이제 화면에서<br />
               주문하는 방법을 알아볼게요
             </h3>
