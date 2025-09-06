@@ -92,13 +92,7 @@ const Payment: React.FC = () => {
               }}
             ></div>
             <h3 
-              className="text-2xl mb-[97px] text-center text-black"
-              style={{
-                fontFamily: 'Pretendard',
-                fontWeight: '600',
-                lineHeight: '140%',
-              }}
-            >
+              className="text-[26px] mb-[97px] text-center text-black font-semibold leading-[140%]">
               메뉴를 다 담았으면,<br />
               결제를 해볼까요?
             </h3>
