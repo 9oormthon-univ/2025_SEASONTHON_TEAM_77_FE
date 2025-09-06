@@ -394,14 +394,7 @@ const Payment: React.FC = () => {
                 backgroundRepeat: 'no-repeat',
               }}
             ></div>
-            <h3 
-              className="text-xl mb-20 text-center text-black"
-              style={{
-                fontFamily: 'Pretendard',
-                fontWeight: '600',
-                lineHeight: '140%',
-              }}
-            >
+            <h3 className="text-[26px] mb-20 text-center text-black font-semibold leading-[140%]">
               모든 학습을 다 마무리 했어요
             </h3>
             <div className="flex items-center justify-center mt-20 gap-2">
