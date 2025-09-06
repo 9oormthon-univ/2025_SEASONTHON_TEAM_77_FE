@@ -61,6 +61,7 @@ const SignupForm = () => {
         gender,
         birthdate,
       });
+      localStorage.setItem(`username_${loginId}`, username);
       setSignupSuccess(true);
       setTimeout(() => navigate('/login'), 2000);
     } catch (error) {

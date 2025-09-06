@@ -1,8 +1,8 @@
 interface ProfileHeaderProps {
-  loginId: string | null;
+  currentUsername: string | null;
 }
 
-export default function ProfileHeader({ loginId }: ProfileHeaderProps) {
+export default function ProfileHeader({ currentUsername }: ProfileHeaderProps) {
   return (
     <>
       <h1 className="text-xl font-bold mb-8">마이페이지</h1>
@@ -12,7 +12,7 @@ export default function ProfileHeader({ loginId }: ProfileHeaderProps) {
 
       {/* 인사말 */}
       <p className="text-xl font-semibold mb-10">
-        안녕하세요 {loginId ?? "사용자"}님
+        안녕하세요 {currentUsername ?? "사용자"}님
       </p>
     </>
   );

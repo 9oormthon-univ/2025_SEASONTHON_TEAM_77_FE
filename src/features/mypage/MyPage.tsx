@@ -7,12 +7,12 @@ import { ProfileHeader, AccountSection } from "../profile/components";
 
 export default function MyPage() {
   const navigate = useNavigate();
-  const [loginId, setLoginId] = useState<string | null>(null);
+  const [currentUsername, setCurrentUsername] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const storedId = localStorage.getItem("loginId");
-    setLoginId(storedId);
+    const storedUsername = localStorage.getItem("currentUsername");
+    setCurrentUsername(storedUsername);
   }, []);
 
   const handleLogout = async () => {
@@ -42,7 +42,7 @@ export default function MyPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F6F4] px-6 py-8 flex flex-col items-center">
-      <ProfileHeader loginId={loginId} />
+      <ProfileHeader currentUsername={currentUsername} />
       <AccountSection onLogoutClick={() => setShowModal(true)} />
       
       <ConfirmModal

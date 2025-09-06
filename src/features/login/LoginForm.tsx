@@ -28,6 +28,11 @@ const LoginForm: React.FC = () => {
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('loginId', loginId);
 
+      const savedUsername = localStorage.getItem(`username_${loginId}`);
+      if (savedUsername) {
+        localStorage.setItem('currentUsername', savedUsername);
+      }
+
       // 로그인 성공 후 메인 페이지 등으로 이동
       navigate('/');
     } catch (error) {
