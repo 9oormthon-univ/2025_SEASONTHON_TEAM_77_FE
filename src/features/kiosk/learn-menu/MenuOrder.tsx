@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import HeaderBar from '../../../components/HeaderBar';
 import KioskFrame, { type Category } from './KioskFrame';
 import { LearnMenuFlow } from './LearnMenuFlow';
 import { itemsByCategory } from './KioskItems';
+import cursor from '../../../assets/cursor.gif';
 
 // 설명 단계별 탭 고정
 const stepToCategory = (step: number | null): Category | null => {
@@ -66,7 +67,7 @@ const MenuOrder: React.FC = () => {
   };
 
   // 다음 단계
-  const nextStep = () => {
+  const nextStep = useCallback(() => {
     if (step === null) return;
     if (step < LearnMenuFlow.length - 1) {
       setStep(step + 1);
@@ -74,9 +75,25 @@ const MenuOrder: React.FC = () => {
       setStep(null);
       setPage('complete');
     }
-  };
+  }, [step]);
 
   const current = step !== null ? LearnMenuFlow[step] : null;
+
+  // 현재 그룹 내에서의 진행상황 계산
+  const getGroupProgress = () => {
+    if (!current?.group || current.type !== 'explain') return null;
+    
+    const currentGroup = current.group;
+    const groupSteps = LearnMenuFlow.filter(s => s.group === currentGroup && s.type === 'explain');
+    const currentIndex = groupSteps.findIndex(s => s.id === current.id);
+    
+    return {
+      current: currentIndex + 1,
+      total: groupSteps.length
+    };
+  };
+
+  const groupProgress = getGroupProgress();
 
   // kiosk 단계 자동 진행(2초)
   useEffect(() => {
@@ -84,7 +101,7 @@ const MenuOrder: React.FC = () => {
       const t = setTimeout(() => nextStep(), 2000);
       return () => clearTimeout(t);
     }
-  }, [kioskPhase, current?.type, step]); // step이 바뀔 때마다 새 타이머
+  }, [kioskPhase, current?.type, step, nextStep]); // step이 바뀔 때마다 새 타이머
 
   const forcedTotals = current?.ui?.totals ?? null;
   const highlightTarget = current?.ui?.highlightIncludes ?? getHighlightTarget(current?.id);
@@ -110,31 +127,39 @@ const MenuOrder: React.FC = () => {
       <AnimatePresence>
         {page === 'intro' && (
           <motion.div
-            className="absolute inset-0 flex flex-col w-full h-screen items-center z-20 cursor-pointer"
+            className="absolute inset-0 flex flex-col w-full h-screen items-center justify-center z-20 cursor-pointer"
             style={{ background: 'linear-gradient(180deg, #FFEFC8 0%, #F3F3F3 100%)' }}
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
             exit={{ opacity: 0 }}
             onClick={enterKiosk}
           >
-            <div
-              className="w-[254px] h-[254px] mt-[206px]"
+            <div 
+              className="w-[254px] h-[254px] mb-3 mt-10"
               style={{
                 backgroundImage: 'url(/src/assets/character/4.png)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
               }}
-            />
-            <div>
-              <h3 className="text-[26px] mt-6 text-center text-black font-bold leading-[140%]">
-                이번에는 직접 키오스크<br />
-                화면에서 주문해볼거에요
-              </h3>
-            <div className="text-center pt-[90px] mb-12 text-base font-normal text-[#9A9A9A]">
+            ></div>
+            <h3 
+              className="text-[26px] mb-[97px] text-center text-black font-semibold leading-[140%]">
+              메뉴를 다 담았으면,<br />
+              결제를 해볼까요?
+            </h3>
+            <p 
+              className="text-base text-center text-[#9A9A9A]"
+              style={{
+                fontFamily: 'Pretendard',
+                fontWeight: '400',
+                lineHeight: '160%',
+                letterSpacing: '-0.4px',
+              }}
+            >
               화면을 터치하면 학습이 시작돼요
-            </div>
-            </div>
+            </p>
+            <img src={cursor} alt="cursor" className="absolute top-[610px] right-[59px] w-[58px] h-[58px] cursor-pointer" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -199,18 +224,23 @@ const MenuOrder: React.FC = () => {
             {kioskPhase === 'flow' && step !== null && current?.type === 'explain' && (
               <motion.div
                 key={step}
-                className="fixed bottom-0 left-0 w-full h-[182px] bg-black/80 z-40 p-6"
+                className="fixed bottom-0 left-0 w-full h-[182px] bg-black/80 z-40 py-[10px] px-[20px]"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="flex flex-col items-start justify-center w-[85%]">
-                  <h1 className="text-2xl text-[#FFC845] mb-2 font-semibold leading-[140%]">
-                    {/* group 번호 붙이기 */}
-                    {current.group ? `${current.group}. ${current.title}` : current.title}
-                  </h1>
-                  <p className="text-sm text-white font-medium leading-[140%]">
+                <div className="flex flex-col items-start justify-start w-[327px] h-[182px]">
+                  <div className="flex flex-row justify-between w-full items-center">
+                    <h1 className="text-3xl text-[#FFC845] mb-1 font-semibold leading-[140%]">
+                      {/* group 번호 붙이기 */}
+                      {current.group ? `${current.group}. ${current.title}` : current.title}
+                    </h1>
+                    {groupProgress && groupProgress.total > 1 && (
+                      <p className="text-base text-white font-light">{groupProgress.current}/{groupProgress.total}</p>
+                    )}
+                  </div>
+                  <p className="text-lg text-white font-medium leading-[140%]">
                     {current.description}
                   </p>
                 </div>
@@ -278,19 +308,19 @@ const MenuOrder: React.FC = () => {
                 backgroundRepeat: 'no-repeat',
               }}
             />
-            <h3 className="text-xl mb-20 text-center text-black font-semibold leading-[140%]">
+            <h3 className="text-[26px] mb-20 text-center text-black font-semibold leading-[140%]">
               메뉴 주문하기에 대한<br />모든 학습을 완료했어요!
             </h3>
             <div className="flex items-center justify-center mt-20 gap-2">
               <button
                 onClick={() => setPage('intro')}
-                className="w-[159px] h-[52px] bg-[#F6F6F6] text-black rounded-full hover:scale-105 transition-all duration-300"
+                className="w-[159px] h-[52px] font-semibold bg-[#F6F6F6] text-black rounded-full hover:scale-105 transition-all duration-300 border border-[#FFC845]"
               >
-                첫 화면으로
+                처음으로
               </button>
               <button
                 onClick={() => navigate('/teachmap/kioskordercheck')}
-                className="w-[159px] h-[52px] bg-[#FFC845] text-black rounded-full hover:scale-105 transition-all duration-300"
+                className="w-[159px] h-[52px] font-semibold bg-[#FFC845] text-black rounded-full hover:scale-105 transition-all duration-300"
               >
                 학습 이어하기
               </button>

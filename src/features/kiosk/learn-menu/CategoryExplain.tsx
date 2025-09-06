@@ -5,6 +5,7 @@ import HeaderBar from '../../../components/HeaderBar';
 import KioskFrame, { type Category } from './KioskFrame';
 import { CategorySteps } from './CategoryData';
 import { itemsByCategory } from './KioskItems';
+import cursor from '../../../assets/cursor.gif';
 
 const CategoryExplain: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
@@ -50,31 +51,39 @@ const stepToCategory = (step: number | null): Category | null => {
       <AnimatePresence>
         {page === 'intro' && (
           <motion.div
-            className="absolute inset-0 flex flex-col w-full h-screen items-center z-20 cursor-pointer"
+            className="absolute inset-0 flex flex-col w-full h-screen items-center justify-center z-20 cursor-pointer"
             style={{ background: 'linear-gradient(180deg, #FFEFC8 0%, #F3F3F3 100%)' }}
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
             exit={{ opacity: 0 }}
             onClick={() => setPage('kiosk')}
           >
-            <div
-              className="w-[254px] h-[254px] mt-[206px]"
+            <div 
+              className="w-[254px] h-[254px] mb-3 mt-10"
               style={{
                 backgroundImage: 'url(/src/assets/character/4.png)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
               }}
-            />
-            <div>
-              <h3 className="text-[26px] mt-6 text-center text-black font-bold leading-[140%]">
-                카테고리마다 어떤 메뉴가<br />
-                있는지 알아볼게요
-              </h3>
-            <div className="text-center pt-[90px] mb-12 text-base font-normal text-[#9A9A9A]">
+            ></div>
+            <h3 
+              className="text-[26px] mb-[97px] text-center text-black font-semibold leading-[140%]">
+              카테고리마다 어떤 메뉴가<br />
+              있는지 알아볼게요
+            </h3>
+            <p 
+              className="text-base text-center text-[#9A9A9A]"
+              style={{
+                fontFamily: 'Pretendard',
+                fontWeight: '400',
+                lineHeight: '160%',
+                letterSpacing: '-0.4px',
+              }}
+            >
               화면을 터치하면 학습이 시작돼요
-            </div>
-            </div>
+            </p>
+            <img src={cursor} alt="cursor" className="absolute top-[610px] right-[59px] w-[58px] h-[58px] cursor-pointer" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -157,19 +166,19 @@ const stepToCategory = (step: number | null): Category | null => {
                 backgroundRepeat: 'no-repeat',
               }}
             />
-            <h3 className="text-xl mb-20 text-center text-black font-semibold leading-[140%]">
+            <h3 className="text-[26px] mb-20 text-center text-black font-semibold leading-[140%]">
               카테고리에 대한<br />모든 학습을 완료했어요!
             </h3>
             <div className="flex items-center justify-center mt-20 gap-2">
               <button
                 onClick={() => setPage('intro')}
-                className="w-[159px] h-[52px] py-4 bg-[#FFFFFF] border border-[#FFC845] flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300"
+                className="w-[159px] h-[52px] py-4 font-semibold bg-[#FFFFFF] border border-[#FFC845] flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300"
               >
-                첫 화면으로
+                처음으로
               </button>
               <button
                 onClick={() => navigate('/teachmap/kioskmenuorder')}
-                className="w-[159px] h-[52px] py-4 bg-[#FFC845] flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300"
+                className="w-[159px] h-[52px] py-4 font-semibold bg-[#FFC845] flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300"
               >
                 학습 이어하기
               </button>

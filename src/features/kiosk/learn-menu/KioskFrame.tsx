@@ -210,7 +210,7 @@ export default function KioskFrame({
         {modalItem && (
           <>
             <div className="absolute mt-[67px] bg-black/30 w-[319px] h-[569px] rounded-[36px]"/>
-            <div className="absolute px-[20px] py-[30px] left-1/2 top-[200px] -translate-x-1/2 w-[312px] rounded-2xl bg-white shadow-xl">
+            <div className="absolute px-[20px] py-[30px] left-1/2 top-[200px] -translate-x-1/2 w-[278px] rounded-[16px] bg-white shadow-xl">
               {/* 헤더: 제목/가격 + 닫기 */}
               <div className="relative">
                 <div className="text-[20px] font-semibold text-[#000000]">

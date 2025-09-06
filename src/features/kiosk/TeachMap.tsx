@@ -47,7 +47,7 @@ const stepsData = [
       {
         id: "2-3",
         title: "주문 메뉴 확인",
-        navigateUrl: "/teachmap/kioskmenuordercheck",
+        navigateUrl: "/teachmap/kioskordercheck",
       },
     ],
   },

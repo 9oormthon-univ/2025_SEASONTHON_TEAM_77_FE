@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import HeaderBar from '../../../components/HeaderBar';
 import KioskFrame from './KioskFrame';
 import { OrderCheckSteps } from './OrderCheckData';
+import cursor from '../../../assets/cursor.gif';
 
 const OrderCheck: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
@@ -23,6 +24,13 @@ const OrderCheck: React.FC = () => {
     } else {
       // 마지막 설명 후 final-kiosk 화면
       setStep('final-kiosk');
+    }
+  };
+
+  const handleBefore = () => {
+    if (step === null) return;
+    if (typeof step === 'number' && step > 0) {
+      setStep(step - 1);
     }
   };
 
@@ -48,32 +56,42 @@ const OrderCheck: React.FC = () => {
       <AnimatePresence>
         {page === 'intro' && (
           <motion.div
-            className="absolute inset-0 flex flex-col w-full h-screen items-center justify-center z-20"
+            className="absolute inset-0 flex flex-col w-full h-screen items-center justify-center z-20 cursor-pointer"
             style={{ background: 'linear-gradient(180deg, #FFEFC8 0%, #F3F3F3 100%)' }}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={() => setPage('kiosk')}
           >
-            <div
-              className="w-[323px] h-[323px]"
+            <div 
+              className="w-[254px] h-[254px] mb-3 mt-10"
               style={{
                 backgroundImage: 'url(/src/assets/character/4.png)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
               }}
-            />
-            <h3 className="text-xl mb-6 text-center text-black font-semibold leading-[140%]">
-              너무 잘 하셨어요!
-            </h3>
-            <p className="text-base mb-20 text-center text-black font-medium leading-[160%] tracking-[-0.4px]">
-              주문할 메뉴를 다 담았으면,<br />
-              마지막으로 주문 확인을 해볼까요?
-            </p>
-            <button
-              onClick={() => setPage('kiosk')}
-              className="w-[327px] h-[52px] py-4 bg-[#FFC845] mt-3 flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300"
+            ></div>
+            <h3 
+              className="text-[26px] mb-[97px] text-center text-black font-semibold leading-[140%]"
+              style={{
+                fontFamily: 'Pretendard',
+                fontWeight: '600',
+              }}
             >
-              시작하기
-            </button>
+              마지막으로 주문 확인을<br />
+              해볼까요?
+            </h3>
+            <p 
+              className="text-base text-center text-[#9A9A9A]"
+              style={{
+                fontFamily: 'Pretendard',
+                fontWeight: '400',
+                lineHeight: '160%',
+                letterSpacing: '-0.4px',
+              }}
+            >
+              화면을 터치하면 학습이 시작돼요
+            </p>
+            <img src={cursor} alt="cursor" className="absolute top-[610px] right-[59px] w-[58px] h-[58px] cursor-pointer" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -181,26 +199,63 @@ const OrderCheck: React.FC = () => {
             {typeof step === 'number' && (
               <motion.div
                 key={step}
-                className="fixed bottom-0 left-0 w-full h-[182px] bg-[rgba(17,17,17,0.80)] z-40 p-6"
+                className="fixed bottom-0 left-0 w-full h-[182px] bg-[rgba(17,17,17,0.80)] z-40 py-[10px] px-[20px]"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
               >
-                <div className="flex flex-col items-start justify-center w-[85%]">
-                  <h1 className="text-2xl text-[#FFC845] mb-2 font-semibold leading-[140%]">
-                    {`${OrderCheckSteps[step].title === '주문 확인' ? 1 : 2}. ${OrderCheckSteps[step].title}`}
-                  </h1>
-                  <p className="text-sm text-white font-medium leading-[140%]">
+                <div className="flex flex-col items-start justify-start w-[327px] h-[182px]">
+                  <div className="flex flex-row justify-between w-full items-center">
+                    <h1 className="text-3xl text-[#FFC845] mb-1 font-semibold leading-[140%]">
+                      {`${OrderCheckSteps[step].title === '주문 확인' ? 1 : 2}. ${OrderCheckSteps[step].title}`}
+                    </h1>
+                    {OrderCheckSteps[step].title === '주문 확인' && (
+                      <p className="text-base text-white font-light">{step + 1}/2</p>
+                    )}
+                    {OrderCheckSteps[step].title === '수량 변경' && (
+                      <p className="text-base text-white font-light">{step - 1}/2</p>
+                    )}
+                  </div>
+                  <p className="text-lg text-white font-medium leading-[140%]">
                     {OrderCheckSteps[step].description}
                   </p>
                 </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* 이전/다음 버튼 */}
+          <AnimatePresence>
+            {typeof step === 'number' && (
+              <motion.div
+                key={`nav-${step}`}
+                className="fixed inset-x-0 bottom-[10px] z-50 flex justify-center gap-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.18 }}
+              >
+                {step > 0 && (
+                  <button
+                    onClick={handleBefore}
+                    className="w-10 h-10"
+                    style={{
+                      backgroundImage: 'url(/src/assets/before.png)',
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      backgroundRepeat: 'no-repeat',
+                    }}
+                    aria-label="이전"
+                  />
+                )}
                 <button
                   onClick={handleNext}
-                  className="absolute -translate-y-1/2 right-[22px] w-8 h-8"
+                  className="w-10 h-10"
                   style={{
-                    top: '50%',
                     backgroundImage: 'url(/src/assets/next.svg)',
                     backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
                   }}
                   aria-label="다음"
                 />
@@ -227,19 +282,19 @@ const OrderCheck: React.FC = () => {
                 backgroundRepeat: 'no-repeat',
               }}
             />
-            <h3 className="text-xl mb-20 text-center text-black font-semibold leading-[140%]">
+            <h3 className="text-[26px] mb-20 text-center text-black font-semibold leading-[140%]">
               주문 메뉴 확인에 대한<br />모든 학습을 완료했어요!
             </h3>
             <div className="flex items-center justify-center mt-20 gap-2">
               <button
                 onClick={() => setPage('intro')}
-                className="w-[159px] h-[52px] py-4 bg-[#F6F6F6] text-black rounded-full hover:scale-105 transition-all duration-300"
+                className="w-[159px] h-[52px] font-semibold bg-[#F6F6F6] text-black rounded-full hover:scale-105 transition-all duration-300 border border-[#FFC845]"
               >
-                첫 화면으로
+                처음으로
               </button>
               <button
                 onClick={() => navigate('/teachmap')}
-                className="w-[159px] h-[52px] py-4 bg-[#FFC845] text-black rounded-full hover:scale-105 transition-all duration-300"
+                className="w-[159px] h-[52px] font-semibold bg-[#FFC845] text-black rounded-full hover:scale-105 transition-all duration-300"
               >
                 학습 이어하기
               </button>
