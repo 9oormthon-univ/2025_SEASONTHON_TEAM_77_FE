@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import HeaderBar from '../../components/HeaderBar';
 import KioskFrame, { type Category, type KioskItem } from '../kiosk/learn-menu/KioskFrame';
 import { itemsByCategory } from '../kiosk/learn-menu/KioskItems';
-import { fetchRetouchTest, submitRetouchResult, type RetouchResult, type ProductResult } from '../../shared/api/retouch';
+import { fetchRetouchTest, submitRetouchResult, type RetouchResult, type ProductResult, type RetouchTestProduct } from '../../shared/api/retouch';
 
 type IntroPhase = 'bg1' | 'modal' | 'bg2';
 
@@ -14,7 +14,27 @@ type CartItem = {
   price: number;
   qty: number;
   size?: 'S' | 'M' | 'L';
+  productOptions?: { optionName: string; optionValue: string }[];
 };
+
+function evalFlags(p?: ProductResult) {
+  if (!p) return { menuOk: false, sizeOk: false, qtyOk: false };
+
+  // 명세서 기준 status: "정답" | "옵션 틀림" | "수량 틀림" | "추가 상품"
+  const s = (p.status || '').trim();
+  switch (s) {
+    case '정답':     return { menuOk: true,  sizeOk: true,  qtyOk: true  };
+    case '옵션 틀림': return { menuOk: true,  sizeOk: false, qtyOk: true  };
+    case '수량 틀림': return { menuOk: true,  sizeOk: true,  qtyOk: false };
+    default:
+      // 명세서 외 값이 오더라도 최대한 합리적으로 표시
+      return {
+        menuOk: !!p.correct,
+        sizeOk: !!p.correct,
+        qtyOk: (p.submittedQuantity ?? NaN) === (p.correctQuantity ?? NaN),
+      };
+  }
+}
 
 const Retouch: React.FC = () => {
 const [page, setPage] = useState<
@@ -50,38 +70,42 @@ const [page, setPage] = useState<
   const [testError, setTestError] = useState<string | null>(null);
   const TEST_ID = 1;
   const [testId, setTestId] = useState<number | null>(null);
+  const [expectedProducts, setExpectedProducts] = useState<RetouchTestProduct[]>([]);
 
   const handleIntroBgClick = () => {
     if (introPhase === 'bg1') setIntroPhase('modal');
     else if (introPhase === 'bg2') setPage('kiosk');
   };
 
-    const handlePay = async () => {
-    if (bottomTotals.qty === 0) return;
-    if (!testId) {                         // ← 보호 로직 추가
-        console.warn('testId가 없습니다. 테스트를 먼저 불러오세요.');
-        return;
-    }
+const handlePay = async () => {
+  if (bottomTotals.qty === 0) return;
+  if (!testId) { // 테스트가 아직 안 불렸다면 보호
+    console.warn('testId가 없습니다. 테스트를 먼저 불러오세요.');
+    return;
+  }
 
-    const submittedProducts = cart.map(ci => ({
-        productId: ci.productId,
-        productName: ci.name,
-        quantity: ci.qty,
-    }));
+  const submittedProducts = cart.map((ci) => ({
+    productId: ci.productId,
+    productName: ci.name,
+    quantity: ci.qty,
+    // 온도는 생략 가능. 사이즈만 보내요.
+    productOptions: ci.size
+      ? [{ optionName: '사이즈', optionValue: ci.size }]
+      : undefined,
+  }));
 
-    try {
-        const data = await submitRetouchResult({
-        testId: 1,
-        duration: 180,
-        submittedProducts,
-        });
-        setResultData(data);
-        setPage('review');
-    } catch (err) {
-        console.error(err);
-    }
-    };
-
+  try {
+    const data = await submitRetouchResult({
+      testId,          // ← 하드코딩 1 제거
+      duration: 180,   // TODO: 실제 타이머 값으로 교체
+      submittedProducts,
+    });
+    setResultData(data);
+    setPage('review');
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   const totals = useMemo(() => {
     let qty = 0;
@@ -131,17 +155,32 @@ const [page, setPage] = useState<
 
 const confirmOptionModal = () => {
   if (!pendingModalItem) return;
+
+  // 이름 정규화: "아이스 " 접두사 제거
+  const normalizedName = pendingModalItem.name.replace(/^아이스\s*/, '');
+
+  // expectedProducts에서 productId/옵션 힌트 가져오기(이름 기준)
+  const matchedExp = expectedProducts.find(
+    (p) => p.productName === normalizedName
+  );
+
+  const opts: CartItem['productOptions'] = [];
+  if (modalSize) {
+    opts.push({ optionName: '사이즈', optionValue: modalSize });
+  }
+
   addToCart({
-    productId: (pendingModalItem as any).productId, // itemsByCategory에 id를 넣으면 자동 전달
-    name: pendingModalItem.name,
+    productId: matchedExp?.id,              // ← 서버 정답 기준 id 채우기
+    name: normalizedName,                   // ← 정답 기준으로 이름도 정규화
     price: pendingModalItem.price ?? 0,
     qty: modalQty,
     size: modalSize,
+    productOptions: opts,
   });
+
   setPendingModalItem(null);
   window.setTimeout(() => setHighlightName(null), 600);
 };
-
 
   // 주문서 이동: 키오스크 하단의 "주문하기" 클릭 시
   const goOrderSheet = () => {
@@ -205,6 +244,7 @@ const confirmOptionModal = () => {
         if (!mounted) return;
         setTestTitle(data?.title ?? '');
         setTestId(data?.id ?? null); 
+        setExpectedProducts(data?.testOrder?.products ?? []);
         } catch (e) {
         if (!mounted) return;
         setTestError('주문 목록을 불러오지 못했어요.');
@@ -588,58 +628,61 @@ const confirmOptionModal = () => {
                 <div className="text-center">사이즈 선택</div>
                 <div className="text-end">수량 선택</div>
             </div>
-            {((resultData?.productResults?.length ?? 0) === 0) ? (
-            <div className="text-center text-[#777] py-4 text-[12px]">
+
+            {expectedProducts.length === 0 ? (
+                <div className="text-center text-[#777] py-4 text-[12px]">
                 표시할 결과가 없습니다.
-            </div>
-            ) : (
-            <>
-            {(resultData?.productResults ?? []).map((p: ProductResult, i: number) => {
-            const menuOk =
-                (p.status ?? '').toUpperCase() !== 'MISSING' &&
-                (p.submittedQuantity ?? 0) > 0;
-            const sizeOk = !!p.correct; // (임시 매핑)
-            const qtyOk = (p.submittedQuantity ?? 0) === (p.correctQuantity ?? -1);
-
-                return (
-                <div
-                    key={`${p.productName}-${i}`}
-                    className="grid grid-cols-[1.2fr,0.8fr,0.9fr,0.9fr] items-center text-[12px] font-normal pt-3"
-                >
-                    <div className="truncate text-[#000000]">{p.productName}</div>
-
-                    {/* 메뉴 선택 */}
-                    <div className="grid place-items-center">
-                    <img
-                        src={menuOk ? '/src/assets/check_icon.png' : '/src/assets/warning_icon.png'}
-                        alt={menuOk ? '정답' : '오답'}
-                        className="w-5 h-5"
-                    />
-                    </div>
-
-                    {/* 사이즈 선택 (임시 매핑: correct → 체크, 아니면 경고) */}
-                    <div className="grid place-items-center">
-                    <img
-                        src={sizeOk ? '/src/assets/check_icon.png' : '/src/assets/warning_icon.png'}
-                        alt={sizeOk ? '정답' : '오답'}
-                        className="w-5 h-5"
-                    />
-                    </div>
-
-                    {/* 수량 선택 */}
-                    <div className="grid place-items-center ml-3">
-                    <img
-                        src={qtyOk ? '/src/assets/check_icon.png' : '/src/assets/warning_icon.png'}
-                        alt={qtyOk ? '정답' : '오답'}
-                        className="w-5 h-5"
-                    />
-                    </div>
                 </div>
-                );
-            })}
-            </>
+            ) : (
+                <>
+                {expectedProducts.map((exp, i) => {
+                    // 서버 응답에서 같은 메뉴명 찾기 (없으면 전부 X)
+                    const matched: ProductResult | undefined =
+                    (resultData?.productResults ?? []).find(r => r.productName === exp.productName);
+
+                    const { menuOk, sizeOk, qtyOk } = evalFlags(matched);
+
+                    return (
+                    <div
+                        key={`exp-${exp.productName}-${i}`}
+                        className="grid grid-cols-[1.2fr,0.8fr,0.9fr,0.9fr] items-center text-[12px] font-normal pt-3"
+                    >
+                        {/* 메뉴명은 항상 ‘요구한 메뉴명’ */}
+                        <div className="truncate text-[#000000]">{exp.productName}</div>
+
+                        {/* 메뉴 선택 */}
+                        <div className="grid place-items-center">
+                        <img
+                            src={menuOk ? '/src/assets/check_icon.png' : '/src/assets/warning_icon.png'}
+                            alt={menuOk ? '정답' : '오답'}
+                            className="w-5 h-5"
+                        />
+                        </div>
+
+                        {/* 사이즈 선택 */}
+                        <div className="grid place-items-center">
+                        <img
+                            src={sizeOk ? '/src/assets/check_icon.png' : '/src/assets/warning_icon.png'}
+                            alt={sizeOk ? '정답' : '오답'}
+                            className="w-5 h-5"
+                        />
+                        </div>
+
+                        {/* 수량 선택 */}
+                        <div className="grid place-items-center ml-3">
+                        <img
+                            src={qtyOk ? '/src/assets/check_icon.png' : '/src/assets/warning_icon.png'}
+                            alt={qtyOk ? '정답' : '오답'}
+                            className="w-5 h-5"
+                        />
+                        </div>
+                    </div>
+                    );
+                })}
+                </>
             )}
-        </div>
+            </div>
+
         </div>
 
         {/* 하단 버튼 */}

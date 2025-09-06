@@ -1,6 +1,12 @@
 import { apiClient } from '../api/client';
 
-export type SubmittedProduct = { productId?: number; productName: string; quantity: number };
+export type SubmittedProduct = { 
+  productId?: number;
+  productName: string;
+  quantity: number
+  productOptions?: RetouchTestProductOption[];
+};
+
 export type SubmitBody = { testId: number; duration: number; submittedProducts: SubmittedProduct[] };
 
 export type ProductResult = {
@@ -75,7 +81,6 @@ export async function fetchRetouchTest(testId: number): Promise<RetouchTestRespo
   return data;
 }
 
-// 🚀 여기 추가
 export async function submitRetouchResult(body: SubmitBody): Promise<RetouchResult> {
   try {
     const { data } = await apiClient.post<RetouchResult>(`/retouch/submit`, body);
