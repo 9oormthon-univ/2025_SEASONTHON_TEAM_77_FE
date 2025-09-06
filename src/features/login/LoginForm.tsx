@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../../shared/api';
+import eyeIcon from '../../assets/eye.svg';
+import eyeOffIcon from '../../assets/eyeslash.svg';
 
 const LoginForm: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
+  const [pwVisible, setPwVisible] = useState(false);
   const navigate = useNavigate();
 
   // 스플래시 0.5초 후 로그인 폼 표시
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowForm(true);
-    }, 500);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -40,15 +43,17 @@ const LoginForm: React.FC = () => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setPwVisible(!pwVisible);
+  };
+
   return (
     <div className="w-full h-screen flex items-center justify-center bg-[#FFC845]">
       {!showForm ? (
-        <div className="text-center">
-          <h1 className="text-5xl font-bold text-red-600 mb-4">WIP</h1>
-        </div>
+        <img src="/src/assets/logo.png" alt="logo" className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[192px] h-[23px]" />
       ) : (
-        <div className="w-full h-screen flex flex-col items-center justify-center px-6 bg-white">
-          <h2 className="text-4xl font-bold text-center mb-8">로고 이미지</h2>
+        <div className="w-full h-screen flex flex-col items-center justify-center px-6 bg-white pb-20">
+          <img src="/src/assets/logo.png" alt="logo" className="w-[192px] h-[23px] mb-[74px]" />
           <label 
             className="w-full block text-base font-normal text-gray-700 text-left mb-2"
             style={{
@@ -69,16 +74,23 @@ const LoginForm: React.FC = () => {
               fontFamily: 'Pretendard',
             }}
           >비밀번호</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 border rounded-full bg-white mb-6 border-[#C1C1C1] focus:border-2 focus:border-[#FFC845] focus:outline-none"
-          />
-
+          <div className="w-full flex relative">
+            <input
+              type={pwVisible ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 border rounded-full bg-white mb-6 border-[#C1C1C1] focus:border-2 focus:border-[#FFC845] focus:outline-none"
+            />
+            <button 
+              onClick={togglePasswordVisibility}
+              className="absolute right-4 top-4 w-[20px] h-[20px]"
+            >
+              {pwVisible ? <img src={eyeOffIcon} alt="eye-off" /> : <img src={eyeIcon} alt="eye" />}
+            </button>
+          </div>
           <button
             onClick={() => handleLogin()}
-            className="w-full py-3 px-4 bg-[#FFC845] text-black text-base font-semibold rounded-full mb-8"
+            className="w-full py-3 px-4 bg-[#FFC845] text-black text-base font-normal rounded-full mb-6"
             style={{
               fontFamily: 'Pretendard',
             }}
@@ -87,7 +99,7 @@ const LoginForm: React.FC = () => {
           </button>
 
           <p 
-            className="text-center text-sm text-black"
+            className="text-center text-sm text-black font-light mb-20"
             style={{
               fontFamily: 'Pretendard',
             }}
@@ -95,7 +107,7 @@ const LoginForm: React.FC = () => {
             티처터치가 처음이신가요?{' '}
             <span
               onClick={() => navigate('/signup')}
-              className="text-[#E6B43E] text-sm font-semibold cursor-pointer"
+              className="text-[#E6B43E] text-sm font-light cursor-pointer"
               style={{
                 fontFamily: 'Pretendard',
               }}

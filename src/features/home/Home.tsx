@@ -1,4 +1,3 @@
-import React from "react";
 import NavBar from "../../components/NavBar";
 
 const days = ["월", "화", "수", "목", "금", "토", "일"];
@@ -29,8 +28,8 @@ export default function Home() {
     <div className=" flex flex-col w-full h-full bg-gradient-to-r from-[#FFC845] to-[#FFAE4A]">
       {/* 상단 영역 */}
       <div className="bg-transparent px-6 pt-20 pb-8 relative z-10">
-        <p className="text-base font-semibold mb-[69px] px-4">로고</p>
-        <p className="text-base font-semibold leading-snug">
+        <img src="/src/assets/logo_white.svg" alt="logo" className="w-[157px] h-[19px] mb-[45px]" />
+        <p className="text-base font-semibold leading-snug text-white">
           티처티치와 함께 쉽고
           <br />
           즐겁게 학습을 시작하세요
