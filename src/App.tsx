@@ -4,6 +4,7 @@ import OrderStart from './features/kiosk/learn-order/OrderStart'
 import LearnMenu from './features/kiosk/learn-menu/CategoryExplain'
 import LearnOrder from './features/kiosk/learn-menu/MenuOrder'
 import OrderCheck from './features/kiosk/learn-menu/OrderCheck'
+import Retouch from './features/retouch/Retouch'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Route path="/teachmap/kioskmenu" element={<LearnMenu />} />
       <Route path="/teachmap/kioskmenuorder" element={<LearnOrder />} />
       <Route path="/teachmap/kioskordercheck" element={<OrderCheck />} />
+      <Route path="/teachmap/retouch" element={<Retouch />} />
     </Routes>
   )
 }

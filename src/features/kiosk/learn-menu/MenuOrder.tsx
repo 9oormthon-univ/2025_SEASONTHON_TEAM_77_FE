@@ -9,9 +9,9 @@ import { itemsByCategory } from './KioskItems';
 // 설명 단계별 탭 고정
 const stepToCategory = (step: number | null): Category | null => {
   if (step === null) return null;
-  if (step <= 8) return '커피';     // 아아 플로우
-  if (step <= 14) return '음료';    // 아이스티
-  return '디저트';                  // 초코쿠키
+  if (step <= 8) return '커피';
+  if (step <= 14) return '음료';
+  return '디저트';
 };
 
 type Phase = 'intro' | 'kiosk' | 'complete';
@@ -31,7 +31,6 @@ const getHighlightTarget = (id?: string) => {
   if (group == null || stepNo == null) return null;
 
   // 이름은 itemsByCategory에 있는 실제 카드명과 일치/포함되어야 함
-  // 커피: '아이스 아메리카노', 음료: '복숭아 아이스티', 디저트: '초코쿠키'(아이템에 추가 필요)
   if (group === 1 && stepNo >= 3 && stepNo <= 9) return '아이스 아메리카노';
   if (group === 2 && stepNo >= 3 && stepNo <= 5) return '복숭아 아이스티';
   if (group === 3 && stepNo === 4) return '초코 쿠키';
@@ -41,7 +40,6 @@ const getHighlightTarget = (id?: string) => {
 const getModalTarget = (id?: string) => {
   const { group, stepNo } = parseStepId(id);
   if (group == null || stepNo == null) return null;
-
   if (group === 1 && stepNo >= 4 && stepNo <= 9) return '아이스 아메리카노';
   if (group === 2 && stepNo >= 4 && stepNo <= 5) return '복숭아 아이스티';
   // group 3: 없음
@@ -88,9 +86,7 @@ const MenuOrder: React.FC = () => {
     }
   }, [kioskPhase, current?.type, step]); // step이 바뀔 때마다 새 타이머
 
-  // current = LearnMenuFlow[step]
   const forcedTotals = current?.ui?.totals ?? null;
-  // 이미 쓰던 하이라이트/모달도 ui에 있으면 우선 사용
   const highlightTarget = current?.ui?.highlightIncludes ?? getHighlightTarget(current?.id);
   const modalTarget     = current?.ui?.optionModalForIncludes ?? getModalTarget(current?.id);
 
@@ -221,7 +217,6 @@ const MenuOrder: React.FC = () => {
               <motion.div
                 key={step}
                 className="absolute inset-0 z-30"
-                // 필요하면 클릭 즉시 이동도 사용 가능:
                 // onClick={nextStep}
               />
             )}

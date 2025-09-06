@@ -26,6 +26,7 @@ type KioskFrameProps = {
   currentStepId?: string | null
   forcedTotals?: { qty: number; sum: number } | null;
   forceScroll?: 'top' | 'bottom' | null; 
+  onClickOrder?: () => void
 }
 
 export default function KioskFrame({
@@ -40,6 +41,7 @@ export default function KioskFrame({
   currentStepId = null,
   forcedTotals = null,
   forceScroll = null,
+  onClickOrder,
 }: KioskFrameProps) {
   const [category, setCategory] = useState<Category>('커피')
   const listRef = useRef<HTMLDivElement>(null); 
@@ -123,8 +125,8 @@ export default function KioskFrame({
                     {/* 아이템이 있으면 아이템 렌더, 없으면 스켈레톤 */}
                     {items.length > 0
                       ? items.map((it, i) => {
-                          const highlight =
-                            !!highlightItemIncludes && it.name.includes(highlightItemIncludes)
+                        const highlight =
+                          !!highlightItemIncludes && it.name === highlightItemIncludes
                           return (
                             <button
                               key={`${it.name}-${i}`}
@@ -191,7 +193,10 @@ export default function KioskFrame({
                     <button className="flex-1 h-[34px] rounded-[32px] bg-white text-black text-[14px] font-medium">
                       이전
                     </button>
-                    <button className="flex-[1] h-[34px] rounded-[32px] bg-[#FFC845] text-black text-[14px] font-medium">
+                    <button
+                     className="flex-[1] h-[34px] rounded-[32px] bg-[#FFC845] text-black text-[14px] font-medium"
+                     onClick={onClickOrder}
+                    >
                       주문하기
                     </button>
                   </div>
