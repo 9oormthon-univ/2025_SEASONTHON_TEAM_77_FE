@@ -257,7 +257,7 @@ const MenuOrder: React.FC = () => {
                 첫 화면으로
               </button>
               <button
-                onClick={() => navigate('/teachmap')}
+                onClick={() => navigate('/teachmap/kioskordercheck')}
                 className="w-[159px] h-[52px] bg-[#FFC845] text-black rounded-full hover:scale-105 transition-all duration-300"
               >
                 학습 이어하기

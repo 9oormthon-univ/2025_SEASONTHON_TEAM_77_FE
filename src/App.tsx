@@ -3,6 +3,7 @@ import LearnStructure from './features/kiosk/learn-structure/LearnStructure'
 import OrderStart from './features/kiosk/learn-order/OrderStart'
 import LearnMenu from './features/kiosk/learn-menu/CategoryExplain'
 import LearnOrder from './features/kiosk/learn-menu/MenuOrder'
+import OrderCheck from './features/kiosk/learn-menu/OrderCheck'
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Route path="/teachmap/kioskorder" element={<OrderStart />} />
       <Route path="/teachmap/kioskmenu" element={<LearnMenu />} />
       <Route path="/teachmap/kioskmenuorder" element={<LearnOrder />} />
+      <Route path="/teachmap/kioskordercheck" element={<OrderCheck />} />
     </Routes>
   )
 }
