@@ -5,7 +5,11 @@ import HeaderBar from '../../../components/HeaderBar';
 import KioskFrame, { type Category } from './KioskFrame';
 import { LearnMenuFlow } from './LearnMenuFlow';
 import { itemsByCategory } from './KioskItems';
-import cursor from '../../../assets/cursor.gif';
+import { kioskAPI } from '../../../shared/api';
+import IntroScreen from '../../../components/common/IntroScreen';
+import CompleteScreen from '../../../components/common/CompleteScreen';
+import NavigationButtons from '../../../components/common/NavigationButtons';
+import { useTTSPlayer } from '../../../hooks/useTTSPlayer';
 
 // 설명 단계별 탭 고정
 const stepToCategory = (step: number | null): Category | null => {
@@ -52,6 +56,7 @@ const MenuOrder: React.FC = () => {
   const [kioskPhase, setKioskPhase] = useState<KioskPhase>('modal');
   const [step, setStep] = useState<number | null>(null);
   const navigate = useNavigate();
+  const { playTTS } = useTTSPlayer();
 
   // 시작하기 → 모달
   const enterKiosk = () => {
@@ -79,6 +84,12 @@ const MenuOrder: React.FC = () => {
 
   const current = step !== null ? LearnMenuFlow[step] : null;
 
+  useEffect(() => {
+    if (kioskPhase === 'flow' && current?.type === 'explain' && current?.description) {
+      playTTS(current.description);
+    }
+  }, [kioskPhase, current?.description, current?.type, playTTS]);
+
   // 현재 그룹 내에서의 진행상황 계산
   const getGroupProgress = () => {
     if (!current?.group || current.type !== 'explain') return null;
@@ -103,6 +114,22 @@ const MenuOrder: React.FC = () => {
     }
   }, [kioskPhase, current?.type, step, nextStep]); // step이 바뀔 때마다 새 타이머
 
+  useEffect(() => {
+    if (page === 'complete') {
+      const completeLesson = async () => {
+        try {
+          await kioskAPI.completeStep('4');
+          console.log('학습 완료 API 호출 성공');
+        } catch (error) {
+          console.error('학습 완료 API 호출 실패:', error);
+        }
+      };
+      
+      completeLesson();
+    }
+  }, [page]);
+
+
   const forcedTotals = current?.ui?.totals ?? null;
   const highlightTarget = current?.ui?.highlightIncludes ?? getHighlightTarget(current?.id);
   const modalTarget     = current?.ui?.optionModalForIncludes ?? getModalTarget(current?.id);
@@ -126,41 +153,10 @@ const MenuOrder: React.FC = () => {
       {/* 시작 화면 */}
       <AnimatePresence>
         {page === 'intro' && (
-          <motion.div
-            className="absolute inset-0 flex flex-col w-full h-screen items-center justify-center z-20 cursor-pointer"
-            style={{ background: 'linear-gradient(180deg, #FFEFC8 0%, #F3F3F3 100%)' }}
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }}
-            onClick={enterKiosk}
-          >
-            <div 
-              className="w-[254px] h-[254px] mb-3 mt-10"
-              style={{
-                backgroundImage: 'url(/src/assets/character/4.png)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            ></div>
-            <h3 
-              className="text-[26px] mb-[97px] text-center text-black font-semibold leading-[140%]">
-              메뉴를 다 담았으면,<br />
-              결제를 해볼까요?
-            </h3>
-            <p 
-              className="text-base text-center text-[#9A9A9A]"
-              style={{
-                fontFamily: 'Pretendard',
-                fontWeight: '400',
-                lineHeight: '160%',
-                letterSpacing: '-0.4px',
-              }}
-            >
-              화면을 터치하면 학습이 시작돼요
-            </p>
-            <img src={cursor} alt="cursor" className="absolute top-[610px] right-[59px] w-[58px] h-[58px] cursor-pointer" />
-          </motion.div>
+          <IntroScreen
+            title="이번에는 직접 키오스크<br />화면에서 주문해볼거에요"
+            onStart={enterKiosk}
+          />
         )}
       </AnimatePresence>
 
@@ -263,27 +259,11 @@ const MenuOrder: React.FC = () => {
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.18 }}
               >
-                <button
-                  onClick={prevStep}
-                  className="w-10 h-10"
-                  style={{
-                    backgroundImage: 'url(/src/assets/before.png)',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                  }}
-                  aria-label="이전"
-                />
-                <button
-                  onClick={nextStep}
-                  className="w-10 h-10"
-                  style={{
-                    backgroundImage: 'url(/src/assets/next.svg)',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                  }}
-                  aria-label="다음"
+                <NavigationButtons
+                  onPrev={prevStep}
+                  onNext={nextStep}
+                  prevIcon="/src/assets/before.png"
+                  className="flex justify-center gap-6"
                 />
               </motion.div>
             )}
@@ -294,38 +274,12 @@ const MenuOrder: React.FC = () => {
       {/* 완료 화면 */}
       <AnimatePresence>
         {page === 'complete' && (
-          <motion.div
-            className="absolute inset-0 flex flex-col items-center justify-center z-20"
-            style={{ background: 'linear-gradient(180deg, #FFEFC8 0%, #F3F3F3 100%)' }}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          >
-            <div
-              className="w-64 h-64 mt-28"
-              style={{
-                backgroundImage: 'url(/src/assets/character/5.png)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            />
-            <h3 className="text-[26px] mb-20 text-center text-black font-semibold leading-[140%]">
-              메뉴 주문하기에 대한<br />모든 학습을 완료했어요!
-            </h3>
-            <div className="flex items-center justify-center mt-20 gap-2">
-              <button
-                onClick={() => setPage('intro')}
-                className="w-[159px] h-[52px] font-semibold bg-[#F6F6F6] text-black rounded-full hover:scale-105 transition-all duration-300 border border-[#FFC845]"
-              >
-                처음으로
-              </button>
-              <button
-                onClick={() => navigate('/teachmap/kioskordercheck')}
-                className="w-[159px] h-[52px] font-semibold bg-[#FFC845] text-black rounded-full hover:scale-105 transition-all duration-300"
-              >
-                학습 이어하기
-              </button>
-            </div>
-          </motion.div>
+          <CompleteScreen
+            title="메뉴 주문하기에 대한<br />모든 학습을 완료했어요!"
+            onRestart={() => setPage('intro')}
+            onNext={() => navigate('/teachmap/kioskordercheck')}
+            characterImage="/src/assets/character/5.png"
+          />
         )}
       </AnimatePresence>
     </div>

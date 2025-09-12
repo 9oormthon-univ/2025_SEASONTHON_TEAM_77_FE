@@ -4,13 +4,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { structureSteps } from './StructureData';
 import HeaderBar from '../../../components/HeaderBar';
 import { kioskAPI } from '../../../shared/api';
-import cursor from '../../../assets/cursor.gif';
+import IntroScreen from '../../../components/common/IntroScreen';
+import CompleteScreen from '../../../components/common/CompleteScreen';
+import NavigationButtons from '../../../components/common/NavigationButtons';
+import KioskHardware from '../../../components/common/KioskHardware';
+import { useTTSPlayer } from '../../../hooks/useTTSPlayer';
 
 const LearnStructure: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
   const [step, setStep] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+  const { playTTS } = useTTSPlayer();
 
   useEffect(() => {
     if (page === 'kiosk') {
@@ -34,6 +39,12 @@ const LearnStructure: React.FC = () => {
     }
   }, [page]);
 
+  useEffect(() => {
+    if (step !== null && structureSteps[step]?.description) {
+      playTTS(structureSteps[step].description);
+    }
+  }, [step, playTTS]);
+
   const handleNextStep = () => {
     if (step === null) return;
     if (step < structureSteps.length - 1) {
@@ -56,44 +67,10 @@ const LearnStructure: React.FC = () => {
       <HeaderBar title="티치맵" backTo="/teachmap" />
       <AnimatePresence>
         {page === 'intro' && (
-          <motion.div
-            key="step-intro-overlay"
-            className="absolute inset-0 flex flex-col w-full h-screen items-center justify-center z-20"
-            style={{
-              background: 'linear-gradient(180deg, #FFEFC8 0%, #F3F3F3 100%)',
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setPage('kiosk')}
-          >
-            <div 
-              className="w-[254px] h-[254px] mb-3 mt-10"
-              style={{
-                backgroundImage: 'url(/src/assets/character/4.png)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            ></div>
-            <h3 
-              className="text-[26px] mb-[97px] text-center text-black font-semibold leading-[140%]">
-              안녕하세요 티코예요!<br />
-              키오스크 구성을 알아볼까요?
-            </h3>
-            <p 
-              className="text-base text-center text-[#9A9A9A]"
-              style={{
-                fontFamily: 'Pretendard',
-                fontWeight: '400',
-                lineHeight: '160%',
-                letterSpacing: '-0.4px',
-              }}
-            >
-              화면을 터치하면 학습이 시작돼요
-            </p>
-            <img src={cursor} alt="cursor" className="absolute top-[610px] right-[59px] w-[58px] h-[58px] cursor-pointer" />
-          </motion.div>
+          <IntroScreen
+            title="안녕하세요 티코예요!<br />키오스크 구성을 알아볼까요?"
+            onStart={() => setPage('kiosk')}
+          />
         )}
       </AnimatePresence>
 
@@ -101,41 +78,14 @@ const LearnStructure: React.FC = () => {
         <div className="absolute inset-0 w-full h-[797px] bg-[#F6F5F4]">
           <div className="relative flex flex-col items-center justify-center">
             <img src="/src/assets/kiosk_initial.svg" alt="kiosk_bg" className="w-[319px] h-[569px] mt-[67px]" />
-            <div className="flex justify-center items-center gap-11 px-13 mt-4">
-              {/* 영수증 출력기 */}
-              <div 
-                onClick={handleNextStep}
-                className={`w-[133px] h-[125px] bg-[#F9F9F9] rounded-lg border-2 border-gray-300 flex items-start justify-center py-[27px] px-[14px] ${
-                  step === 4 ? "z-50 cursor-pointer" : "z-20"
-                }`}
-              >
-                <div className="w-3/4 h-2 bg-black rounded-full" />
-              </div>
-
-              <div className="flex flex-col gap-3">
-                {/* 바코드 인식기 */}
-                <div 
-                  onClick={handleNextStep}
-                  className={`w-[93px] h-[57px] bg-black rounded-lg flex items-center justify-center border-2 border-gray-300 ${
-                    step === 3 ? "z-50 cursor-pointer" : "z-20"
-                  }`}
-                >
-                  <div className="w-[63px] h-[39px] bg-[#f9f9f9] rounded flex items-center justify-center">
-                    <div className="w-3 h-3 bg-black rounded-full opacity-80 blur-[0.5px]" />
-                  </div>
-                </div>
-
-                {/* 카드 리더기 */}
-                <div 
-                  onClick={handleNextStep}
-                  className={`w-[93px] h-[57px] bg-black rounded-lg flex items-center justify-center border-2 border-gray-300 ${
-                    step === 1 || step === 2 ? "z-50 cursor-pointer" : "z-20"
-                  }`}
-                >
-                  <div className="w-3/4 h-1 bg-[#747474] rounded-full" />
-                </div>
-              </div>
-            </div>
+            <KioskHardware 
+              onReceiptClick={step === 4 ? handleNextStep : undefined}
+              onBarcodeClick={step === 3 ? handleNextStep : undefined}
+              onCardReaderClick={(step === 1 || step === 2) ? handleNextStep : undefined}
+              receiptClickable={step === 4}
+              barcodeClickable={step === 3}
+              cardReaderClickable={step === 1 || step === 2}
+            />
           </div>
 
           <AnimatePresence>
@@ -170,19 +120,10 @@ const LearnStructure: React.FC = () => {
                           자신의 원하는 메뉴를 담을 수 있습니다.
                       </h4>
                     </div>
-                    <div className="flex flex-row gap-6 w-full items-center justify-center mt-6">
-                      <button
-                        onClick={handleNextStep}
-                        style={{
-                          backgroundImage: 'url(/src/assets/next.svg)',
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center',
-                          backgroundRepeat: 'no-repeat',
-                          width: '43px',
-                          height: '42px',
-                        }}
-                      />
-                    </div>
+                    <NavigationButtons
+                      onNext={handleNextStep}
+                      showPrev={false}
+                    />
                 </motion.div>
               </>
             )}
@@ -225,7 +166,7 @@ const LearnStructure: React.FC = () => {
                       모든 메뉴를 선택한 뒤 결제를 해야 할 때
                       카드를 꽂아 결제하는 부분이에요.
                   </h4>
-                  <div className="flex flex-row gap-6 w-full items-center justify-center mt-6">
+                  <div className="flex flex-row gap-6 w-full items-center justify-center mt-4">
                     <button
                       onClick={handlePrevStep}
                       style={{
@@ -280,7 +221,7 @@ const LearnStructure: React.FC = () => {
                       카드에서 딸깍 소리가 날 때까지 안쪽으로
                       잘 밀어 넣어주세요!
                   </h4>
-                  <div className="flex flex-row gap-6 w-full items-center justify-center mt-6">
+                  <div className="flex flex-row gap-6 w-full items-center justify-center mt-4">
                     <button
                       onClick={handlePrevStep}
                       style={{
@@ -331,7 +272,7 @@ const LearnStructure: React.FC = () => {
                       쿠폰으로 결제를 원할 때 핸드폰에 뜨는
                       바코드(쿠폰) 화면을 이곳에 갖다댑니다.
                   </h4>
-                  <div className="flex flex-row gap-6 w-full items-center justify-center mt-6">
+                  <div className="flex flex-row gap-6 w-full items-center justify-center mt-4">
                     <button
                       onClick={handlePrevStep}
                       style={{
@@ -384,7 +325,7 @@ const LearnStructure: React.FC = () => {
                       확인해주세요!
                   </h4>
                   
-                  <div className="flex flex-row gap-6 w-full items-center justify-center mt-6">
+                  <div className="flex flex-row gap-6 w-full items-center justify-center mt-4">
                     <button
                       onClick={handlePrevStep}
                       style={{
@@ -487,45 +428,11 @@ const LearnStructure: React.FC = () => {
       )}
       <AnimatePresence>
         {page === 'complete' && (
-          <motion.div
-            key="step-complete-overlay"
-            className="absolute inset-0 flex flex-col w-full h-screen items-center justify-center z-20"
-            style={{
-              background: 'linear-gradient(180deg, #FFEFC8 0%, #F3F3F3 100%)',
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <div 
-              className="w-60 h-60 mt-28"
-              style={{
-                backgroundImage: 'url(/src/assets/character/3.png)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            ></div>
-            <h3 
-              className="text-[26px] mb-20 text-center text-black font-semibold leading-[140%]">
-              키오스크 전체 구성에 대해<br />
-              모든 학습을 완료했어요!
-            </h3>
-            <div className="flex items-center justify-center mt-20 gap-2">
-              <button
-                onClick={() => setPage('intro')}
-                className="w-[159px] h-[52px] py-4 font-semibold bg-[#F6F6F6] flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300 border border-[#ffc845]"
-              >
-                처음으로
-              </button>
-              <button
-                onClick={() => navigate('/teachmap/kioskorder')}
-                className="w-[159px] h-[52px] py-4 font-semibold bg-[#FFC845] flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300"
-              >
-                학습 이어하기
-              </button>
-            </div>
-          </motion.div>
+          <CompleteScreen
+            title="키오스크 전체 구성에 대해<br />모든 학습을 완료했어요!"
+            onRestart={() => setPage('intro')}
+            onNext={() => navigate('/teachmap/kioskorder')}
+          />
         )}
       </AnimatePresence>
     </div>
