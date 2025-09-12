@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import HeaderBar from '../../../components/HeaderBar';
 import KioskFrame from './KioskFrame';
 import { OrderCheckSteps } from './OrderCheckData';
-import cursor from '../../../assets/cursor.gif';
+import { kioskAPI } from '../../../shared/api';
+import IntroScreen from '../../../components/common/IntroScreen';
+import CompleteScreen from '../../../components/common/CompleteScreen';
+import StepOverlay from '../../../components/common/StepOverlay';
 
 const OrderCheck: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
@@ -13,9 +16,29 @@ const OrderCheck: React.FC = () => {
 
   // 키오스크 진입 시 0단계부터 시작
   useEffect(() => {
-    if (page === 'kiosk') setStep(0);
-    else setStep(null);
+    if (page === 'kiosk') {
+      const timer = setTimeout(() => setStep(0), 300); // 300ms 지연
+      return () => clearTimeout(timer);
+    } else {
+      setStep(null);
+    }
   }, [page]);
+
+  useEffect(() => {
+    if (page === 'complete') {
+      const completeLesson = async () => {
+        try {
+          await kioskAPI.completeStep('5');
+          console.log('학습 완료 API 호출 성공');
+        } catch (error) {
+          console.error('학습 완료 API 호출 실패:', error);
+        }
+      };
+      
+      completeLesson();
+    }
+  }, [page]);
+
 
   const handleNext = () => {
     if (step === null) return;
@@ -55,44 +78,10 @@ const OrderCheck: React.FC = () => {
       {/* 시작 화면 */}
       <AnimatePresence>
         {page === 'intro' && (
-          <motion.div
-            className="absolute inset-0 flex flex-col w-full h-screen items-center justify-center z-20 cursor-pointer"
-            style={{ background: 'linear-gradient(180deg, #FFEFC8 0%, #F3F3F3 100%)' }}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            onClick={() => setPage('kiosk')}
-          >
-            <div 
-              className="w-[254px] h-[254px] mb-3 mt-10"
-              style={{
-                backgroundImage: 'url(/src/assets/character/4.png)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            ></div>
-            <h3 
-              className="text-[26px] mb-[97px] text-center text-black font-semibold leading-[140%]"
-              style={{
-                fontFamily: 'Pretendard',
-                fontWeight: '600',
-              }}
-            >
-              마지막으로 주문 확인을<br />
-              해볼까요?
-            </h3>
-            <p 
-              className="text-base text-center text-[#9A9A9A]"
-              style={{
-                fontFamily: 'Pretendard',
-                fontWeight: '400',
-                lineHeight: '160%',
-                letterSpacing: '-0.4px',
-              }}
-            >
-              화면을 터치하면 학습이 시작돼요
-            </p>
-            <img src={cursor} alt="cursor" className="absolute top-[610px] right-[59px] w-[58px] h-[58px] cursor-pointer" />
-          </motion.div>
+          <IntroScreen
+            title="마지막으로 주문 확인을<br />해볼까요?"
+            onStart={() => setPage('kiosk')}
+          />
         )}
       </AnimatePresence>
 
@@ -197,69 +186,18 @@ const OrderCheck: React.FC = () => {
           {/* 설명 오버레이 */}
           <AnimatePresence>
             {typeof step === 'number' && (
-              <motion.div
-                key={step}
-                className="fixed bottom-0 left-0 w-full h-[182px] bg-[rgba(17,17,17,0.80)] z-40 py-[10px] px-[20px]"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-              >
-                <div className="flex flex-col items-start justify-start w-[327px] h-[182px]">
-                  <div className="flex flex-row justify-between w-full items-center">
-                    <h1 className="text-3xl text-[#FFC845] mb-1 font-semibold leading-[140%]">
-                      {`${OrderCheckSteps[step].title === '주문 확인' ? 1 : 2}. ${OrderCheckSteps[step].title}`}
-                    </h1>
-                    {OrderCheckSteps[step].title === '주문 확인' && (
-                      <p className="text-base text-white font-light">{step + 1}/2</p>
-                    )}
-                    {OrderCheckSteps[step].title === '수량 변경' && (
-                      <p className="text-base text-white font-light">{step - 1}/2</p>
-                    )}
-                  </div>
-                  <p className="text-lg text-white font-medium leading-[140%]">
-                    {OrderCheckSteps[step].description}
-                  </p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* 이전/다음 버튼 */}
-          <AnimatePresence>
-            {typeof step === 'number' && (
-              <motion.div
-                key={`nav-${step}`}
-                className="fixed inset-x-0 bottom-[10px] z-50 flex justify-center gap-6"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.18 }}
-              >
-                {step > 0 && (
-                  <button
-                    onClick={handleBefore}
-                    className="w-10 h-10"
-                    style={{
-                      backgroundImage: 'url(/src/assets/before.png)',
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      backgroundRepeat: 'no-repeat',
-                    }}
-                    aria-label="이전"
-                  />
-                )}
-                <button
-                  onClick={handleNext}
-                  className="w-10 h-10"
-                  style={{
-                    backgroundImage: 'url(/src/assets/next.svg)',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                  }}
-                  aria-label="다음"
-                />
-              </motion.div>
+              <StepOverlay
+                title={`${OrderCheckSteps[step].title === '주문 확인' ? 1 : 2}. ${OrderCheckSteps[step].title}`}
+                description={OrderCheckSteps[step].description}
+                stepProgress={
+                  OrderCheckSteps[step].title === '주문 확인' ? `${step + 1}/2` :
+                  OrderCheckSteps[step].title === '수량 변경' ? `${step - 1}/2` : undefined
+                }
+                onNext={handleNext}
+                onPrev={step > 0 ? handleBefore : undefined}
+                showPrev={step > 0}
+                className="fixed bottom-0 left-0 w-full bg-[rgba(17,17,17,0.80)] z-40 py-[10px] px-[20px]"
+              />
             )}
           </AnimatePresence>
         </>
@@ -268,38 +206,12 @@ const OrderCheck: React.FC = () => {
       {/* 완료 화면 */}
       <AnimatePresence>
         {page === 'complete' && (
-          <motion.div
-            className="absolute inset-0 flex flex-col w-full h-screen items-center justify-center z-20"
-            style={{ background: 'linear-gradient(180deg, #FFEFC8 0%, #F3F3F3 100%)' }}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          >
-            <div
-              className="w-[240px] h-[240px] mt-28"
-              style={{
-                backgroundImage: 'url(/src/assets/character/5.png)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            />
-            <h3 className="text-[26px] mb-20 text-center text-black font-semibold leading-[140%]">
-              주문 메뉴 확인에 대한<br />모든 학습을 완료했어요!
-            </h3>
-            <div className="flex items-center justify-center mt-20 gap-2">
-              <button
-                onClick={() => setPage('intro')}
-                className="w-[159px] h-[52px] font-semibold bg-[#F6F6F6] text-black rounded-full hover:scale-105 transition-all duration-300 border border-[#FFC845]"
-              >
-                처음으로
-              </button>
-              <button
-                onClick={() => navigate('/teachmap/kioskpayment')}
-                className="w-[159px] h-[52px] font-semibold bg-[#FFC845] text-black rounded-full hover:scale-105 transition-all duration-300"
-              >
-                학습 이어하기
-              </button>
-            </div>
-          </motion.div>
+          <CompleteScreen
+            title="주문 메뉴 확인에 대한<br />모든 학습을 완료했어요!"
+            onRestart={() => setPage('intro')}
+            onNext={() => navigate('/teachmap/kioskpayment')}
+            characterImage="/src/assets/character/5.png"
+          />
         )}
       </AnimatePresence>
     </div>

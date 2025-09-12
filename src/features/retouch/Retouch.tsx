@@ -379,7 +379,7 @@ const proceedAfterSelect = (opt: '매장' | '포장') => {
 
   return (
     <div className="relative w-full h-screen">
-      <HeaderBar title="티치맵" backTo="/teachmap" />
+      <HeaderBar title="리터치" backTo="/" />
 
      {/* 시작 화면 */}
       <AnimatePresence>

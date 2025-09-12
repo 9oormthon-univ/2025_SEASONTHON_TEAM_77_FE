@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import NavBar from "../../components/NavBar";
 import { kioskAPI } from "../../shared/api";
 import SearchBar from "../../components/common/SearchBar";
-import { StepCard } from "./components/TeachMap";
+import StepCard from "./components/TeachMap/StepCard";
 
 interface SearchResult {
   title: string;
@@ -33,7 +33,7 @@ const stepsData = [
     step: '2',
     title: "메뉴 선택 학습",
     description: "음료 카테고리, 메뉴 주문",
-    image: "menu.png",
+    image: "menu_learn.png",
     substeps: [
       {
         id: '3',
@@ -50,7 +50,7 @@ const stepsData = [
       {
         id: '5',
         title: "주문 메뉴 확인",
-        navigateUrl: "/teachmap/kioskmenuorder",
+        navigateUrl: "/teachmap/kioskordercheck",
         time: "05:03",
       },
     ],
