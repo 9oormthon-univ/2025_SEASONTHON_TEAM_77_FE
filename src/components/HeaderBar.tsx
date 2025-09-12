@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTTS } from '../hooks/useTTS';
+import { useTTSPlayer } from '../hooks/useTTSPlayer';
 
 interface HeaderBarProps {
   title: string;
@@ -8,6 +10,8 @@ interface HeaderBarProps {
 
 const HeaderBar: React.FC<HeaderBarProps> = ({ title, backTo }) => {
   const navigate = useNavigate();
+  const { isTTSEnabled, setIsTTSEnabled } = useTTS();
+  const { playTTS } = useTTSPlayer();
 
   const handleBack = () => {
     if (backTo) {
@@ -16,6 +20,17 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ title, backTo }) => {
       navigate(-1);
     }
   };
+
+  const toggleSwitch = () => {
+    const newState = !isTTSEnabled;
+    setIsTTSEnabled(newState);
+    
+    // TTS가 켜질 때 테스트 메시지 재생
+    if (newState) {
+      playTTS('티치터치 음성 안내가 시작됩니다');
+    }
+  };
+
 
   return (
     <header className="w-full h-[67px] flex items-center justify-center relative bg-transparent z-50 inline-block">
@@ -35,6 +50,17 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ title, backTo }) => {
           lineHeight: '140%',
         }}
       >{title}</h3>
+      <button
+        onClick={toggleSwitch}
+        className="absolute right-4 h-full flex items-center justify-center"
+        aria-label="on/off"
+      >
+        <img
+          src={isTTSEnabled ? "/src/assets/on.png" : "/src/assets/off.png"}
+          alt={isTTSEnabled ? "on" : "off"}
+          className="w-7 h-7"
+        />
+      </button>
     </header>
   );
 };

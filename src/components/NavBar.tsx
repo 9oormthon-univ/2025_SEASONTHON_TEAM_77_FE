@@ -1,5 +1,6 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const NavBar: React.FC = () => {
   const location = useLocation();
@@ -87,10 +88,13 @@ const NavBar: React.FC = () => {
       {navItems.map((item) => {
         const isActive = location.pathname === item.path;
         return (
-          <button
+          <motion.button
             key={item.path}
             onClick={() => navigate(item.path)}
             className="flex flex-col items-center"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.2 }}
           >
             {item.icon(isActive)}
             <span
@@ -98,7 +102,7 @@ const NavBar: React.FC = () => {
             >
               {item.label}
             </span>
-          </button>
+          </motion.button>
         );
       })}
     </nav>

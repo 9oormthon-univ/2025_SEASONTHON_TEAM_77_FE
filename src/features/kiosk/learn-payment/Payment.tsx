@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { paymentSteps } from './PaymentData';
 import HeaderBar from '../../../components/HeaderBar';
 import PointInput from './PointInput';
 import { kioskAPI } from '../../../shared/api';
-import cursor from '../../../assets/cursor.gif';
+import IntroScreen from '../../../components/common/IntroScreen';
+import CompleteScreen from '../../../components/common/CompleteScreen';
+import StepOverlay from '../../../components/common/StepOverlay';
+import KioskHardware from '../../../components/common/KioskHardware';
 
 const Payment: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
@@ -69,46 +72,13 @@ const Payment: React.FC = () => {
       <HeaderBar title="티치맵" backTo="/teachmap" />
       <AnimatePresence>
         {page === 'intro' && (
-          <motion.div
-            className="absolute inset-0 flex flex-col w-full h-screen items-center justify-center z-20"
-            style={{
-              background: 'linear-gradient(180deg, #FFEFC8 0%, #F3F3F3 100%)',
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => {
+          <IntroScreen
+            title="메뉴를 다 담았으면,<br />결제를 해볼까요?"
+            onStart={() => {
               setPage('kiosk');
               setStep(0);
             }}
-          >
-            <div 
-              className="w-[254px] h-[254px] mb-3 mt-10"
-              style={{
-                backgroundImage: 'url(/src/assets/character/4.png)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            ></div>
-            <h3 
-              className="text-[26px] mb-[97px] text-center text-black font-semibold leading-[140%]">
-              메뉴를 다 담았으면,<br />
-              결제를 해볼까요?
-            </h3>
-            <p 
-              className="text-base text-center text-[#9A9A9A]"
-              style={{
-                fontFamily: 'Pretendard',
-                fontWeight: '400',
-                lineHeight: '160%',
-                letterSpacing: '-0.4px',
-              }}
-            >
-              화면을 터치하면 학습이 시작돼요
-            </p>
-            <img src={cursor} alt="cursor" className="absolute top-[610px] right-[59px] w-[58px] h-[58px] cursor-pointer" />
-          </motion.div>
+          />
         )}
       </AnimatePresence>
 
@@ -276,26 +246,7 @@ const Payment: React.FC = () => {
                   <img src="/src/assets/payment/receipt.svg" className="w-[184px] h-[173px]" />
                 </div>
               )}
-              <div className="flex justify-center items-center gap-11 px-13 mt-4">
-                {/* 영수증 출력기 */}
-                <div className="w-[133px] h-[125px] bg-[#F9F9F9] rounded-lg border-2 border-gray-300 flex items-start justify-center py-[27px] px-[14px]">
-                  <div className="w-3/4 h-2 bg-black rounded-full" />
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  {/* 바코드 인식기 */}
-                  <div className="w-[93px] h-[57px] bg-black rounded-lg flex items-center justify-center border-2 border-gray-300">
-                    <div className="w-[63px] h-[39px] bg-[#f9f9f9] rounded flex items-center justify-center">
-                      <div className="w-3 h-3 bg-black rounded-full opacity-80 blur-[0.5px]" />
-                    </div>
-                  </div>
-
-                  {/* 카드 리더기 */}
-                  <div className="w-[93px] h-[57px] bg-black rounded-lg flex items-center justify-center border-2 border-gray-300">
-                    <div className="w-3/4 h-1 bg-[#747474] rounded-full" />
-                  </div>
-                </div>
-              </div>
+              <KioskHardware />
             </>
 
             
@@ -303,103 +254,27 @@ const Payment: React.FC = () => {
 
           <AnimatePresence>
             {step !== null && (
-              <>
-                {/* 반투명 배경 */}
-                <motion.div
-                  className="fixed bottom-0 left-0 w-full h-[192px] bg-[rgba(17,17,17,0.80)] z-40 py-[10px] px-6"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  >
-                    <div className="flex flex-col items-start justify-center w-[327px]">
-                      <div className="flex flex-row justify-between w-full items-center">
-                        <h1 
-                          className="text-3xl text-[#FFC845] mb-1"
-                          style={{
-                            fontFamily: 'Pretendard',
-                            fontWeight: '600',
-                            lineHeight: '140%',
-                          }}
-                        >
-                          {`${paymentSteps[step].title}`}
-                        </h1>
-                        {currentStepData.substeps.length > 1 && (
-                          <p className="text-base text-white font-light">{substep + 1}/{currentStepData.substeps.length}</p>
-                        )}
-                      </div>
-                      <h4 className="text-lg text-white"
-                        style={{
-                          fontFamily: 'Pretendard',
-                          fontWeight: '600',
-                          lineHeight: '140%',
-                        }}>
-                          {currentSubstepText}
-                      </h4>
-                    </div>
-                    <div className="absolute bottom-[10px] flex flex-row gap-6 w-[327px] items-center justify-center mt-6">
-                        {(step !== 0 || substep !== 0) && (
-                          <button
-                            onClick={handlePrevStep}
-                            style={{
-                              backgroundImage: 'url(/src/assets/prev.svg)',
-                              backgroundSize: 'cover',
-                              backgroundPosition: 'center',
-                              backgroundRepeat: 'no-repeat',
-                              width: '43px',
-                              height: '42px',
-                            }}
-                          />
-                        )}
-                        <button
-                          onClick={handleNextStep}
-                          style={{
-                            backgroundImage: 'url(/src/assets/next.svg)',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            backgroundRepeat: 'no-repeat',
-                            width: '42px',
-                            height: '42px',
-                          }}
-                        />
-                    </div>
-                </motion.div>
-              </>
+              <StepOverlay
+                title={paymentSteps[step].title}
+                description={currentSubstepText}
+                stepProgress={currentStepData.substeps.length > 1 ? `${substep + 1}/${currentStepData.substeps.length}` : undefined}
+                onNext={handleNextStep}
+                onPrev={(step !== 0 || substep !== 0) ? handlePrevStep : undefined}
+                showPrev={step !== 0 || substep !== 0}
+                height="h-[192px]"
+                className="fixed bottom-0 left-0 w-full bg-[rgba(17,17,17,0.80)] z-40 py-[10px] px-6"
+              />
             )}
           </AnimatePresence>
         </div>
       )}
       <AnimatePresence>
         {page === 'complete' && (
-          <motion.div
-            className="absolute inset-0 flex flex-col w-full h-screen items-center justify-center z-20"
-            style={{
-              background: 'linear-gradient(180deg, #FFEFC8 0%, #F3F3F3 100%)',
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <div 
-              className="w-60 h-60 mt-28"
-              style={{
-                backgroundImage: 'url(/src/assets/character/3.png)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            ></div>
-            <h3 className="text-[26px] mb-20 text-center text-black font-semibold leading-[140%]">
-              모든 학습을 다 마무리 했어요
-            </h3>
-            <div className="flex items-center justify-center mt-20 gap-2">
-              <button
-                onClick={() => navigate('/')}
-                className="w-[327px] h-[52px] py-4 bg-[#FFC845] mt-10 flex items-center justify-center text-black rounded-full hover:scale-105 transition-all duration-300"
-              >
-                확인
-              </button>
-            </div>
-          </motion.div>
+          <CompleteScreen
+            title="모든 학습을 다 마무리 했어요"
+            onConfirm={() => navigate('/')}
+            isLastLesson={true}
+          />
         )}
       </AnimatePresence>
       {/* 모달 */}

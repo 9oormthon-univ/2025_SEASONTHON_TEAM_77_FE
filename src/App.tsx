@@ -11,23 +11,26 @@ import Payment from './features/kiosk/learn-payment/Payment'
 import MyPage from './features/mypage/MyPage'
 import Home from './features/home/Home'
 import TeachMap from './features/kiosk/TeachMap'
+import { TTSProvider } from './contexts/TTSProvider'
 
 function App() {
   return (
-    <Routes>
-      <Route path="/teachmap/kioskstructure" element={<LearnStructure />} />
-      <Route path="/teachmap/kioskorder" element={<OrderStart />} />
-      <Route path="/teachmap/kioskmenu" element={<LearnMenu />} />
-      <Route path="/teachmap/kioskmenuorder" element={<LearnOrder />} />
-      <Route path="/teachmap/kioskordercheck" element={<OrderCheck />} />
-      <Route path="/teachmap/retouch" element={<Retouch />} />
-      <Route path="/teachmap/kioskpayment" element={<Payment />} />
-      <Route path="/login" element={<LoginForm />} />
-      <Route path="/signup" element={<SignupForm />} />
-      <Route path="/mypage" element={<MyPage />} />
-      <Route path="/" element={<Home />} />
-      <Route path="/teachmap" element={<TeachMap />} />
-    </Routes>
+    <TTSProvider>
+      <Routes>
+        <Route path="/teachmap/kioskstructure" element={<LearnStructure />} />
+        <Route path="/teachmap/kioskorder" element={<OrderStart />} />
+        <Route path="/teachmap/kioskmenu" element={<LearnMenu />} />
+        <Route path="/teachmap/kioskmenuorder" element={<LearnOrder />} />
+        <Route path="/teachmap/kioskordercheck" element={<OrderCheck />} />
+        <Route path="/teachmap/retouch" element={<Retouch />} />
+        <Route path="/teachmap/kioskpayment" element={<Payment />} />
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/signup" element={<SignupForm />} />
+        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/teachmap" element={<TeachMap />} />
+      </Routes>
+    </TTSProvider>
   )
 }
 

@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "../../shared/api";
 import NavBar from "../../components/NavBar";
-import { ConfirmModal } from "../../components/common/Modal";
-import { ProfileHeader, AccountSection } from "../profile/components";
+import ConfirmModal from "../../components/common/ConfirmModal";
+import ProfileHeader from "../profile/components/ProfileHeader";
+import AccountSection from "../profile/components/AccountSection";
 
 export default function MyPage() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function MyPage() {
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("currentUsername");
+    console.log(storedUsername);
     setCurrentUsername(storedUsername);
   }, []);
 
