@@ -9,6 +9,7 @@ import CompleteScreen from '../../../components/common/CompleteScreen';
 import NavigationButtons from '../../../components/common/NavigationButtons';
 import KioskHardware from '../../../components/common/KioskHardware';
 import { useTTSPlayer } from '../../../hooks/useTTSPlayer';
+import { SoundTooltip } from '../../../components/common/SoundTooltip';
 
 const LearnStructure: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
@@ -16,6 +17,7 @@ const LearnStructure: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const { playTTS } = useTTSPlayer();
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     if (page === 'kiosk') {
@@ -45,6 +47,17 @@ const LearnStructure: React.FC = () => {
     }
   }, [step, playTTS]);
 
+  useEffect(() => {
+    if (page === 'kiosk' && step !== null && step === 0) {
+      setShowTooltip(true);
+      const timer = setTimeout(() => {
+        setShowTooltip(false);
+      }, 10000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [page, step]);
+
   const handleNextStep = () => {
     if (step === null) return;
     if (step < structureSteps.length - 1) {
@@ -65,6 +78,8 @@ const LearnStructure: React.FC = () => {
   return (
     <div className="relative w-full h-screen">
       <HeaderBar title="티치맵" backTo="/teachmap" />
+      <SoundTooltip showTooltip={showTooltip} />
+
       <AnimatePresence>
         {page === 'intro' && (
           <IntroScreen

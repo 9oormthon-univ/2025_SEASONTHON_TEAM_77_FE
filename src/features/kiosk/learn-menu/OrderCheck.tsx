@@ -8,19 +8,28 @@ import { kioskAPI } from '../../../shared/api';
 import IntroScreen from '../../../components/common/IntroScreen';
 import CompleteScreen from '../../../components/common/CompleteScreen';
 import StepOverlay from '../../../components/common/StepOverlay';
+import { SoundTooltip } from '../../../components/common/SoundTooltip';
 
 const OrderCheck: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
   const [step, setStep] = useState<number | 'final-kiosk' | null>(null);
   const navigate = useNavigate();
+  const [showTooltip, setShowTooltip] = useState(false);
 
   // 키오스크 진입 시 0단계부터 시작
   useEffect(() => {
     if (page === 'kiosk') {
-      const timer = setTimeout(() => setStep(0), 300); // 300ms 지연
-      return () => clearTimeout(timer);
-    } else {
-      setStep(null);
+      setShowTooltip(true);
+
+      const timer1 = setTimeout(() => {
+        setShowTooltip(false);
+      }, 10000);
+
+      const timer2 = setTimeout(() => setStep(0), 300); // 300ms 지연
+      return () => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+      };
     }
   }, [page]);
 
@@ -74,6 +83,7 @@ const OrderCheck: React.FC = () => {
   return (
     <div className="relative w-full h-screen">
       <HeaderBar title="티치맵" backTo="/teachmap" />
+      <SoundTooltip showTooltip={showTooltip} />
 
       {/* 시작 화면 */}
       <AnimatePresence>

@@ -9,6 +9,7 @@ import IntroScreen from '../../../components/common/IntroScreen';
 import CompleteScreen from '../../../components/common/CompleteScreen';
 import StepOverlay from '../../../components/common/StepOverlay';
 import KioskHardware from '../../../components/common/KioskHardware';
+import { SoundTooltip } from '../../../components/common/SoundTooltip';
 
 const Payment: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
@@ -16,6 +17,18 @@ const Payment: React.FC = () => {
   const [substep, setSubstep] = useState<number>(0);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  useEffect(() => {
+    if (page === 'kiosk') {
+      setShowTooltip(true);
+      const timer = setTimeout(() => {
+        setShowTooltip(false);
+      }, 10000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [page]);
 
   useEffect(() => {
     if (step === 3) {
@@ -70,6 +83,8 @@ const Payment: React.FC = () => {
   return (
     <div className="relative w-full h-screen">
       <HeaderBar title="티치맵" backTo="/teachmap" />
+      <SoundTooltip showTooltip={showTooltip} />
+      
       <AnimatePresence>
         {page === 'intro' && (
           <IntroScreen
