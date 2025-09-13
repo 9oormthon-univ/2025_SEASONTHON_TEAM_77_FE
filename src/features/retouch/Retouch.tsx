@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import HeaderBar from '../../components/HeaderBar';
 import KioskFrame, { type Category, type KioskItem } from '../kiosk/learn-menu/KioskFrame';
 import { itemsByCategory } from '../kiosk/learn-menu/KioskItems';
@@ -10,22 +11,22 @@ import {
   type RetouchTestProduct,
   type RetouchTestProductOption,
   type SubmittedProduct,
+  type ProductResult,
 } from '../../shared/api/retouch';
 
-import { evalFlags, findKioskItemByName } from './retouchUtils';
-import IntroTouchScreen from '../retouch/components/IntroTouchScreen';
+import { findKioskItemByName } from './retouchUtils';
+import IntroScreen from '../../components/common/IntroScreen';
 import KioskIntro from '../retouch/components/KioskIntro';
 import ReviewSplash from '../retouch/components/ReviewSplash';
 import WrongCheck from '../retouch/components/WrongCheck';
-import CompleteScreen from '../retouch/components/CompleteScreen';
+import CompleteScreen from '../../components/common/CompleteScreen';
 import OrderSheet from '../retouch/components/OrderSheet';
 import OptionModal from '../retouch/components/OptionModal';
+import MenuButton from '../retouch/components/MenuButton';
 
 type IntroPhase = 'bg1' | 'modal' | 'bg2' | 'select';
 
 type CartItem = {
-  // 제출 직전에 정답 목록과 매칭해서 productId를 붙일 거라 optional
-  productId?: number;
   name: string;
   price: number;
   qty: number;
@@ -33,7 +34,7 @@ type CartItem = {
   productOptions?: { optionName: string; optionValue: string }[];
 };
 
-// “아이스 ” 접두사만 제거 (너가 말한 대로 정규화 문제는 아니라서 최소한만)
+// “아이스 ” 접두사만 제거
 const normalizeName = (name: string) => name.replace(/^아이스\s*/, '').trim();
 
 // 옵션 중복 제거(같은 optionName이면 마지막 값 우선)
@@ -45,6 +46,13 @@ const mergeAndDedupeOptions = (
   [...base, ...extra].forEach((o) => byName.set(o.optionName, o.optionValue));
   return Array.from(byName.entries()).map(([optionName, optionValue]) => ({ optionName, optionValue }));
 };
+
+// 서버 detailedResult에서 안전하게 플래그 추출
+const pickFlags = (r?: ProductResult) => ({
+  menuOk: r?.detailedResult?.menuSelection ?? false,
+  sizeOk: r?.detailedResult?.sizeSelection ?? false,
+  qtyOk:  r?.detailedResult?.quantitySelection ?? false,
+});
 
 const Retouch: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kioskIntro' | 'kiosk' | 'orderSheet' | 'review' | 'wrongCheck' | 'complete'>('intro');
@@ -70,6 +78,7 @@ const Retouch: React.FC = () => {
 
   const [isRetry, setIsRetry] = useState<boolean>(false);
   const [sizePreselectEnabled, setSizePreselectEnabled] = useState<boolean>(true);
+  const navigate = useNavigate();
 
   // URL에서 ?testId= 파라미터 읽기 (없으면 1)
   const initialTestId = (() => {
@@ -94,20 +103,15 @@ const Retouch: React.FC = () => {
   }, [page]);
 
   const totals = useMemo(() => {
-    let qty = 0,
-      sum = 0;
+    let qty = 0, sum = 0;
     for (const it of cart) {
       qty += it.qty;
       sum += (it.price ?? 0) * it.qty;
     }
     return { qty, sum };
   }, [cart]);
-  const bottomTotals = totals;
 
-  const handleIntroBgClick = () => {
-    if (introPhase === 'bg1') setIntroPhase('modal');
-    else if (introPhase === 'bg2') setIntroPhase('select');
-  };
+  const bottomTotals = totals;
 
   const handleSelectAndProceed = (opt: '매장' | '포장') => {
     setSelectedOption(opt);
@@ -115,6 +119,11 @@ const Retouch: React.FC = () => {
       if (!startTs) setStartTs(Date.now());
       setPage('kiosk');
     }, 400);
+  };
+
+  const handleIntroBgClick = () => {
+    if (introPhase === 'bg1') setIntroPhase('modal');
+    else if (introPhase === 'bg2') setIntroPhase('select');
   };
 
   const handleSelectItem = (item: KioskItem, category: Category) => {
@@ -126,7 +135,7 @@ const Retouch: React.FC = () => {
         setModalSize('S');
         setModalQty(1);
         setSizePreselectEnabled(true);
-      }, 200) as unknown as number;
+      }, 200); // ⬅️ as unknown as number 제거
     } else {
       // 즉시 담는 메뉴: 이름 최소 정규화 후 담기
       addToCart({
@@ -158,7 +167,6 @@ const Retouch: React.FC = () => {
 
   const confirmOptionModal = () => {
     if (!pendingModalItem) return;
-
     const normalizedName = normalizeName(pendingModalItem.name);
 
     const opts: CartItem['productOptions'] = [];
@@ -178,15 +186,6 @@ const Retouch: React.FC = () => {
     window.setTimeout(() => setHighlightName(null), 600);
   };
 
-  const goOrder = () => {
-    if (totals.qty === 0) return;
-    if (isRetry) {
-      handlePay();
-    } else {
-      setPage('orderSheet');
-    }
-  };
-
   const changeQty = (idx: number, delta: number) => {
     setCart((prev) => {
       const copy = [...prev];
@@ -195,9 +194,8 @@ const Retouch: React.FC = () => {
       return copy;
     });
   };
-  const removeItem = (idx: number) => {
-    setCart((prev) => prev.filter((_, i) => i !== idx));
-  };
+
+  const removeItem = (idx: number) => setCart((prev) => prev.filter((_, i) => i !== idx));
 
   const goBack = () => {
     if (page === 'orderSheet') setPage('kiosk');
@@ -232,9 +230,7 @@ const Retouch: React.FC = () => {
         setTestLoading(false);
       }
     })();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
@@ -250,9 +246,7 @@ const Retouch: React.FC = () => {
     // 제출 직전 매핑: productId 부여 + 옵션 중복 제거/보강
     const submittedProducts: SubmittedProduct[] = cart.map((ci) => {
       const normalized = normalizeName(ci.name);
-      const matched =
-        byName.get(ci.name) || // 정확히 같은 이름 우선
-        byName.get(normalized); // 접두사 제거로도 시도(안전용)
+      const matched = byName.get(ci.name) ?? byName.get(normalized);
 
       // 옵션 합치기: (카트 옵션 + size prop) → 중복 제거 → 온도 기본값 보강
       const sizeOpt: RetouchTestProductOption[] = ci.size
@@ -265,16 +259,16 @@ const Retouch: React.FC = () => {
       const finalOptions = hasTemp ? merged : mergeAndDedupeOptions(merged, [{ optionName: '온도', optionValue: 'ICED' }]);
 
       const base: SubmittedProduct = {
-        productName: matched ? matched.productName : normalized, // 서버 기준 명칭으로 맞춰주면 가독성↑
+        productName: matched ? matched.productName : normalized,
         quantity: ci.qty,
         productOptions: finalOptions,
       };
 
-      return matched ? { ...base, productId: matched.id } : base; // 정답에 있는 상품이면 id 포함
+      return matched ? { ...base, productId: matched.id } : base;
     });
 
-    // 🔎 제출 전 콘솔 디버그 (필요 없으면 지워도 됨)
-    try {
+    // 개발 중에만 디버그
+    if (import.meta.env.DEV) {
       console.groupCollapsed('[SUBMIT DEBUG]');
       console.log('testId (from GET):', testId);
       console.table(
@@ -294,23 +288,26 @@ const Retouch: React.FC = () => {
         }))
       );
       console.groupEnd();
-    } catch {}
+    }
 
     try {
       const data = await submitRetouchResult({ testId, duration: durationSec, submittedProducts });
-      // handlePay try { ... } 안에서, setResultData 전에:
-      console.table((data.productResults ?? []).map(r => ({
-        name: r.productName,
-        correctQty: r.correctQuantity,
-        submittedQty: r.submittedQuantity,
-        menuOk: r.detailedResult?.menuSelection,
-        sizeOk: r.detailedResult?.sizeSelection,
-        qtyOk:  r.detailedResult?.quantitySelection,
-        status: r.status,
-      })));
 
-      // 서버 채점 duration을 그대로 쓰고 싶으면 data.duration, 아니면 클라이언트 계산값 사용
+      if (import.meta.env.DEV) {
+        console.table((data.productResults ?? []).map(r => ({
+          name: r.productName,
+          correctQty: r.correctQuantity,
+          submittedQty: r.submittedQuantity,
+          menuOk: r.detailedResult?.menuSelection,
+          sizeOk: r.detailedResult?.sizeSelection,
+          qtyOk:  r.detailedResult?.quantitySelection,
+          status: r.status,
+        })));
+      }
+
+      // 서버 duration을 쓸지, 클라 계산을 쓸지 선택 가능
       setResultData({ ...data, duration: durationSec });
+
       if (isRetry) {
         setPage('complete');
         setIsRetry(false);
@@ -324,53 +321,41 @@ const Retouch: React.FC = () => {
 
   // 오답 풀기
   const handleRetryWrong = () => {
-    if (!resultData) {
-      setPage('kiosk');
-      return;
-    }
+    if (!resultData) { setPage('kiosk'); return; }
 
     const firstWrong = expectedProducts.find((exp) => {
       const matched = (resultData.productResults ?? []).find((r) => r.productName === exp.productName);
-      const { menuOk, sizeOk, qtyOk } = evalFlags(matched);
+      const { menuOk, sizeOk, qtyOk } = pickFlags(matched);
       return !(menuOk && sizeOk && qtyOk);
     });
 
     setIsRetry(true);
     setCart([]);
 
-    if (!firstWrong) {
-      setPage('kiosk');
-      return;
-    }
+    if (!firstWrong) { setPage('kiosk'); return; }
 
     const matched = (resultData.productResults ?? []).find((r) => r.productName === firstWrong.productName);
-    const { menuOk, sizeOk, qtyOk } = evalFlags(matched);
+    const { menuOk, sizeOk, qtyOk } = pickFlags(matched);
 
     setPage('kiosk');
 
     setTimeout(() => {
-      if (!menuOk) {
-        setPendingModalItem(null);
-        return;
-      }
+      if (!menuOk) { setPendingModalItem(null); return; }
 
       const item = findKioskItemByName(firstWrong.productName);
-      if (!item) {
-        setPendingModalItem(null);
-        return;
-      }
+      if (!item) { setPendingModalItem(null); return; }
 
       const correctQty = (firstWrong as any).quantity ?? 1;
       const qty = qtyOk ? correctQty : 1;
 
-      const expSize = firstWrong.productOptions?.find((o) => o.optionName === '사이즈')?.optionValue as 'S' | 'M' | 'L' | undefined;
-      let size: 'S' | 'M' | 'L' = (expSize ?? 'S') as any;
+      const expSize = firstWrong.productOptions?.find((o) => o.optionName === '사이즈')?.optionValue as ('S'|'M'|'L'|undefined);
+      const size: 'S'|'M'|'L' = (expSize ?? 'S') as any;
 
       setPendingModalItem(item);
       setModalQty(qty);
 
       if (sizeOk && expSize) {
-        setModalSize(expSize as 'S' | 'M' | 'L');
+        setModalSize(expSize);
         setSizePreselectEnabled(true);
       } else {
         setModalSize(size);
@@ -383,8 +368,24 @@ const Retouch: React.FC = () => {
     <div className="relative w-full h-screen">
       <HeaderBar title="리터치" backTo="/" />
 
-      {/* 시작 */}
-      <AnimatePresence>{page === 'intro' && <IntroTouchScreen onNext={() => setPage('kioskIntro')} />}</AnimatePresence>
+      {/* 메뉴보기 버튼: kioskIntro~orderSheet 구간에서만 보이게 */}
+      {(
+        (page === 'kioskIntro' && (introPhase === 'bg2' || introPhase === 'select')) ||
+        page === 'kiosk' ||
+        page === 'orderSheet'
+      ) && (
+        <MenuButton onClick={() => setIntroPhase('modal')} />
+      )}
+
+      <AnimatePresence>
+        {page === 'intro' && (
+          <IntroScreen
+            title={'주어진 주문서 대로<br/>키오스크에서 주문해주세요'}
+            subtitle="화면을 터치하면 학습이 시작돼요"
+            onStart={() => setPage('kioskIntro')}
+          />
+        )}
+      </AnimatePresence>
 
       {/* 키오스크 도입부 */}
       {page === 'kioskIntro' && (
@@ -410,7 +411,10 @@ const Retouch: React.FC = () => {
             onSelectItem={handleSelectItem}
             highlightItemIncludes={highlightName}
             forcedTotals={totals}
-            onClickOrder={goOrder}
+            onClickOrder={() => {
+              if (totals.qty === 0) return;
+              isRetry ? handlePay() : setPage('orderSheet');
+            }}
           />
           <OptionModal
             item={pendingModalItem}
@@ -454,8 +458,55 @@ const Retouch: React.FC = () => {
       </AnimatePresence>
 
       {/* 완료 */}
-      <AnimatePresence>{page === 'complete' && <CompleteScreen />}</AnimatePresence>
-    </div>
+      <AnimatePresence>
+        {page === 'complete' && (
+          <CompleteScreen
+            title={'리터치 학습이<br/>마무리되었어요'}
+            subtitle={'다시 풀기 버튼을 누르면,<br/>문제를 다시 풀어볼 수 있어요'}
+            onRestart={() => navigate('/teachmap')}
+            onNext={() => navigate('/')}
+            restartLabel="다시 풀기"
+            nextLabel="나가기"
+            characterImage="/src/assets/character/5.png"
+          />
+        )}
+      </AnimatePresence>
+      
+      <AnimatePresence>
+        {introPhase === 'modal' && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-[rgba(17,17,17,0.80)] z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+            <motion.div
+              className="fixed flex flex-col items-center justify-center w-[312px] h-[317px] z-50 bg-white rounded-lg px-[17px] py-5 text-center"
+              style={{ top: '50%', left: '50%' }}
+              initial={{ x: '-50%', y: '100%' }}
+              animate={{ x: '-50%', y: '-50%' }}
+              exit={{ x: '-50%', y: '100%' }}
+              transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+            >
+              <img src="/src/assets/menu.png" alt="주문 리스트" className="mx-auto w-[120px] h-[120px] mb-4" />
+              <h4 className="text-lg text-black mb-5 font-semibold leading-[140%]">매장 식사</h4>
+              <ul className="text-sm text-[#444444] mb-5 font-medium leading-[160%] text-left">
+                {testLoading && <li>• 불러오는 중...</li>}
+                {testError && <li>• {testError}</li>}
+                {!testLoading && !testError && (<li>• {testTitle || '주문 목록이 없습니다.'}</li>)}
+              </ul>
+              <button
+                onClick={() => setIntroPhase('bg2')}
+                className="w-[278px] h-[52px] py-4 bg-[#FFC845] text-black rounded-full hover:scale-105 transition-all duration-300"
+              >
+                확인
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+  </div>
   );
 };
 
