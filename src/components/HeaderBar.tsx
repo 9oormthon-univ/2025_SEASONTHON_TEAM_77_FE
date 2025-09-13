@@ -36,7 +36,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ title, backTo }) => {
     <header className="w-full h-[67px] flex items-center justify-center relative bg-transparent z-50 inline-block">
       <button
         onClick={handleBack}
-        className="absolute left-4 h-full flex items-center justify-center"
+        className="absolute left-6 h-full flex items-center justify-center"
         aria-label="뒤로가기"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
@@ -52,7 +52,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ title, backTo }) => {
       >{title}</h3>
       <button
         onClick={toggleSwitch}
-        className="absolute right-4 h-full flex items-center justify-center"
+        className="absolute right-6 h-full flex items-center justify-center"
         aria-label="on/off"
       >
         <img
