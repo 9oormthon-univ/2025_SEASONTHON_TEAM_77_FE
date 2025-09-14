@@ -53,9 +53,10 @@ const CompleteScreen: React.FC<CompleteScreenProps> = ({
       />
       
       {subtitle && (
-        <p className="text-base text-center text-[#666666] mb-4">
-          {subtitle}
-        </p>
+        <p
+          className="text-base text-center text-[#666666] mb-4"
+          dangerouslySetInnerHTML={{ __html: subtitle }}
+        />
       )}
       
       <div className="flex items-center justify-center mt-20 gap-2">
