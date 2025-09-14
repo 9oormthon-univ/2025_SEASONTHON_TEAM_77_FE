@@ -1,4 +1,6 @@
+import { useState, useEffect } from "react";
 import NavBar from "../../components/NavBar";
+import { kioskAPI } from "../../shared/api";
 
 const days = ["월", "화", "수", "목", "금", "토", "일"];
 const attendance = [true, true, true, false, false, false, false];
@@ -22,7 +24,34 @@ const centers = [
 ];
 
 export default function Home() {
-  const currentStep = 2;
+  const [currentStep, setCurrentStep] = useState(0);
+
+  useEffect(() => {
+    const fetchProgress = async () => {
+      try {
+        // 1,2,3 guideId를 한 번에 요청
+        const responses = await Promise.all([
+          kioskAPI.getProgress('1'),
+          kioskAPI.getProgress('2'),
+          kioskAPI.getProgress('3'),
+        ]);
+  
+        // responses = [[1,2], [3,4,5], [6]]
+        const allSteps = responses.flat(); // [1,2,3,4,5,6]
+  
+        if (allSteps.length > 0) {
+          const maxSubstep = Math.max(...allSteps.map((n: any) => parseInt(n)));
+          setCurrentStep(maxSubstep);
+        }
+      } catch (error) {
+        console.error("진행률 조회 실패:", error);
+        setCurrentStep(0);
+      }
+    };
+  
+    fetchProgress();
+  }, []);
+  
 
   return (
     <div className=" flex flex-col w-full h-full bg-gradient-to-r from-[#FFC845] to-[#FFAE4A]">
@@ -58,10 +87,10 @@ export default function Home() {
           >
           <div
             className="h-full bg-[#FFC845] rounded-full transition-all duration-300"
-            style={{ width: `${(currentStep / 3) * 100}%` }}
+            style={{ width: `${(currentStep / 6) * 100}%` }}
           />
           </div>
-          <p className="text-sm text-black px-1">{currentStep}단계 / 총 3단계</p>
+          <p className="text-sm text-black px-1">{currentStep}단계 / 총 6단계</p>
         </div>
 
         <div className="flex flex-col">
