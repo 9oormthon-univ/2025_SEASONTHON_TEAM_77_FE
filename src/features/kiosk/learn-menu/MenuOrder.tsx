@@ -10,6 +10,7 @@ import IntroScreen from '../../../components/common/IntroScreen';
 import CompleteScreen from '../../../components/common/CompleteScreen';
 import NavigationButtons from '../../../components/common/NavigationButtons';
 import { useTTSPlayer } from '../../../hooks/useTTSPlayer';
+import { SoundTooltip } from '../../../components/common/SoundTooltip';
 
 // 설명 단계별 탭 고정
 const stepToCategory = (step: number | null): Category | null => {
@@ -57,6 +58,7 @@ const MenuOrder: React.FC = () => {
   const [step, setStep] = useState<number | null>(null);
   const navigate = useNavigate();
   const { playTTS } = useTTSPlayer();
+  const [showTooltip, setShowTooltip] = useState(false);
 
   // 시작하기 → 모달
   const enterKiosk = () => {
@@ -89,6 +91,17 @@ const MenuOrder: React.FC = () => {
       playTTS(current.description);
     }
   }, [kioskPhase, current?.description, current?.type, playTTS]);
+
+  useEffect(() => {
+    if (kioskPhase === 'flow') {
+      setShowTooltip(true);
+      const timer = setTimeout(() => {
+        setShowTooltip(false);
+      }, 10000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [kioskPhase]);
 
   // 현재 그룹 내에서의 진행상황 계산
   const getGroupProgress = () => {
@@ -149,7 +162,8 @@ const MenuOrder: React.FC = () => {
   return (
     <div className="relative w-full h-screen">
       <HeaderBar title="티치맵" backTo="/teachmap" />
-
+      <SoundTooltip showTooltip={showTooltip} />
+      
       {/* 시작 화면 */}
       <AnimatePresence>
         {page === 'intro' && (

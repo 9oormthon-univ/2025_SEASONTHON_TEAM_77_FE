@@ -9,11 +9,13 @@ import { kioskAPI } from '../../../shared/api';
 import IntroScreen from '../../../components/common/IntroScreen';
 import CompleteScreen from '../../../components/common/CompleteScreen';
 import StepOverlay from '../../../components/common/StepOverlay';
+import { SoundTooltip } from '../../../components/common/SoundTooltip';
 
 const CategoryExplain: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
   const [step, setStep] = useState<number | null>(null); // 0~4
   const navigate = useNavigate();
+  const [showTooltip, setShowTooltip] = useState(false);
 
 const stepToCategory = (step: number | null): Category | null => {
   if (step === null) return null;
@@ -24,8 +26,17 @@ const stepToCategory = (step: number | null): Category | null => {
 
   // 키오스크 진입 시 0단계부터 시작
   useEffect(() => {
-    if (page === 'kiosk') setStep(0);
-    else setStep(null);
+    if (page === 'kiosk') {
+      setStep(0);
+      setShowTooltip(true);
+      const timer = setTimeout(() => {
+        setShowTooltip(false);
+      }, 10000);
+
+      return () => clearTimeout(timer);
+    } else {
+      setStep(null);
+    }
   }, [page]);
 
   useEffect(() => {
@@ -65,6 +76,7 @@ const stepToCategory = (step: number | null): Category | null => {
   return (
     <div className="relative w-full h-screen">
       <HeaderBar title="티치맵" backTo="/teachmap" />
+      <SoundTooltip showTooltip={showTooltip} />
 
       {/* 시작 화면 */}
       <AnimatePresence>
