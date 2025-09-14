@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import HeaderBar from '../../components/HeaderBar';
 import KioskFrame, { type Category, type KioskItem } from '../kiosk/learn-menu/KioskFrame';
 import { itemsByCategory } from '../kiosk/learn-menu/KioskItems';
+import { MenuTooltip } from '../retouch/components/MenuTooltip';
 import {
   fetchRetouchTest,
   submitRetouchResult,
@@ -374,8 +375,12 @@ const Retouch: React.FC = () => {
         page === 'kiosk' ||
         page === 'orderSheet'
       ) && (
+      <>
         <MenuButton onClick={() => setIntroPhase('modal')} />
-      )}
+        {/* bg2일 때만 버튼 아래에서 살짝 튕기는 툴팁 노출 */}
+        <MenuTooltip showTooltip={page === 'kioskIntro' && introPhase === 'bg2'} />
+      </>
+    )}
 
       <AnimatePresence>
         {page === 'intro' && (

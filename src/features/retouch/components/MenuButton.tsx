@@ -6,7 +6,7 @@ interface MenuButtonProps {
 
 const MenuButton: React.FC<MenuButtonProps> = ({ onClick }) => {
   return (
-    <div className="fixed top-4 right-4 flex flex-col items-center z-50">
+    <div className="fixed top-4 right-7 flex flex-col items-center z-50">
       {/* 버튼 아이콘 */}
       <button
         onClick={onClick}
