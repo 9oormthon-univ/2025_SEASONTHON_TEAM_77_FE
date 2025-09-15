@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import NavBar from "../../components/NavBar";
-import { kioskAPI } from "../../shared/api";
+import { kioskAPI, homeAPI } from "../../shared/api";
 
 const days = ["월", "화", "수", "목", "금", "토", "일"];
-const attendance = [true, true, true, false, false, false, false];
 
 const centers = [
   {
@@ -25,33 +24,43 @@ const centers = [
 
 export default function Home() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [attendance, setAttendance] = useState<boolean[]>([false, false, false, false, false, false, false]);
 
   useEffect(() => {
-    const fetchProgress = async () => {
+    const fetchData = async () => {
       try {
-        // 1,2,3 guideId를 한 번에 요청
+        // 1. 체크인 요청
+        await homeAPI.checkAttendance();
+        console.log('출석 체크 완료');
+
+        // 2. 주간 출석 상태 조회
+        const weeklyStatusResponse = await homeAPI.getWeeklyStatus();
+        if (weeklyStatusResponse && weeklyStatusResponse.attendance) {
+          setAttendance(weeklyStatusResponse.attendance);
+        }
+
+        // 3. 학습 진행률 조회
         const responses = await Promise.all([
           kioskAPI.getProgress('1'),
           kioskAPI.getProgress('2'),
           kioskAPI.getProgress('3'),
         ]);
-  
-        // responses = [[1,2], [3,4,5], [6]]
-        const allSteps = responses.flat(); // [1,2,3,4,5,6]
-  
+
+        const allSteps = responses.flat();
+
         if (allSteps.length > 0) {
           const maxSubstep = Math.max(...allSteps.map((n: any) => parseInt(n)));
           setCurrentStep(maxSubstep);
         }
       } catch (error) {
-        console.error("진행률 조회 실패:", error);
+        console.error("데이터 조회 실패:", error);
         setCurrentStep(0);
+        setAttendance([false, false, false, false, false, false, false]);
       }
     };
-  
-    fetchProgress();
+
+    fetchData();
   }, []);
-  
 
   return (
     <div className=" flex flex-col w-full h-full bg-gradient-to-r from-[#FFC845] to-[#FFAE4A]">
