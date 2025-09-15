@@ -28,34 +28,43 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
+      // 출석 상태
       try {
-        await homeAPI.checkAttendance();
-        console.log('출석 체크 완료');
-
         const weeklyStatusResponse = await homeAPI.getWeeklyStatus();
         if (weeklyStatusResponse && weeklyStatusResponse.attendance) {
           setAttendance(weeklyStatusResponse.attendance);
         }
-
-        const responses = await Promise.all([
-          kioskAPI.getProgress('1'),
-          kioskAPI.getProgress('2'),
-          kioskAPI.getProgress('3'),
-        ]);
-
-        const allSteps = responses.flat();
-
-        if (allSteps.length > 0) {
-          const maxSubstep = Math.max(...allSteps.map((n: any) => parseInt(n)));
-          setCurrentStep(maxSubstep);
-        }
-      } catch (error) {
-        console.error("데이터 조회 실패:", error);
-        setCurrentStep(0);
+      } catch (err) {
+        console.error("주간 출석 상태 조회 실패:", err);
         setAttendance([false, false, false, false, false, false, false]);
       }
+  
+      // 진행 단계
+      try {
+        const responses = await Promise.all([
+          kioskAPI.getProgress("1"),
+          kioskAPI.getProgress("2"),
+          kioskAPI.getProgress("3"),
+        ]);
+        const allSteps = responses.flat();
+        if (allSteps.length > 0) {
+          const maxSubstep = Math.max(...allSteps.map((n: number | string) => parseInt(n as string)));
+          setCurrentStep(maxSubstep);
+        }
+      } catch (err) {
+        console.error("진행률 조회 실패:", err);
+        setCurrentStep(0);
+      }
+  
+      // 출석 체크
+      try {
+        await homeAPI.checkAttendance();
+        console.log("출석 체크 완료");
+      } catch (err) {
+        console.error("출석 체크 실패:", err);
+      }
     };
-
+  
     fetchData();
   }, []);
 
