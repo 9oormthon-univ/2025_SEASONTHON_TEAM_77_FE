@@ -29,17 +29,14 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. 체크인 요청
         await homeAPI.checkAttendance();
         console.log('출석 체크 완료');
 
-        // 2. 주간 출석 상태 조회
         const weeklyStatusResponse = await homeAPI.getWeeklyStatus();
         if (weeklyStatusResponse && weeklyStatusResponse.attendance) {
           setAttendance(weeklyStatusResponse.attendance);
         }
 
-        // 3. 학습 진행률 조회
         const responses = await Promise.all([
           kioskAPI.getProgress('1'),
           kioskAPI.getProgress('2'),
