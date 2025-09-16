@@ -3,3 +3,5 @@ export { authAPI } from './auth';
 export { kioskAPI } from './kiosk';
 export { apiClient } from './client';
 export { requestTTSAPI } from './tts';
+export { homeAPI } from './home';
+export { ocrAPI } from './ocr';

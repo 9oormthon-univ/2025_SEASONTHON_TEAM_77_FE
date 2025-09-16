@@ -12,6 +12,7 @@ import MyPage from './features/mypage/MyPage'
 import Home from './features/home/Home'
 import TeachMap from './features/kiosk/TeachMap'
 import { TTSProvider } from './contexts/TTSProvider'
+import Analysis from './features/analysis/Analysis'
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/" element={<Home />} />
         <Route path="/teachmap" element={<TeachMap />} />
+        <Route path="/order-analysis" element={<Analysis />} />
       </Routes>
     </TTSProvider>
   )

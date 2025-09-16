@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import cursor from '../../assets/cursor.gif';
+import { useLocation } from 'react-router-dom';
 
 interface IntroScreenProps {
   title: string;
@@ -15,6 +16,11 @@ const IntroScreen: React.FC<IntroScreenProps> = ({
   onStart, 
   characterImage = '/src/assets/character/4.png' 
 }) => {
+  const location = useLocation();
+
+  if (location.pathname === "/order-analysis") {
+    characterImage = "/src/assets/analysis.png";
+  }
   return (
     <motion.div
       className="absolute inset-0 flex flex-col w-full h-screen items-center justify-center z-20 cursor-pointer"

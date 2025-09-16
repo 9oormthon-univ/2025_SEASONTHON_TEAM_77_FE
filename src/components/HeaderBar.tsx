@@ -33,6 +33,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ title, backTo }) => {
   };
 
   const isRetouchPage = location.pathname.startsWith('/teachmap/retouch');
+  const isAnalysisPage = location.pathname.startsWith('/order-analysis');
 
   return (
     <header className="w-full h-[67px] flex items-center justify-center relative bg-transparent z-50">
@@ -54,7 +55,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ title, backTo }) => {
       >{title}</h3>
 
       {/* 리터치 페이지에서는 TTS 아이콘 숨기기 */}
-      {!isRetouchPage && (
+      {!isRetouchPage && !isAnalysisPage && (
         <button
           onClick={toggleSwitch}
           className="absolute right-4 h-full flex items-center justify-center"
