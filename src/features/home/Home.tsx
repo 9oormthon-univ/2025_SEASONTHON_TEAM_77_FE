@@ -1,7 +1,8 @@
+import { useState, useEffect } from "react";
 import NavBar from "../../components/NavBar";
+import { kioskAPI, homeAPI } from "../../shared/api";
 
 const days = ["월", "화", "수", "목", "금", "토", "일"];
-const attendance = [true, true, true, false, false, false, false];
 
 const centers = [
   {
@@ -22,7 +23,50 @@ const centers = [
 ];
 
 export default function Home() {
-  const currentStep = 2;
+  const [currentStep, setCurrentStep] = useState(0);
+  const [attendance, setAttendance] = useState<boolean[]>([false, false, false, false, false, false, false]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      // 출석 상태
+      try {
+        const weeklyStatusResponse = await homeAPI.getWeeklyStatus();
+        if (weeklyStatusResponse && weeklyStatusResponse.attendance) {
+          setAttendance(weeklyStatusResponse.attendance);
+        }
+      } catch (err) {
+        console.error("주간 출석 상태 조회 실패:", err);
+        setAttendance([false, false, false, false, false, false, false]);
+      }
+  
+      // 진행 단계
+      try {
+        const responses = await Promise.all([
+          kioskAPI.getProgress("1"),
+          kioskAPI.getProgress("2"),
+          kioskAPI.getProgress("3"),
+        ]);
+        const allSteps = responses.flat();
+        if (allSteps.length > 0) {
+          const maxSubstep = Math.max(...allSteps.map((n: number | string) => parseInt(n as string)));
+          setCurrentStep(maxSubstep);
+        }
+      } catch (err) {
+        console.error("진행률 조회 실패:", err);
+        setCurrentStep(0);
+      }
+  
+      // 출석 체크
+      try {
+        await homeAPI.checkAttendance();
+        console.log("출석 체크 완료");
+      } catch (err) {
+        console.error("출석 체크 실패:", err);
+      }
+    };
+  
+    fetchData();
+  }, []);
 
   return (
     <div className=" flex flex-col w-full h-full bg-gradient-to-r from-[#FFC845] to-[#FFAE4A]">
@@ -58,10 +102,10 @@ export default function Home() {
           >
           <div
             className="h-full bg-[#FFC845] rounded-full transition-all duration-300"
-            style={{ width: `${(currentStep / 3) * 100}%` }}
+            style={{ width: `${(currentStep / 6) * 100}%` }}
           />
           </div>
-          <p className="text-sm text-black px-1">{currentStep}단계 / 총 3단계</p>
+          <p className="text-sm text-black px-1">{currentStep}단계 / 총 6단계</p>
         </div>
 
         <div className="flex flex-col">

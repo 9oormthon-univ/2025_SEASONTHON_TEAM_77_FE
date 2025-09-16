@@ -25,7 +25,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   const variantClasses = {
     primary: 'bg-[#FFC845] text-black hover:bg-[#FFD666]',
     secondary: 'bg-[#F6F6F6] text-black hover:bg-[#E6E6E6]',
-    outline: 'bg-[#F6F6F6] text-black border border-[#FFC845] hover:bg-[#FFF9E6]'
+    outline: 'bg-white text-black border border-[#FFC845] hover:bg-[#FFF9E6]'
   };
 
   const sizeClasses = {
