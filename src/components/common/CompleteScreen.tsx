@@ -65,7 +65,7 @@ const CompleteScreen: React.FC<CompleteScreenProps> = ({
           <ActionButton
             onClick={onConfirm!}
             variant="primary"
-            size="lg"
+            size="md"
             className="w-[327px] mt-10"
           >
             {confirmLabel}
