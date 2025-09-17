@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import toast from 'react-hot-toast';
 import NavBar from "../../components/NavBar";
 import { kioskAPI, homeAPI } from "../../shared/api";
 
@@ -35,7 +36,7 @@ export default function Home() {
           setAttendance(weeklyStatusResponse.attendance);
         }
       } catch (err) {
-        console.error("주간 출석 상태 조회 실패:", err);
+        toast.error("주간 출석 상태 조회에 실패했습니다.");
         setAttendance([false, false, false, false, false, false, false]);
       }
   
@@ -52,14 +53,12 @@ export default function Home() {
           setCurrentStep(maxSubstep);
         }
       } catch (err) {
-        console.error("진행률 조회 실패:", err);
         setCurrentStep(0);
       }
   
       // 출석 체크
       try {
         await homeAPI.checkAttendance();
-        console.log("출석 체크 완료");
       } catch (err) {
         console.error("출석 체크 실패:", err);
       }

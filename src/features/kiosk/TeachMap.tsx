@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import toast from 'react-hot-toast';
 import NavBar from "../../components/NavBar";
 import { kioskAPI } from "../../shared/api";
 import SearchBar from "../../components/common/SearchBar";
@@ -19,13 +20,13 @@ const stepsData = [
         id: '1',
         title: "키오스크 전체 구성",
         navigateUrl: "/teachmap/kioskstructure",
-        time: "05:03",
+        time: "00:38",
       },
       {
         id: '2',
         title: "주문시작 및 장소 선택",
         navigateUrl: "/teachmap/kioskorder",
-        time: "05:03",
+        time: "00:20",
       },
     ],
   },
@@ -39,19 +40,19 @@ const stepsData = [
         id: '3',
         title: "카테고리 설명",
         navigateUrl: "/teachmap/kioskmenu",
-        time: "05:03",
+        time: "00:39",
       },
       {
         id: '4',
         title: "메뉴 주문",
         navigateUrl: "/teachmap/kioskmenuorder",
-        time: "05:03",
+        time: "02:03",
       },
       {
         id: '5',
         title: "주문 메뉴 확인",
         navigateUrl: "/teachmap/kioskordercheck",
-        time: "05:03",
+        time: "00:27",
       },
     ],
   },
@@ -65,7 +66,7 @@ const stepsData = [
         id: '6',
         title: "포인트 적립 및 결제 수단 선택",
         navigateUrl: "/teachmap/kioskpayment",
-        time: "05:03",
+        time: "00:57",
       },
     ],
   },
@@ -98,7 +99,7 @@ export default function TeachMap() {
             status[substepId] = true;
           });
         } catch (error) {
-          console.error(`단계 ${step.step} 진도 조회 실패:`, error);
+          toast.error(`단계 ${step.step} 진도 조회에 실패했습니다.`);
         }
       }
       
@@ -118,7 +119,7 @@ export default function TeachMap() {
       const data = await kioskAPI.search(searchKeyword);
       setSearchResult(data);
     } catch (error) {
-      console.error("검색 실패:", error);
+      toast.error(`검색에 실패했습니다.`);
       setSearchResult([]);
     }
   };

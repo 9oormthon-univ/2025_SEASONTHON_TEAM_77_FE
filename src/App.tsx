@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 import LearnStructure from './features/kiosk/learn-structure/LearnStructure'
 import OrderStart from './features/kiosk/learn-order/OrderStart'
 import LearnMenu from './features/kiosk/learn-menu/CategoryExplain'
@@ -32,6 +33,40 @@ function App() {
         <Route path="/teachmap" element={<TeachMap />} />
         <Route path="/order-analysis" element={<Analysis />} />
       </Routes>
+
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#333',
+            color: '#fff',
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontFamily: 'Pretendard',
+          },
+          error: {
+            style: {
+              background: '#ef4444',
+              color: '#fff',
+            },
+            iconTheme: {
+              primary: '#fff',
+              secondary: '#ef4444',
+            },
+          },
+          success: {
+            style: {
+              background: '#10b981',
+              color: '#fff',
+            },
+            iconTheme: {
+              primary: '#fff',
+              secondary: '#10b981',
+            },
+          },
+        }}
+      />
     </TTSProvider>
   )
 }

@@ -45,4 +45,12 @@ export const authAPI = {
     const response = await axios.get(`${API_BASE_URL}/user/check-id?loginId=${loginId}`);
     return response.data;
   },
+  
+  // 토큰 재발급 API
+  reissue: async (refreshToken: string) => {
+    const response = await axios.post(`${API_BASE_URL}/user/reissue`, {
+      refreshToken
+    });
+    return response.data;
+  },
 };
