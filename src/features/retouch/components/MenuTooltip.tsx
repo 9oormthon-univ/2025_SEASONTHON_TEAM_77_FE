@@ -10,7 +10,7 @@ export const MenuTooltip: React.FC<MenuTooltipProps> = ({ showTooltip }) => {
     <AnimatePresence>
       {showTooltip && (
         <motion.img
-          src="/src/assets/menu_guide.png"
+          src="/assets/menu_guide.png"
           alt="Tooltip"
           className="fixed top-[54px] right-4 pointer-events-none z-[100]"
           initial={{ x: "0%", y: "0%" }}

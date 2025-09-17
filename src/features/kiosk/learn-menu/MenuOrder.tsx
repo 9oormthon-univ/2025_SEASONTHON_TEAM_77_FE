@@ -205,7 +205,7 @@ const MenuOrder: React.FC = () => {
                   transition={{ type: 'spring', stiffness: 100, damping: 20 }}
                 >
                   <img
-                    src="/src/assets/menu.png"
+                    src="/assets/menu.png"
                     alt="주문 리스트"
                     className="mx-auto w-[120px] h-[120px] mb-7"
                   />
@@ -276,7 +276,7 @@ const MenuOrder: React.FC = () => {
                 <NavigationButtons
                   onPrev={prevStep}
                   onNext={nextStep}
-                  prevIcon="/src/assets/before.png"
+                  prevIcon="/assets/before.png"
                   className="flex justify-center gap-6"
                 />
               </motion.div>
@@ -292,7 +292,7 @@ const MenuOrder: React.FC = () => {
             title="메뉴 주문하기에 대한<br />모든 학습을 완료했어요!"
             onRestart={() => setPage('intro')}
             onNext={() => navigate('/teachmap/kioskordercheck')}
-            characterImage="/src/assets/character/5.png"
+            characterImage="/assets/character/5.png"
           />
         )}
       </AnimatePresence>

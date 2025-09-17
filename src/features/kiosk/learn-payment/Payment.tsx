@@ -154,7 +154,7 @@ const Payment: React.FC = () => {
                         substep === 1 ? "bg-[#FFEEC5]" : "bg-[#F6F5F4]"
                       }`}
                     >
-                      <img src="/src/assets/payment/card.png" className="w-[40px] h-[40px]" />
+                      <img src="/assets/payment/card.png" className="w-[40px] h-[40px]" />
                       <p className="text-sm text-black">카드/삼성페이</p>
                     </div>
 
@@ -164,7 +164,7 @@ const Payment: React.FC = () => {
                         substep === 2 ? "bg-[#FFEEC5]" : "bg-[#F6F5F4]"
                       }`}
                     >
-                      <img src="/src/assets/payment/gift.png" className="w-[30px] h-[30px] mb-1" />
+                      <img src="/assets/payment/gift.png" className="w-[30px] h-[30px] mb-1" />
                       <p className="text-sm text-black">기프티콘</p>
                     </div>
 
@@ -174,7 +174,7 @@ const Payment: React.FC = () => {
                         substep === 3 ? "bg-[#FFEEC5]" : "bg-[#F6F5F4]"
                       }`}
                     >
-                      <img src="/src/assets/payment/naver.svg" className="w-[53px] h-[20px] mb-[10px]" />
+                      <img src="/assets/payment/naver.svg" className="w-[53px] h-[20px] mb-[10px]" />
                       <p className="text-sm text-black">네이버페이</p>
                     </div>
 
@@ -184,7 +184,7 @@ const Payment: React.FC = () => {
                         substep === 3 ? "bg-[#FFEEC5]" : "bg-[#F6F5F4]"
                       }`}
                     >
-                      <img src="/src/assets/payment/kakao.png" className="w-[53px] h-[22px] mb-2" />
+                      <img src="/assets/payment/kakao.png" className="w-[53px] h-[22px] mb-2" />
                       <p className="text-sm text-black">카카오페이</p>
                     </div>
                   </div>
@@ -220,8 +220,8 @@ const Payment: React.FC = () => {
                     <p className="text-black text-xl mt-1">투입구에 꽂아주세요</p>
                   </div>
                   <p className="text-sm text-black mb-10">결제 오류 시 마그네틱을 아래로 향하게 긁어주세요.</p>
-                  <img src="/src/assets/payment/group.svg" className="w-[30px] h-[30px] mb-10" />
-                  <img src="/src/assets/payment/pay.svg" className="w-[127px] h-[100px]" />
+                  <img src="/assets/payment/group.svg" className="w-[30px] h-[30px] mb-10" />
+                  <img src="/assets/payment/pay.svg" className="w-[127px] h-[100px]" />
                 </div>
               )}
               {step === 3 && (
@@ -237,8 +237,8 @@ const Payment: React.FC = () => {
                     <p className="text-black text-xl mt-1">투입구에 꽂아주세요</p>
                   </div>
                   <p className="text-sm text-black mb-10">결제 오류 시 마그네틱을 아래로 향하게 긁어주세요.</p>
-                  <img src="/src/assets/payment/group.svg" className="w-[30px] h-[30px] mb-10" />
-                  <img src="/src/assets/payment/pay.svg" className="w-[127px] h-[100px]" />
+                  <img src="/assets/payment/group.svg" className="w-[30px] h-[30px] mb-10" />
+                  <img src="/assets/payment/pay.svg" className="w-[127px] h-[100px]" />
                 </div>
               )}
               {step === 4 &&  (
@@ -258,7 +258,7 @@ const Payment: React.FC = () => {
                   </div>
                   <p className="text-sm text-black mb-10 text-center">신용카드를 뽑은 후<br />
                   출력된 영수증을 받아가세요.</p>
-                  <img src="/src/assets/payment/receipt.svg" className="w-[184px] h-[173px]" />
+                  <img src="/assets/payment/receipt.svg" className="w-[184px] h-[173px]" />
                 </div>
               )}
               <KioskHardware />

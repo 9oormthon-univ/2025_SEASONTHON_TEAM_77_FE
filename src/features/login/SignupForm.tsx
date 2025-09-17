@@ -4,8 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../../shared/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import HeaderBar from '../../components/HeaderBar';
-import eyeIcon from '../../assets/eye.svg';
-import eyeOffIcon from '../../assets/eyeslash.svg';
 
 const SignupForm = () => {
   const navigate = useNavigate();
@@ -115,7 +113,7 @@ const SignupForm = () => {
               onClick={togglePasswordVisibility}
               className="absolute right-4 top-4 w-[20px] h-[20px]"
             >
-              {pwVisible ? <img src={eyeOffIcon} alt="eye-off" /> : <img src={eyeIcon} alt="eye" />}
+              {pwVisible ? <img src='/assets/eyeslash.svg' alt="eye-off" /> : <img src='/assets/eye.svg' alt="eye" />}
             </button>
           </div>
             <ul className="text-sm flex flex-row gap-2 text-start w-full">
@@ -217,7 +215,7 @@ const SignupForm = () => {
               <div 
               className="w-60 h-60"
               style={{
-                backgroundImage: 'url(/src/assets/character/3.png)',
+                backgroundImage: 'url(/assets/character/3.png)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',

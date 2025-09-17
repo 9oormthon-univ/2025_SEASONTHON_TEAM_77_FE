@@ -224,7 +224,7 @@ export default function KioskFrame({
                   className="absolute right-0 top-0 w-6 h-6 flex items-center justify-center"
                 >
                   <img
-                    src="/src/assets/cancel_icon.png"
+                    src="/assets/cancel_icon.png"
                     alt="닫기"
                     className="w-6 h-6"
                   />

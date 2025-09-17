@@ -14,26 +14,83 @@ import Home from './features/home/Home'
 import TeachMap from './features/kiosk/TeachMap'
 import { TTSProvider } from './contexts/TTSProvider'
 import Analysis from './features/analysis/Analysis'
+import ProtectedRoute from './ProjectedRoute'
 
 function App() {
   return (
     <TTSProvider>
       <Routes>
-        <Route path="/teachmap/kioskstructure" element={<LearnStructure />} />
-        <Route path="/teachmap/kioskorder" element={<OrderStart />} />
-        <Route path="/teachmap/kioskmenu" element={<LearnMenu />} />
-        <Route path="/teachmap/kioskmenuorder" element={<LearnOrder />} />
-        <Route path="/teachmap/kioskordercheck" element={<OrderCheck />} />
-        <Route path="/teachmap/retouch" element={<Retouch />} />
-        <Route path="/teachmap/kioskpayment" element={<Payment />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<SignupForm />} />
-        <Route path="/mypage" element={<MyPage />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/teachmap" element={<TeachMap />} />
-        <Route path="/order-analysis" element={<Analysis />} />
+        
+        <Route path="/" element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/teachmap" element={
+          <ProtectedRoute>
+            <TeachMap />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/teachmap/kioskstructure" element={
+          <ProtectedRoute>
+            <LearnStructure />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/teachmap/kioskorder" element={
+          <ProtectedRoute>
+            <OrderStart />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/teachmap/kioskmenu" element={
+          <ProtectedRoute>
+            <LearnMenu />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/teachmap/kioskmenuorder" element={
+          <ProtectedRoute>
+            <LearnOrder />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/teachmap/kioskordercheck" element={
+          <ProtectedRoute>
+            <OrderCheck />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/teachmap/retouch" element={
+          <ProtectedRoute>
+            <Retouch />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/teachmap/kioskpayment" element={
+          <ProtectedRoute>
+            <Payment />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/mypage" element={
+          <ProtectedRoute>
+            <MyPage />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/order-analysis" element={
+          <ProtectedRoute>
+            <Analysis />
+          </ProtectedRoute>
+        } />
       </Routes>
-
+      
+      {/* Toast 알림 */}
       <Toaster
         position="top-center"
         toastOptions={{

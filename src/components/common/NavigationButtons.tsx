@@ -15,8 +15,8 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
   onNext,
   showPrev = true,
   showNext = true,
-  prevIcon = '/src/assets/prev.svg',
-  nextIcon = '/src/assets/next.svg',
+  prevIcon = '/assets/prev.svg',
+  nextIcon = '/assets/next.svg',
   className = "absolute bottom-[10px] left-0 flex flex-row gap-6 w-full items-center justify-center"
 }) => {
   return (

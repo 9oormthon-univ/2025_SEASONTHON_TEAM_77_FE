@@ -67,7 +67,7 @@ const NavBar: React.FC = () => {
       label: "주문 분석",
       path: "/order-analysis",
       icon: (isActive: boolean) => (
-        <img src="/src/assets/ocr.svg" alt="주문 분석"
+        <img src="/assets/ocr.svg" alt="주문 분석"
         style={{ width: "24px", height: "24px", fill: isActive ? "#FFC845" : "#C1C1C1" }}
         />
       ),

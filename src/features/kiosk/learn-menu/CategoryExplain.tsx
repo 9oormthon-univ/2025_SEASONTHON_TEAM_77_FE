@@ -119,7 +119,7 @@ const stepToCategory = (step: number | null): Category | null => {
             title="카테고리에 대한<br />모든 학습을 완료했어요!"
             onRestart={() => setPage('intro')}
             onNext={() => navigate('/teachmap/kioskmenuorder')}
-            characterImage="/src/assets/character/5.png"
+            characterImage="/assets/character/5.png"
           />
         )}
       </AnimatePresence>

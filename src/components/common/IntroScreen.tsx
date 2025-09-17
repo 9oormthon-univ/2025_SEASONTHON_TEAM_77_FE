@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import cursor from '../../assets/cursor.gif';
 import { useLocation } from 'react-router-dom';
 
 interface IntroScreenProps {
@@ -14,12 +13,12 @@ const IntroScreen: React.FC<IntroScreenProps> = ({
   title, 
   subtitle, 
   onStart, 
-  characterImage = '/src/assets/character/4.png' 
+  characterImage = '/assets/character/4.png' 
 }) => {
   const location = useLocation();
 
   if (location.pathname === "/order-analysis") {
-    characterImage = "/src/assets/analysis.png";
+    characterImage = "/assets/analysis.png";
   }
   return (
     <motion.div
@@ -64,7 +63,7 @@ const IntroScreen: React.FC<IntroScreenProps> = ({
       </p>
       
       <img 
-        src={cursor} 
+        src='/assets/cursor.gif' 
         alt="cursor" 
         className="absolute top-[610px] right-[59px] w-[58px] h-[58px] cursor-pointer" 
       />

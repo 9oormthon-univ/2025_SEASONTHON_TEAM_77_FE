@@ -131,7 +131,7 @@ const Analysis = () => {
                                         />
                                     ) : (
                                         <>
-                                            <img src="/src/assets/upload.svg" alt="upload" className="w-[32px] h-[32px] mb-3" />
+                                            <img src="/assets/upload.svg" alt="upload" className="w-[32px] h-[32px] mb-3" />
                                             <p className="text-base text-black font-semibold leading-[160%]">사진 올리기</p>
                                         </>
                                     )}
@@ -159,7 +159,7 @@ const Analysis = () => {
                         {loading && (
                         <>
                             <img
-                            src="/src/assets/loading.gif"
+                            src="/assets/loading.gif"
                             alt="loading"
                             className="w-[128px] h-[32px] mb-[100px]"
                             />
@@ -186,7 +186,7 @@ const Analysis = () => {
                         )}
                         {ocrResult && (
                             <div className="w-[327px] p-[20px] h-[283px] rounded-[16px] bg-[#F6F5F4]">
-                            <img src="/src/assets/ai.svg" alt="ai" className="w-[70px] h-[27px] mb-2" />
+                            <img src="/assets/ai.svg" alt="ai" className="w-[70px] h-[27px] mb-2" />
                             <p className="max-h-[200px] overflow-y-auto text-base text-black font-normal leading-[160%] whitespace-pre-line">
                                 {ocrResult}
                             </p>
@@ -221,7 +221,7 @@ const Analysis = () => {
                                 style={{
                                     width: "130px",
                                     height: "48px",
-                                    backgroundImage: "url('/src/assets/analysis_tts.png')",
+                                    backgroundImage: "url('/assets/analysis_tts.png')",
                                     backgroundSize: "100% 100%",
                                     backgroundRepeat: "no-repeat",
                                 }}
@@ -245,7 +245,7 @@ const Analysis = () => {
                             aria-label="TTS 듣기"
                             >
                             <img
-                                src={isTTSActive ? "/src/assets/tts_icon_after.png" : "/src/assets/tts_icon.png"}
+                                src={isTTSActive ? "/assets/tts_icon_after.png" : "/assets/tts_icon.png"}
                                 alt="tts"
                                 className="w-[57px] h-[57px]"
                             />
