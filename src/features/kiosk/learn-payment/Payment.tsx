@@ -233,8 +233,24 @@ const Payment: React.FC = () => {
                         substep === 3 ? "bg-[#FFEEC5]" : "bg-[#F6F5F4]"
                       }`}
                     >
-                      <img src="/assets/payment/kakao.png" className="w-[53px] h-[22px] mb-2" />
-                      <p className="text-sm text-black">카카오페이</p>
+                      <div className="flex flex-col items-center">
+                        {/* 카카오페이 아이콘 애니메이션 */}
+                        <motion.img
+                          src="/assets/payment/kakao.png"
+                          className="w-[53px] h-[22px] mb-2"
+                          animate={substep === 3 ? { rotate: [0, -20, 0] } : { rotate: 0 }}
+                          transition={substep === 3 ? { duration: 1.2, repeat: Infinity, ease: "easeInOut" } : {}}
+                        />
+
+                        {/* 텍스트 애니메이션 */}
+                        <motion.p
+                          className="text-sm text-black"
+                          animate={substep === 3 ? { y: [0, 6, 0] } : { y: 0 }}
+                          transition={substep === 3 ? { duration: 1.2, repeat: Infinity, ease: "easeInOut" } : {}}
+                        >
+                          카카오페이
+                        </motion.p>
+                      </div>
                     </div>
                   </div>
                   <div className="mt-[111px] w-[315px] h-[147px] rounded-b-[34px] bg-[#444444] text-white px-4 pt-3 pb-[82px] shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
