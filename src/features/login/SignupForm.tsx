@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../../shared/api';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -50,7 +51,7 @@ const SignupForm = () => {
         setCheckResult('duplicated');
       }
     } catch (error) {
-      console.log(error);
+      toast.error('ID 중복 확인에 실패했습니다.');
     }
   };
 
@@ -67,7 +68,7 @@ const SignupForm = () => {
       setSignupSuccess(true);
       setTimeout(() => navigate('/login'), 2000);
     } catch (error) {
-      alert('회원가입 실패');
+      toast.error('회원가입에 실패했습니다.');
     }
   };
 

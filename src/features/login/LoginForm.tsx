@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { authAPI } from '../../shared/api';
 import eyeIcon from '../../assets/eye.svg';
 import eyeOffIcon from '../../assets/eyeslash.svg';
@@ -21,12 +22,15 @@ const LoginForm: React.FC = () => {
   }, []);
 
   const handleLogin = async () => {
+    if (!loginId.trim() || !password.trim()) {
+      toast.error('아이디와 비밀번호를 모두 입력해주세요.');
+      return;
+    }
+
     try {
       const data = await authAPI.login(loginId, password);
-
       const { accessToken, refreshToken } = data;
 
-      // 예시: 토큰 저장 (필요에 따라 localStorage, 쿠키 등으로)
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('loginId', loginId);
@@ -36,10 +40,17 @@ const LoginForm: React.FC = () => {
         localStorage.setItem('currentUsername', savedUsername);
       }
 
-      // 로그인 성공 후 메인 페이지 등으로 이동
+      // 로그인 성공 후 메인 페이지로 이동
+      toast.success('로그인에 성공했습니다.');
       navigate('/');
     } catch (error) {
-      alert('로그인 실패! 아이디 또는 비밀번호를 확인해주세요.');
+      toast.error(
+        <div>
+          로그인에 실패했습니다.
+          <br />
+          아이디와 비밀번호를 확인해주세요.
+        </div>
+      );
     }
   };
 

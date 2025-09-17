@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from 'react-hot-toast';
 import { authAPI } from "../../shared/api";
 import NavBar from "../../components/NavBar";
 import ConfirmModal from "../../components/common/ConfirmModal";
@@ -13,7 +14,6 @@ export default function MyPage() {
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("currentUsername");
-    console.log(storedUsername);
     setCurrentUsername(storedUsername);
   }, []);
 
@@ -22,23 +22,21 @@ export default function MyPage() {
       const accessToken = localStorage.getItem("accessToken");
     
       if (!accessToken) {
-        alert("로그인 정보가 없습니다.");
+        toast.error("로그인 정보가 없습니다.");
         navigate("/login");
         return;
       }
 
       const data = await authAPI.logout();
   
-      console.log("로그아웃 응답:", data); // 확인
       if (data === "로그아웃 완료") {
         localStorage.clear();
         navigate("/login");
       } else {
-        alert("로그아웃 실패");
+        toast.error("로그아웃에 실패했습니다.");
       }
     } catch (error) {
-      console.error("로그아웃 실패:", error);
-      alert("로그아웃에 실패했습니다.");
+      toast.error("로그아웃에 실패했습니다.");
     }
   };
 

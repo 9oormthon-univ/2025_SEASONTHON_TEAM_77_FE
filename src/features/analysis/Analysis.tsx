@@ -1,5 +1,6 @@
 // src/features/analysis/Analysis.tsx
 import React, { useState, useRef } from 'react';
+import toast from 'react-hot-toast';
 import HeaderBar from '../../components/HeaderBar';
 import { AnimatePresence } from 'framer-motion';
 import IntroScreen from '../../components/common/IntroScreen';
@@ -38,7 +39,7 @@ const Analysis = () => {
             setOcrResult(res.content);
             setStep(2);
         } catch (err) {
-            console.error("OCR 요청 실패:", err);
+            toast.error("이미지 분석에 실패했습니다.");
         } finally {
             setLoading(false);
         }

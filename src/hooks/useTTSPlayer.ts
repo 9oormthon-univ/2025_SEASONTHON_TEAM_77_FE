@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import toast from 'react-hot-toast';
 import { requestTTSAPI } from '../shared/api';
 import { useTTS } from './useTTS';
 
@@ -32,10 +33,8 @@ export const useTTSPlayer = () => {
       };
       
       audio.play();
-
-      console.log("TTS 재생 성공");
     } catch (error) {
-      console.error("TTS 재생 실패:", error);
+      toast.error('음성 재생에 실패했습니다.');
     }
   }, [isTTSEnabled]);
 
