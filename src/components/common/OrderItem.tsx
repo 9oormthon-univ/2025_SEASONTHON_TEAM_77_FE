@@ -54,7 +54,7 @@ const OrderItem: React.FC<OrderItemProps> = ({
             aria-label="삭제"
           >
             <img 
-              src="/src/assets/cancel_icon.png" 
+              src="/assets/cancel_icon.png" 
               alt="닫기" 
               className="w-5 h-5 filter brightness-[3]" 
             />

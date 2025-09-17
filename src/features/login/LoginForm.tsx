@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { authAPI } from '../../shared/api';
-import eyeIcon from '../../assets/eye.svg';
-import eyeOffIcon from '../../assets/eyeslash.svg';
 
 const LoginForm: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
@@ -61,10 +59,10 @@ const LoginForm: React.FC = () => {
   return (
     <div className="w-full h-screen flex items-center justify-center bg-[#FFC845]">
       {!showForm ? (
-        <img src="/src/assets/logo.png" alt="logo" className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[192px] h-[23px]" />
+        <img src="/assets/logo.png" alt="logo" className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[192px] h-[23px]" />
       ) : (
         <div className="w-full h-screen flex flex-col items-center justify-center px-6 bg-white pb-20">
-          <img src="/src/assets/logo.png" alt="logo" className="w-[192px] h-[23px] mb-[74px]" />
+          <img src="/assets/logo.png" alt="logo" className="w-[192px] h-[23px] mb-[74px]" />
           <label 
             className="w-full block text-base font-normal text-gray-700 text-left mb-2"
             style={{
@@ -96,7 +94,7 @@ const LoginForm: React.FC = () => {
               onClick={togglePasswordVisibility}
               className="absolute right-4 top-4 w-[20px] h-[20px]"
             >
-              {pwVisible ? <img src={eyeOffIcon} alt="eye-off" /> : <img src={eyeIcon} alt="eye" />}
+              {pwVisible ? <img src='/assets/eyeslash.svg' alt="eye-off" /> : <img src='/assets/eye.svg' alt="eye" />}
             </button>
           </div>
           <button

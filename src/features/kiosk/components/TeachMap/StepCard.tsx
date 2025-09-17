@@ -44,7 +44,7 @@ export default function StepCard({
           <div 
             className="w-[72px] h-[72px] rounded-[24px] bg-[#FFEEC5] flex items-center justify-center">
             <img
-              src={`/src/assets/${image}`}
+              src={`/assets/${image}`}
               alt={title}
               className="w-[50px] h-fit"
             />

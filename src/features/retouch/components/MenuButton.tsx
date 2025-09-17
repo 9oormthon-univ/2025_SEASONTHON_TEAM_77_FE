@@ -14,7 +14,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({ onClick }) => {
         aria-label="메뉴보기"
       >
         <img
-          src="/src/assets/menu_check.png"
+          src="/assets/menu_check.png"
           alt="메뉴보기"
           className="w-8 h-8"
         />

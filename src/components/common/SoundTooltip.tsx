@@ -10,7 +10,7 @@ export const SoundTooltip: React.FC<SoundTooltipProps> = ({ showTooltip }) => {
     <AnimatePresence>
       {showTooltip && (
         <motion.img
-          src="/src/assets/tooltip.png"
+          src="/assets/tooltip.png"
           alt="Tooltip"
           className="absolute top-[54px] right-4 pointer-events-none z-[100]"
           initial={{ x: "0%", y: "0%" }}

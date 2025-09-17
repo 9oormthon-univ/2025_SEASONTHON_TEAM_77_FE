@@ -10,7 +10,7 @@ export default function ReviewSplash() {
       <div
         className="w-[240px] h-[240px] mt-28"
         style={{
-          backgroundImage: 'url(/src/assets/character/6.png)',
+          backgroundImage: 'url(/assets/character/6.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',

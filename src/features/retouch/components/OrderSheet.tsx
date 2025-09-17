@@ -48,7 +48,7 @@ export default function OrderSheet({ cart, bottomTotals, changeQty, removeItem, 
                   </div>
                   <div className="text-right">{money(ci.price * ci.qty)}</div>
                   <button aria-label="삭제" className="items-center justify-center ml-1" onClick={() => removeItem(idx)}>
-                    <img src="/src/assets/cancel_icon.png" alt="닫기" className="w-5 h-5 filter brightness-[3]" />
+                    <img src="/assets/cancel_icon.png" alt="닫기" className="w-5 h-5 filter brightness-[3]" />
                   </button>
                 </div>
                 <div className="mt-2 h-px bg-[#F0F0F0]" />

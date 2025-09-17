@@ -127,7 +127,7 @@ const OrderCheck: React.FC = () => {
                 </div>
                 <div className="text-right">3,600원</div>
                 <button aria-label="닫기" className="items-center justify-center ml-1">
-                    <img src="/src/assets/cancel_icon.png" alt="닫기" className="w-5 h-5 filter brightness-[3]" />
+                    <img src="/assets/cancel_icon.png" alt="닫기" className="w-5 h-5 filter brightness-[3]" />
                 </button>
                 </div>
                 <div className="mt-2 h-px bg-[#F0F0F0]" />
@@ -142,7 +142,7 @@ const OrderCheck: React.FC = () => {
                 </div>
                 <div className="text-right">{step === 2 ? '7,200원' : '3,600원'}</div>
                 <button aria-label="닫기" className="items-center justify-center ml-1">
-                    <img src="/src/assets/cancel_icon.png" alt="닫기" className="w-5 h-5 filter brightness-[3]" />
+                    <img src="/assets/cancel_icon.png" alt="닫기" className="w-5 h-5 filter brightness-[3]" />
                 </button>
                 </div>
                 <div className="mt-2 h-px bg-[#F0F0F0]" />
@@ -159,7 +159,7 @@ const OrderCheck: React.FC = () => {
                     </div>
                     <div className="text-right">4,200원</div>
                     <button aria-label="닫기" className="items-center justify-center ml-1">
-                        <img src="/src/assets/cancel_icon.png" alt="닫기" className="w-5 h-5 filter brightness-[3]" />
+                        <img src="/assets/cancel_icon.png" alt="닫기" className="w-5 h-5 filter brightness-[3]" />
                     </button>
                     </div>
                     <div className="mt-2 h-px bg-[#F0F0F0]" />
@@ -220,7 +220,7 @@ const OrderCheck: React.FC = () => {
             title="주문 메뉴 확인에 대한<br />모든 학습을 완료했어요!"
             onRestart={() => setPage('intro')}
             onNext={() => navigate('/teachmap/kioskpayment')}
-            characterImage="/src/assets/character/5.png"
+            characterImage="/assets/character/5.png"
           />
         )}
       </AnimatePresence>

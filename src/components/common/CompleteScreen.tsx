@@ -24,7 +24,7 @@ const CompleteScreen: React.FC<CompleteScreenProps> = ({
   restartLabel = "처음으로",
   nextLabel = "학습 이어하기",
   confirmLabel = "확인",
-  characterImage = '/src/assets/character/3.png',
+  characterImage = '/assets/character/3.png',
   isLastLesson = false
 }) => {
   return (
