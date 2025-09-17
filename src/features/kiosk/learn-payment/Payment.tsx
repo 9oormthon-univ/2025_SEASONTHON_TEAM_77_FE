@@ -10,6 +10,7 @@ import CompleteScreen from '../../../components/common/CompleteScreen';
 import StepOverlay from '../../../components/common/StepOverlay';
 import KioskHardware from '../../../components/common/KioskHardware';
 import { SoundTooltip } from '../../../components/common/SoundTooltip';
+import { motion } from "framer-motion";
 
 const Payment: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
@@ -143,8 +144,8 @@ const Payment: React.FC = () => {
                   }}
                 >
                   <div className="text-center mb-7">
-                    <p className="text-[#FFC845] text-xl">결제 수단을</p>
-                    <p className="text-black text-xl mt-1">선택해 주세요</p>
+                    <p className="text-[#FFC845] text-xl font-bold">결제 수단을</p>
+                    <p className="text-black text-xl mt-1 font-bold">선택해 주세요</p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
@@ -154,8 +155,24 @@ const Payment: React.FC = () => {
                         substep === 1 ? "bg-[#FFEEC5]" : "bg-[#F6F5F4]"
                       }`}
                     >
-                      <img src="/assets/payment/card.png" className="w-[40px] h-[40px]" />
-                      <p className="text-sm text-black">카드/삼성페이</p>
+                      <div className="flex flex-col items-center">
+                        {/* 카드 아이콘 애니메이션 */}
+                        <motion.img
+                          src="/assets/payment/card.png"
+                          className="w-[40px] h-[40px]"
+                          animate={substep === 1 ? { rotate: [0, -20, 0] } : { rotate: 0 }}
+                          transition={substep === 1 ? { duration: 1.2, repeat: Infinity, ease: "easeInOut" } : {}}
+                        />
+
+                        {/* 텍스트 애니메이션 */}
+                        <motion.p
+                          className="text-sm text-black"
+                          animate={substep === 1 ? { y: [0, 6, 0] } : { y: 0 }}
+                          transition={substep === 1 ? { duration: 1.2, repeat: Infinity, ease: "easeInOut" } : {}}
+                        >
+                          카드/삼성페이
+                        </motion.p>
+                      </div>
                     </div>
 
                     {/* 기프티콘 */}
@@ -164,8 +181,24 @@ const Payment: React.FC = () => {
                         substep === 2 ? "bg-[#FFEEC5]" : "bg-[#F6F5F4]"
                       }`}
                     >
-                      <img src="/assets/payment/gift.png" className="w-[30px] h-[30px] mb-1" />
-                      <p className="text-sm text-black">기프티콘</p>
+                      <div className="flex flex-col items-center">
+                        {/* 기프티콘 아이콘 애니메이션 */}
+                        <motion.img
+                          src="/assets/payment/gift.png"
+                          className="w-[30px] h-[30px] mb-1"
+                          animate={substep === 2 ? { rotate: [0, -20, 0] } : { rotate: 0 }}
+                          transition={substep === 2 ? { duration: 1.2, repeat: Infinity, ease: "easeInOut" } : {}}
+                        />
+
+                        {/* 텍스트 애니메이션 */}
+                        <motion.p
+                          className="text-sm text-black"
+                          animate={substep === 2 ? { y: [0, 6, 0] } : { y: 0 }}
+                          transition={substep === 2 ? { duration: 1.2, repeat: Infinity, ease: "easeInOut" } : {}}
+                        >
+                          기프티콘
+                        </motion.p>
+                      </div>
                     </div>
 
                     {/* 네이버페이 */}
@@ -174,8 +207,24 @@ const Payment: React.FC = () => {
                         substep === 3 ? "bg-[#FFEEC5]" : "bg-[#F6F5F4]"
                       }`}
                     >
-                      <img src="/assets/payment/naver.svg" className="w-[53px] h-[20px] mb-[10px]" />
-                      <p className="text-sm text-black">네이버페이</p>
+                      <div className="flex flex-col items-center">
+                        {/* 네이버페이 아이콘 애니메이션 */}
+                        <motion.img
+                          src="/assets/payment/naver.svg"
+                          className="w-[53px] h-[20px] mb-[10px]"
+                          animate={substep === 3 ? { rotate: [0, -20, 0] } : { rotate: 0 }}
+                          transition={substep === 3 ? { duration: 1.2, repeat: Infinity, ease: "easeInOut" } : {}}
+                        />
+
+                        {/* 텍스트 애니메이션 */}
+                        <motion.p
+                          className="text-sm text-black"
+                          animate={substep === 3 ? { y: [0, 6, 0] } : { y: 0 }}
+                          transition={substep === 3 ? { duration: 1.2, repeat: Infinity, ease: "easeInOut" } : {}}
+                        >
+                          네이버페이
+                        </motion.p>
+                      </div>
                     </div>
 
                     {/* 카카오페이 */}
@@ -216,29 +265,29 @@ const Payment: React.FC = () => {
                   }}
                 >
                   <div className="text-center mb-5">
-                    <p className="text-[#FFC845] text-xl">신용카드를</p>
-                    <p className="text-black text-xl mt-1">투입구에 꽂아주세요</p>
+                    <p className="text-[#FFC845] text-xl font-bold">신용카드를</p>
+                    <p className="text-black text-xl mt-1 font-bold">투입구에 꽂아주세요</p>
                   </div>
                   <p className="text-sm text-black mb-10">결제 오류 시 마그네틱을 아래로 향하게 긁어주세요.</p>
-                  <img src="/assets/payment/group.svg" className="w-[30px] h-[30px] mb-10" />
-                  <img src="/assets/payment/pay.svg" className="w-[127px] h-[100px]" />
+                  <img src="/assets/payment/group1.svg" className="w-[30px] h-[30px] mb-10" />
+                  <img src="/assets/payment/insert_frame.svg" className="w-[127px] h-[57px]" />
+                  <img src="/assets/payment/insert.gif" className="w-[95px] h-[73px] z-20 -mt-[30px]" />
                 </div>
               )}
               {step === 3 && (
                 <div 
-                  className="flex flex-col items-center justify-center w-[319px] h-[569px] mt-[67px] py-[132px] px-[16px] border-2 border-gray-300 bg-black bg-opacity-30"
+                  className="flex flex-col items-center justify-center w-[319px] h-[569px] mt-[67px] py-[132px] px-[16px] border-2 border-gray-300 bg-black bg-opacity-20"
                   style={{
-                    boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.04)',
+                    boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.02)',
                     borderRadius: '36px',
                   }}
                 >
-                  <div className="text-center mb-5">
-                    <p className="text-[#FFC845] text-xl">신용카드를</p>
-                    <p className="text-black text-xl mt-1">투입구에 꽂아주세요</p>
+                  <div className="text-center mb-5 -mt-[150px]">
+                    <p className="text-[#FFC845] text-xl font-bold">신용카드를</p>
+                    <p className="text-black text-xl mt-1 font-bold">투입구에 꽂아주세요</p>
                   </div>
-                  <p className="text-sm text-black mb-10">결제 오류 시 마그네틱을 아래로 향하게 긁어주세요.</p>
-                  <img src="/assets/payment/group.svg" className="w-[30px] h-[30px] mb-10" />
-                  <img src="/assets/payment/pay.svg" className="w-[127px] h-[100px]" />
+                  <p className="text-sm text-black mb-[100px]">결제 오류 시 마그네틱을 아래로 향하게 긁어주세요.</p>
+                  <img src="/assets/payment/pay.svg" className="w-[127px] h-[57px]" />
                 </div>
               )}
               {step === 4 &&  (
@@ -252,13 +301,18 @@ const Payment: React.FC = () => {
                   <div className="text-center mb-7">
                     <p className="text-black text-xl">주문이 완료되었습니다!</p>
                   </div>
-                  <div className="text-center mb-7">
+                  <motion.div
+                    className="text-center mb-7"
+                    animate={{ scale: [1, 1.2, 0.95, 1] }}
+                    transition={{ duration: 1.2, repeat: Infinity }}
+                  >
                     <p className="text-[#ffc845] text-sm">주문번호</p>
                     <p className="text-[#ffc845] text-[64px]">712</p>
-                  </div>
+                  </motion.div>
                   <p className="text-sm text-black mb-10 text-center">신용카드를 뽑은 후<br />
                   출력된 영수증을 받아가세요.</p>
-                  <img src="/assets/payment/receipt.svg" className="w-[184px] h-[173px]" />
+                  <img src="/assets/payment/receipt_frame.svg" className="w-[184px] h-[173px]" />
+                  <img src="/assets/payment/order_sheet.gif" className="w-[143px] h-[116px] z-50 -mt-[149px]" />
                 </div>
               )}
               <KioskHardware />
@@ -299,7 +353,7 @@ const Payment: React.FC = () => {
             <p className="text-lg font-semibold mb-6">영수증을 출력하시겠어요?</p>
             <div className="flex justify-between gap-2">
               <button
-                className="flex-1 bg-[#FFD845] text-base text-black py-2 rounded-full rounded-[36px]"
+                className="flex-1 bg-[#FFD845] text-base text-black py-2 rounded-[36px]"
                 onClick={() => {
                   setShowModal(false);
                   handleNextStep();
@@ -308,7 +362,7 @@ const Payment: React.FC = () => {
                 예 
               </button>
               <button
-                className="flex-1 bg-[#ececec] text-base text-black py-2 rounded-full rounded-[36px]"
+                className="flex-1 bg-[#ececec] text-base text-black py-2 rounded-[36px]"
                 onClick={() => setShowModal(false)}
               >
                   아니오
