@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import HeaderBar from '../../components/HeaderBar';
 import KioskFrame, { type Category, type KioskItem } from '../kiosk/learn-menu/KioskFrame';
 import { itemsByCategory } from '../kiosk/learn-menu/KioskItems';
+import { MenuTooltip } from '../retouch/components/MenuTooltip';
 import {
   fetchRetouchTest,
   submitRetouchResult,
@@ -135,7 +136,7 @@ const Retouch: React.FC = () => {
         setModalSize('S');
         setModalQty(1);
         setSizePreselectEnabled(true);
-      }, 200); // ⬅️ as unknown as number 제거
+      }, 200);
     } else {
       // 즉시 담는 메뉴: 이름 최소 정규화 후 담기
       addToCart({
@@ -220,7 +221,7 @@ const Retouch: React.FC = () => {
         const data = await fetchRetouchTest(initialTestId);
         if (!mounted) return;
         setTestTitle(data?.title ?? '');
-        setTestId(data?.id ?? null); // 서버가 내려준 진짜 문제 id 저장
+        setTestId(data?.id ?? null); // 서버가 내려준 문제 id 저장
         setExpectedProducts(data?.testOrder?.products ?? []);
       } catch {
         if (!mounted) return;
@@ -267,43 +268,8 @@ const Retouch: React.FC = () => {
       return matched ? { ...base, productId: matched.id } : base;
     });
 
-    // 개발 중에만 디버그
-    if (import.meta.env.DEV) {
-      console.groupCollapsed('[SUBMIT DEBUG]');
-      console.log('testId (from GET):', testId);
-      console.table(
-        expectedProducts.map((p) => ({
-          expId: p.id,
-          expName: p.productName,
-          expQty: p.quantity,
-          expOpts: JSON.stringify(p.productOptions ?? []),
-        }))
-      );
-      console.table(
-        submittedProducts.map((s) => ({
-          subId: (s as any).productId ?? '(none)',
-          subName: s.productName,
-          subQty: s.quantity,
-          subOpts: JSON.stringify(s.productOptions),
-        }))
-      );
-      console.groupEnd();
-    }
-
     try {
       const data = await submitRetouchResult({ testId, duration: durationSec, submittedProducts });
-
-      if (import.meta.env.DEV) {
-        console.table((data.productResults ?? []).map(r => ({
-          name: r.productName,
-          correctQty: r.correctQuantity,
-          submittedQty: r.submittedQuantity,
-          menuOk: r.detailedResult?.menuSelection,
-          sizeOk: r.detailedResult?.sizeSelection,
-          qtyOk:  r.detailedResult?.quantitySelection,
-          status: r.status,
-        })));
-      }
 
       // 서버 duration을 쓸지, 클라 계산을 쓸지 선택 가능
       setResultData({ ...data, duration: durationSec });
@@ -374,8 +340,12 @@ const Retouch: React.FC = () => {
         page === 'kiosk' ||
         page === 'orderSheet'
       ) && (
+      <>
         <MenuButton onClick={() => setIntroPhase('modal')} />
-      )}
+        {/* bg2일 때만 버튼 아래에서 살짝 튕기는 툴팁 노출 */}
+        <MenuTooltip showTooltip={page === 'kioskIntro' && introPhase === 'bg2'} />
+      </>
+    )}
 
       <AnimatePresence>
         {page === 'intro' && (

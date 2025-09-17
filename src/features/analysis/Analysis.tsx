@@ -1,12 +1,13 @@
-// src/features/analysis/Analysis.tsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
+import { AnimatePresence, motion } from 'framer-motion';
 import HeaderBar from '../../components/HeaderBar';
-import { AnimatePresence } from 'framer-motion';
 import IntroScreen from '../../components/common/IntroScreen';
 import { ocrAPI } from '../../shared/api';
 import ActionButton from '../../components/buttons/ActionButton';
 import { useNavigate } from 'react-router-dom';
+import { useTTS } from '../../hooks/useTTS';
+import { useTTSPlayer } from '../../hooks/useTTSPlayer';
 
 const Analysis = () => {
     const [page, setPage] = useState<'intro' | 'ocr'>('intro');
@@ -18,6 +19,21 @@ const Analysis = () => {
     const [file, setFile] = useState<File | null>(null);
     const navigate = useNavigate();
 
+    const { setIsTTSEnabled } = useTTS();
+    const [showTooltip, setShowTooltip] = useState(false);
+    const [isTTSActive, setIsTTSActive] = useState(false);
+    const { playTTS, stopTTS } = useTTSPlayer();
+
+    useEffect(() => {
+        if (step === 2) {
+        setShowTooltip(true); // 결과 화면 진입 시 표시
+        const timer = setTimeout(() => {
+            setShowTooltip(false); // 3초 뒤 사라짐
+        }, 8000);
+        return () => clearTimeout(timer);
+        }
+    }, [step]);
+
     const handleClick = () => {
         fileInputRef.current?.click();
     };
@@ -25,15 +41,15 @@ const Analysis = () => {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
         if (selectedFile) {
-            setFile(selectedFile); // 파일 저장
-            setPreview(URL.createObjectURL(selectedFile)); // 미리보기
+            setFile(selectedFile);
+            setPreview(URL.createObjectURL(selectedFile));
         }
     };
 
     const handleAnalysis = async () => {
         if (!file) return;
-            setStep(1);
-            setLoading(true);
+        setStep(1);
+        setLoading(true);
         try {
             const res = await ocrAPI.ocrGenerateFromImage(file);
             setOcrResult(res.content);
@@ -50,7 +66,24 @@ const Analysis = () => {
         setPreview(null);
         setFile(null);
         setOcrResult("");
-      };
+    };
+
+    const handleTTSClick = async () => {
+    if (!ocrResult.trim()) return;
+
+    if (isTTSActive) {
+        stopTTS();
+        setIsTTSEnabled(false);
+        setIsTTSActive(false);
+    } else {
+        setIsTTSEnabled(true);
+        const audio = await playTTS(ocrResult);
+        if (audio) {
+        audio.onended = () => setIsTTSActive(false);
+        setIsTTSActive(true);
+        }
+    }
+    };
 
     return (
         <div className="relative w-full h-screen">
@@ -58,15 +91,16 @@ const Analysis = () => {
             
             <AnimatePresence>
                 {page === 'intro' && (
-                <IntroScreen
-                    title="키오스크 화면을 촬영하면<br />주문 방법을 바로 안내해 드려요"
-                    onStart={() => {
-                    setPage('ocr');
-                    setStep(0);
-                    }}
-                />
+                    <IntroScreen
+                        title="키오스크 화면을 촬영하면<br />주문 방법을 바로 안내해 드려요"
+                        onStart={() => {
+                            setPage('ocr');
+                            setStep(0);
+                        }}
+                    />
                 )}
             </AnimatePresence>
+
             {page === 'ocr' && (
                 <div className="absolute inset-0 w-full h-[797px] bg-white">
                     <div className="relative flex flex-col items-center justify-center">
@@ -141,46 +175,89 @@ const Analysis = () => {
                     )}
 
                     {step === 2 && (
-                        <div className="w-full px-7 py-2 flex flex-col items-start justify-center mt-[63px]">
-                            <div className="w-full flex flex-col items-center gap-4">
-                                {preview && (
-                                    <img
-                                    src={preview}
-                                    alt="uploaded"
-                                    className="w-[327px] h-[327px] object-cover rounded-[16px]"
-                                    />
-                                )}
-                                {ocrResult && (
-                                    <div className="w-[327px] p-[20px] h-[283px] rounded-[16px] bg-[#F6F5F4]">
-                                        <img src="/src/assets/ai.svg" alt="ai" className="w-[70px] h-[27px] mb-2" />
-                                        <p className="max-h-[200px] overflow-y-auto text-base text-black font-normal leading-[160%] whitespace-pre-line">
-                                            {ocrResult}
-                                        </p>
-                                    </div>
-                                )}
-                                <div className="flex items-center justify-center gap-2">
-                                    <ActionButton
-                                        onClick={() => navigate('/')}
-                                        variant="outline"
-                                        size="md"
-                                    >
-                                        홈으로
-                                    </ActionButton>
-                                    <ActionButton
-                                        onClick={handleReset}
-                                        variant="primary"
-                                        size="md"
-                                    >
-                                        추가 분석하기
-                                    </ActionButton>
-                                </div>
+                    <div className="w-full px-7 py-2 flex flex-col items-start justify-center mt-[63px] relative">
+                        <div className="w-full flex flex-col items-center gap-4">
+                        {preview && (
+                            <img
+                            src={preview}
+                            alt="uploaded"
+                            className="w-[327px] h-[327px] object-cover rounded-[16px]"
+                            />
+                        )}
+                        {ocrResult && (
+                            <div className="w-[327px] p-[20px] h-[283px] rounded-[16px] bg-[#F6F5F4]">
+                            <img src="/src/assets/ai.svg" alt="ai" className="w-[70px] h-[27px] mb-2" />
+                            <p className="max-h-[200px] overflow-y-auto text-base text-black font-normal leading-[160%] whitespace-pre-line">
+                                {ocrResult}
+                            </p>
                             </div>
+                        )}
+                        <div className="flex items-center justify-center gap-2">
+                            <ActionButton
+                            onClick={() => navigate('/')}
+                            variant="outline"
+                            size="md"
+                            >
+                            홈으로
+                            </ActionButton>
+                            <ActionButton
+                            onClick={handleReset}
+                            variant="primary"
+                            size="md"
+                            >
+                            추가 분석하기
+                            </ActionButton>
                         </div>
+                        </div>
+
+                        {/* TTS 버튼 + Tooltip */}
+                        {ocrResult && (
+                          <div className="fixed bottom-[70px] right-[16px] flex items-center justify-center">
+                            {/* Tooltip (왼쪽) */}
+                            <AnimatePresence>
+                            {showTooltip && (
+                                <motion.div
+                                className="absolute right-[50px] bottom-0 pointer-events-none z-[100]"
+                                style={{
+                                    width: "130px",
+                                    height: "48px",
+                                    backgroundImage: "url('/src/assets/analysis_tts.png')",
+                                    backgroundSize: "100% 100%",
+                                    backgroundRepeat: "no-repeat",
+                                }}
+                                initial={{ opacity: 0, y: 0 }}
+                                animate={{ opacity: 1, y: ["0%", "-10%", "0%"] }}
+                                exit={{ opacity: 0, y: "0%", transition: { duration: 0.3 } }}
+                                transition={{
+                                    duration: 1.2,
+                                    repeat: Infinity,
+                                    repeatType: "loop",
+                                    ease: "easeOut",
+                                }}
+                                />
+                            )}
+                            </AnimatePresence>
+
+                            {/* TTS 버튼 */}
+                            <button
+                            onClick={handleTTSClick}
+                            className="w-[57px] h-[57px] flex items-center justify-center"
+                            aria-label="TTS 듣기"
+                            >
+                            <img
+                                src={isTTSActive ? "/src/assets/tts_icon_after.png" : "/src/assets/tts_icon.png"}
+                                alt="tts"
+                                className="w-[57px] h-[57px]"
+                            />
+                            </button>
+                          </div>
+                        )}
+                    </div>
                     )}
-                    </>
+                        </>
+                    </div>
                 </div>
-            </div>
-        )}
+            )}
         </div>
     );
 };
