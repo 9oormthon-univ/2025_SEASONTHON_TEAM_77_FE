@@ -89,7 +89,7 @@ const SignupForm = () => {
             <input
               value={loginId}
               onChange={(e) => setLoginId(e.target.value)}
-              className="w-full px-4 py-3 border rounded-full bg-white placeholder-gray-400 mb-6 border border-[#C1C1C1] focus:border-2 focus:border-[#FFC845] focus:outline-none"
+              className="w-full px-4 py-3 border rounded-full bg-white placeholder-gray-400 mb-6 border-[#C1C1C1] focus:border-2 focus:border-[#FFC845] focus:outline-none"
               placeholder="이메일을 입력해주세요"
             />
             {checkResult === 'duplicated' && (
@@ -106,7 +106,7 @@ const SignupForm = () => {
               type={pwVisible ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border rounded-full bg-white mb-2 border border-[#C1C1C1] focus:border-2 focus:border-[#FFC845] focus:outline-none"
+              className="w-full px-4 py-3 border rounded-full bg-white mb-2 border-[#C1C1C1] focus:border-2 focus:border-[#FFC845] focus:outline-none"
               placeholder="비밀번호를 입력해주세요"
             />
             <button 
@@ -147,7 +147,7 @@ const SignupForm = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="이름을 입력해주세요"
-              className="w-full px-4 py-3 border rounded-full bg-white placeholder-gray-400 mb-6 border border-[#C1C1C1] focus:border-2 focus:border-[#FFC845] focus:outline-none"
+              className="w-full px-4 py-3 border rounded-full bg-white placeholder-gray-400 mb-6 border-[#C1C1C1] focus:border-2 focus:border-[#FFC845] focus:outline-none"
             />
             <label 
               className="w-full block text-base font-normal text-gray-700 text-left mb-2"
@@ -161,7 +161,7 @@ const SignupForm = () => {
               value={birthdate}
               onChange={handleBirthdateChange}
               placeholder="1999-01-01"
-              className="w-full px-4 py-3 border rounded-full bg-white placeholder-gray-400 mb-6 border border-[#C1C1C1] focus:border-2 focus:border-[#FFC845] focus:outline-none"
+              className="w-full px-4 py-3 border rounded-full bg-white placeholder-gray-400 mb-6 border-[#C1C1C1] focus:border-2 focus:border-[#FFC845] focus:outline-none"
             />
             <label 
               className="w-full block text-base font-normal text-gray-700 text-left mb-2"
