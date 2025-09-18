@@ -6,11 +6,11 @@ import KioskFrame, { type Category } from './KioskFrame';
 import { LearnMenuFlow } from './LearnMenuFlow';
 import { itemsByCategory } from './KioskItems';
 import { kioskAPI } from '../../../shared/api';
-import IntroScreen from '../../../components/common/IntroScreen';
-import CompleteScreen from '../../../components/common/CompleteScreen';
-import NavigationButtons from '../../../components/common/NavigationButtons';
+import IntroScreen from '../../../components/teachmap/IntroScreen';
+import CompleteScreen from '../../../components/teachmap/CompleteScreen';
+import NavigationButtons from '../../../components/buttons/NavigationButtons';
 import { useTTSPlayer } from '../../../hooks/useTTSPlayer';
-import { SoundTooltip } from '../../../components/common/SoundTooltip';
+import { SoundTooltip } from '../../../components/tooltip/SoundTooltip';
 
 // 설명 단계별 탭 고정
 const stepToCategory = (step: number | null): Category | null => {

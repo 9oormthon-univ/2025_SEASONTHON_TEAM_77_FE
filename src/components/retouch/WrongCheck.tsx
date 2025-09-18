@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import { fmtDuration } from '../retouchUtils'; // evalFlags 제거
-import type { ProductResult, RetouchTestProduct, RetouchResult } from '../../../shared/api/retouch';
+import { fmtDuration } from '../../features/retouch/retouchUtils'; // evalFlags 제거
+import type { ProductResult, RetouchTestProduct, RetouchResult } from '../../shared/api/retouch';
+import ActionButton from '../buttons/ActionButton';
 
 type Props = {
   expectedProducts: RetouchTestProduct[];
@@ -124,13 +125,23 @@ export default function WrongCheck({ expectedProducts, resultData, onRetryWrong,
       </div>
 
       {wrongChecks === 0 ? (
-        <button onClick={onGoComplete} className="mt-[173px] w-[320px] h-[52px] rounded-full bg-[#FFC845] text-black text-[16px] font-semibold">
+        <ActionButton
+          onClick={onGoComplete}
+          variant="primary"
+          size="md"
+          className="fixed bottom-[60px] w-[327px]"
+          >
           다음
-        </button>
+        </ActionButton>
       ) : (
-        <button onClick={onRetryWrong} className="mt-[173px] w-[320px] h-[52px] rounded-full bg-[#FFC845] text-black text-[16px] font-semibold">
+        <ActionButton
+          onClick={onRetryWrong}
+          variant="primary"
+          size="md"
+          className="fixed bottom-[60px] w-[327px]"
+          >
           오답 풀기
-        </button>
+        </ActionButton>
       )}
     </div>
   );

@@ -38,7 +38,7 @@ const CompleteScreen: React.FC<CompleteScreenProps> = ({
       exit={{ opacity: 0 }}
     >
       <div 
-        className="w-60 h-60 mt-28"
+        className="w-60 h-60"
         style={{
           backgroundImage: `url(${characterImage})`,
           backgroundSize: 'cover',
@@ -48,7 +48,7 @@ const CompleteScreen: React.FC<CompleteScreenProps> = ({
       ></div>
       
       <h3 
-        className="text-[26px] mb-20 text-center text-black font-semibold leading-[140%]"
+        className="text-[26px] mb-6 text-center text-black font-semibold leading-[140%]"
         dangerouslySetInnerHTML={{ __html: title }}
       />
       
@@ -59,7 +59,7 @@ const CompleteScreen: React.FC<CompleteScreenProps> = ({
         />
       )}
       
-      <div className="flex items-center justify-center mt-20 gap-2">
+      <div className="absolute bottom-[60px] flex items-center justify-center gap-2">
         {isLastLesson ? (
           // 마지막 학습인 경우 확인 버튼만
           <ActionButton

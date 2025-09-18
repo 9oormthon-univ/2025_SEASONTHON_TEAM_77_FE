@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import toast from 'react-hot-toast';
 import { authAPI } from "../../shared/api";
 import NavBar from "../../components/NavBar";
-import ConfirmModal from "../../components/common/ConfirmModal";
-import ProfileHeader from "../profile/components/ProfileHeader";
-import AccountSection from "../profile/components/AccountSection";
+import ConfirmModal from "../../components/ConfirmModal";
+import ProfileHeader from "../../components/profile/ProfileHeader";
+import AccountSection from "../../components/profile/AccountSection";
 
 export default function MyPage() {
   const navigate = useNavigate();

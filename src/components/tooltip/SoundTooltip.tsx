@@ -1,18 +1,18 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-interface MenuTooltipProps {
+interface SoundTooltipProps {
   showTooltip: boolean;
 }
 
-export const MenuTooltip: React.FC<MenuTooltipProps> = ({ showTooltip }) => {
+export const SoundTooltip: React.FC<SoundTooltipProps> = ({ showTooltip }) => {
   return (
     <AnimatePresence>
       {showTooltip && (
         <motion.img
-          src="/assets/menu_guide.png"
+          src="/assets/tooltip.svg"
           alt="Tooltip"
-          className="fixed top-[54px] right-4 pointer-events-none z-[100]"
+          className="absolute top-[54px] right-4 pointer-events-none z-[100]"
           initial={{ x: "0%", y: "0%" }}
           animate={{
             y: ["0%", "-10%", "0%"],

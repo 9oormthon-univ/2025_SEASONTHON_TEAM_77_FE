@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import HeaderBar from '../../components/HeaderBar';
 import KioskFrame, { type Category, type KioskItem } from '../kiosk/learn-menu/KioskFrame';
 import { itemsByCategory } from '../kiosk/learn-menu/KioskItems';
-import { MenuTooltip } from '../retouch/components/MenuTooltip';
+import { MenuTooltip } from '../../components/tooltip/MenuTooltip';
 import {
   fetchRetouchTest,
   submitRetouchResult,
@@ -16,14 +16,14 @@ import {
 } from '../../shared/api/retouch';
 
 import { findKioskItemByName } from './retouchUtils';
-import IntroScreen from '../../components/common/IntroScreen';
-import KioskIntro from '../retouch/components/KioskIntro';
-import ReviewSplash from '../retouch/components/ReviewSplash';
-import WrongCheck from '../retouch/components/WrongCheck';
-import CompleteScreen from '../../components/common/CompleteScreen';
-import OrderSheet from '../retouch/components/OrderSheet';
-import OptionModal from '../retouch/components/OptionModal';
-import MenuButton from '../retouch/components/MenuButton';
+import IntroScreen from '../../components/teachmap/IntroScreen';
+import KioskIntro from '../../components/retouch/KioskIntro';
+import ReviewSplash from '../../components/retouch/ReviewSplash';
+import WrongCheck from '../../components/retouch/WrongCheck';
+import CompleteScreen from '../../components/teachmap/CompleteScreen';
+import OrderSheet from '../../components/retouch/OrderSheet';
+import OptionModal from '../../components/retouch/OptionModal';
+import MenuButton from '../../components/retouch/MenuButton';
 
 type IntroPhase = 'bg1' | 'modal' | 'bg2' | 'select';
 
@@ -330,6 +330,14 @@ const Retouch: React.FC = () => {
     }, 0);
   };
 
+  const handleReset = () => {
+    setPage('kioskIntro');
+    setIntroPhase('bg1');
+    setCart([]);
+    setResultData(null);
+    setTestId(null);
+  };
+
   return (
     <div className="relative w-full h-screen">
       <HeaderBar title="리터치" backTo="/" />
@@ -433,7 +441,7 @@ const Retouch: React.FC = () => {
           <CompleteScreen
             title={'리터치 학습이<br/>마무리되었어요'}
             subtitle={'다시 풀기 버튼을 누르면,<br/>문제를 다시 풀어볼 수 있어요'}
-            onRestart={() => navigate('/teachmap')}
+            onRestart={handleReset}
             onNext={() => navigate('/')}
             restartLabel="다시 풀기"
             nextLabel="나가기"

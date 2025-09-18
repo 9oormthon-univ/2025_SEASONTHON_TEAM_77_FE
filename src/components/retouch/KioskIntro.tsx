@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import KioskFrame from '../../kiosk/learn-menu/KioskFrame';
+import KioskFrame from '../../features/kiosk/learn-menu/KioskFrame';
 
 type Props = {
   totals: { qty: number; sum: number };

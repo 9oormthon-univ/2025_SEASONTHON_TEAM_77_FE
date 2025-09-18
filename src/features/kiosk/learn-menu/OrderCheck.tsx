@@ -5,10 +5,10 @@ import HeaderBar from '../../../components/HeaderBar';
 import KioskFrame from './KioskFrame';
 import { OrderCheckSteps } from './OrderCheckData';
 import { kioskAPI } from '../../../shared/api';
-import IntroScreen from '../../../components/common/IntroScreen';
-import CompleteScreen from '../../../components/common/CompleteScreen';
-import StepOverlay from '../../../components/common/StepOverlay';
-import { SoundTooltip } from '../../../components/common/SoundTooltip';
+import IntroScreen from '../../../components/teachmap/IntroScreen';
+import CompleteScreen from '../../../components/teachmap/CompleteScreen';
+import StepOverlay from '../../../components/teachmap/StepOverlay';
+import { SoundTooltip } from '../../../components/tooltip/SoundTooltip';
 
 const OrderCheck: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
