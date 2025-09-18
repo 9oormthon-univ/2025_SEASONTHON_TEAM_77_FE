@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import HeaderBar from '../../components/HeaderBar';
-import IntroScreen from '../../components/common/IntroScreen';
+import IntroScreen from '../../components/teachmap/IntroScreen';
 import { ocrAPI } from '../../shared/api';
 import ActionButton from '../../components/buttons/ActionButton';
-import { useNavigate } from 'react-router-dom';
 import { useTTS } from '../../hooks/useTTS';
 import { useTTSPlayer } from '../../hooks/useTTSPlayer';
+import { AnalysisTooltip } from '../../components/tooltip/AnalysisTooltip';
 
 const Analysis = () => {
     const [page, setPage] = useState<'intro' | 'ocr'>('intro');
@@ -17,7 +17,6 @@ const Analysis = () => {
     const [ocrResult, setOcrResult] = useState<string>("");
     const [loading, setLoading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
-    const navigate = useNavigate();
 
     const { setIsTTSEnabled } = useTTS();
     const [showTooltip, setShowTooltip] = useState(false);
@@ -145,13 +144,14 @@ const Analysis = () => {
                                     />
                                 </div>
                             </div>
-
-                            <button
+                            <ActionButton
                                 onClick={handleAnalysis}
-                                className="fixed bottom-[60px] w-[327px] h-[52px] py-4 bg-[#FFC845] flex items-center justify-center text-center text-black rounded-full hover:scale-105 transition-all duration-300"
+                                variant="primary"
+                                size="md"
+                                className="fixed bottom-[60px] w-[327px]"
                             >
                                 분석하기
-                            </button>
+                            </ActionButton>
                         </>
                     )}
                     {step === 1 && (
@@ -194,18 +194,12 @@ const Analysis = () => {
                         )}
                         <div className="flex items-center justify-center gap-2">
                             <ActionButton
-                            onClick={() => navigate('/')}
-                            variant="outline"
-                            size="md"
-                            >
-                            홈으로
-                            </ActionButton>
-                            <ActionButton
                             onClick={handleReset}
                             variant="primary"
                             size="md"
+                            className="w-[327px] mt-[10px]"
                             >
-                            추가 분석하기
+                            분석 이어하기
                             </ActionButton>
                         </div>
                         </div>
@@ -214,29 +208,7 @@ const Analysis = () => {
                         {ocrResult && (
                           <div className="fixed bottom-[70px] right-[16px] flex items-center justify-center">
                             {/* Tooltip (왼쪽) */}
-                            <AnimatePresence>
-                            {showTooltip && (
-                                <motion.div
-                                className="absolute right-[50px] bottom-0 pointer-events-none z-[100]"
-                                style={{
-                                    width: "130px",
-                                    height: "48px",
-                                    backgroundImage: "url('/assets/analysis_tts.png')",
-                                    backgroundSize: "100% 100%",
-                                    backgroundRepeat: "no-repeat",
-                                }}
-                                initial={{ opacity: 0, y: 0 }}
-                                animate={{ opacity: 1, y: ["0%", "-10%", "0%"] }}
-                                exit={{ opacity: 0, y: "0%", transition: { duration: 0.3 } }}
-                                transition={{
-                                    duration: 1.2,
-                                    repeat: Infinity,
-                                    repeatType: "loop",
-                                    ease: "easeOut",
-                                }}
-                                />
-                            )}
-                            </AnimatePresence>
+                            <AnalysisTooltip showTooltip={showTooltip} />
 
                             {/* TTS 버튼 */}
                             <button

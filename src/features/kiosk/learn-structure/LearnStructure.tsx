@@ -4,12 +4,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { structureSteps } from './StructureData';
 import HeaderBar from '../../../components/HeaderBar';
 import { kioskAPI } from '../../../shared/api';
-import IntroScreen from '../../../components/common/IntroScreen';
-import CompleteScreen from '../../../components/common/CompleteScreen';
-import NavigationButtons from '../../../components/common/NavigationButtons';
-import KioskHardware from '../../../components/common/KioskHardware';
+import IntroScreen from '../../../components/teachmap/IntroScreen';
+import CompleteScreen from '../../../components/teachmap/CompleteScreen';
+import NavigationButtons from '../../../components/buttons/NavigationButtons';
+import KioskHardware from '../../../components/teachmap/KioskHardware';
 import { useTTSPlayer } from '../../../hooks/useTTSPlayer';
-import { SoundTooltip } from '../../../components/common/SoundTooltip';
+import { SoundTooltip } from '../../../components/tooltip/SoundTooltip';
 
 const LearnStructure: React.FC = () => {
   const [page, setPage] = useState<'intro' | 'kiosk' | 'complete'>('intro');
