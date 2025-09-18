@@ -18,7 +18,7 @@ const IntroScreen: React.FC<IntroScreenProps> = ({
   const location = useLocation();
 
   if (location.pathname === "/order-analysis") {
-    characterImage = "/assets/analysis.png";
+    characterImage = "/assets/analysis/analysis.png";
   }
   return (
     <motion.div
@@ -63,7 +63,7 @@ const IntroScreen: React.FC<IntroScreenProps> = ({
       </p>
       
       <img 
-        src='/assets/cursor.gif' 
+        src='/assets/common/cursor.gif' 
         alt="cursor" 
         className="absolute top-[610px] right-[59px] w-[58px] h-[58px] cursor-pointer" 
       />

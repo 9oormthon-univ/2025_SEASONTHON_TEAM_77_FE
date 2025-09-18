@@ -92,7 +92,7 @@ const LearnStructure: React.FC = () => {
       {page === 'kiosk' && (
         <div className="absolute inset-0 w-full h-[797px] bg-[#F6F5F4]">
           <div className="relative flex flex-col items-center justify-center">
-            <img src="/assets/kiosk_initial.svg" alt="kiosk_bg" className="w-[319px] h-[569px] mt-[67px]" />
+            <img src="/assets/common/kiosk_initial.svg" alt="kiosk_bg" className="w-[319px] h-[569px] mt-[67px]" />
             <KioskHardware 
               onReceiptClick={step === 4 ? handleNextStep : undefined}
               onBarcodeClick={step === 3 ? handleNextStep : undefined}
@@ -158,7 +158,7 @@ const LearnStructure: React.FC = () => {
                 <div 
                   key="step-1-overlay"
                   className="absolute top-[505px] left-[24px] w-[327px] h-[272px] flex flex-col items-start justify-start z-40">
-                  <img src="/assets/reader.png" alt="reader" className="absolute -top-[315px] left-1/2 -translate-x-1/2 w-[276px] h-[276px]" />
+                  <img src="/assets/structure/reader.png" alt="reader" className="absolute -top-[315px] left-1/2 -translate-x-1/2 w-[276px] h-[276px]" />
                   <div className="flex flex-row justify-between w-full items-center">
                     <h1 
                       className="text-3xl text-[#FFC845] mb-2"
@@ -185,7 +185,7 @@ const LearnStructure: React.FC = () => {
                     <button
                       onClick={handlePrevStep}
                       style={{
-                        backgroundImage: 'url(/assets/prev.svg)',
+                        backgroundImage: 'url(/assets/common/prev.svg)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
@@ -196,7 +196,7 @@ const LearnStructure: React.FC = () => {
                     <button
                       onClick={handleNextStep}
                       style={{
-                        backgroundImage: 'url(/assets/next.svg)',
+                        backgroundImage: 'url(/assets/common/next.svg)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
@@ -213,7 +213,7 @@ const LearnStructure: React.FC = () => {
                 <div 
                   key="step-2-overlay"
                   className="absolute top-[505px] left-[24px] w-[327px] h-[272px] flex flex-col items-start justify-start z-40">
-                  <img src="/assets/reader.png" alt="reader" className="absolute -top-[315px] left-1/2 -translate-x-1/2 w-[276px] h-[276px]" />
+                  <img src="/assets/structure/reader.png" alt="reader" className="absolute -top-[315px] left-1/2 -translate-x-1/2 w-[276px] h-[276px]" />
                   <div className="flex flex-row justify-between w-full items-center">
                     <h1 
                       className="text-3xl text-[#FFC845] mb-2"
@@ -240,7 +240,7 @@ const LearnStructure: React.FC = () => {
                     <button
                       onClick={handlePrevStep}
                       style={{
-                        backgroundImage: 'url(/assets/prev.svg)',
+                        backgroundImage: 'url(/assets/common/prev.svg)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
@@ -251,7 +251,7 @@ const LearnStructure: React.FC = () => {
                     <button
                       onClick={handleNextStep}
                       style={{
-                        backgroundImage: 'url(/assets/next.svg)',
+                        backgroundImage: 'url(/assets/common/next.svg)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
@@ -267,7 +267,7 @@ const LearnStructure: React.FC = () => {
                 <div 
                   key="step-3-overlay"
                   className="absolute top-[435px] left-[24px] w-[327px] h-[272px] flex flex-col items-start justify-start z-40">
-                  <img src="/assets/barcode.png" alt="barcode" className="absolute -top-[315px] left-1/2 -translate-x-1/2 w-[276px] h-[276px]" />
+                  <img src="/assets/structure/barcode.png" alt="barcode" className="absolute -top-[315px] left-1/2 -translate-x-1/2 w-[276px] h-[276px]" />
                   <h1 
                     className="text-3xl text-[#FFC845] mb-2"
                     style={{
@@ -291,7 +291,7 @@ const LearnStructure: React.FC = () => {
                     <button
                       onClick={handlePrevStep}
                       style={{
-                        backgroundImage: 'url(/assets/prev.svg)',
+                        backgroundImage: 'url(/assets/common/prev.svg)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
@@ -302,7 +302,7 @@ const LearnStructure: React.FC = () => {
                     <button
                       onClick={handleNextStep}
                       style={{
-                        backgroundImage: 'url(/assets/next.svg)',
+                        backgroundImage: 'url(/assets/common/next.svg)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
@@ -318,7 +318,7 @@ const LearnStructure: React.FC = () => {
                 <div 
                   key="step-4-overlay"
                   className="absolute top-[435px] left-[24px] w-[327px] h-[272px] flex flex-col items-start justify-start z-40">
-                  <img src="/assets/barcode.png" alt="barcode" className="absolute -top-[315px] left-1/2 -translate-x-1/2 w-[276px] h-[276px]" />
+                  <img src="/assets/structure/barcode.png" alt="barcode" className="absolute -top-[315px] left-1/2 -translate-x-1/2 w-[276px] h-[276px]" />
                   <h1 
                     className="text-3xl text-[#FFC845] mb-2"
                     style={{
@@ -344,7 +344,7 @@ const LearnStructure: React.FC = () => {
                     <button
                       onClick={handlePrevStep}
                       style={{
-                        backgroundImage: 'url(/assets/prev.svg)',
+                        backgroundImage: 'url(/assets/common/prev.svg)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
@@ -355,7 +355,7 @@ const LearnStructure: React.FC = () => {
                     <button
                       onClick={handleNextStep}
                       style={{
-                        backgroundImage: 'url(/assets/next.svg)',
+                        backgroundImage: 'url(/assets/common/next.svg)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
@@ -402,7 +402,7 @@ const LearnStructure: React.FC = () => {
                   transition={{ type: 'spring', stiffness: 100, damping: 20 }}
                 >
                   <img
-                    src="/assets/card.png"
+                    src="/assets/common/card.png"
                     alt="카드 결제"
                     className="mx-auto w-[128px] h-[108px] mb-7"
                   />

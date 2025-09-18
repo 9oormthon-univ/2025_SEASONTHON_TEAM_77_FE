@@ -82,7 +82,7 @@ const OrderStart: React.FC = () => {
           <div className="relative flex flex-col items-center justify-center">
             {step === 0 && (
               <>
-                <img src="/assets/kiosk_initial.svg" alt="kiosk_bg" className="w-[319px] h-[569px] mt-[67px]" onClick={() => setStep(1)} />
+                <img src="/assets/common/kiosk_initial.svg" alt="kiosk_bg" className="w-[319px] h-[569px] mt-[67px]" onClick={() => setStep(1)} />
                 <div className="flex justify-center items-center gap-11 px-13 mt-4">
                   {/* 영수증 출력기 */}
                   <div className="w-[133px] h-[125px] bg-[#F9F9F9] rounded-lg border-2 border-gray-300 flex items-start justify-center py-[27px] px-[14px]">
