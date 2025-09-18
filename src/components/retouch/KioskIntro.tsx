@@ -45,7 +45,7 @@ export default function KioskIntro({
                 style={{ border: '1px solid #ECECEC', boxShadow: '0 2px 4px 0 rgba(0,0,0,0.04)' }}
               >
                 <img
-                  src="/assets/store.png"
+                  src="/assets/common/store.png"
                   alt="store"
                   width={59}
                   height={58}
@@ -63,7 +63,7 @@ export default function KioskIntro({
                 style={{ border: '1px solid #ECECEC', boxShadow: '0 2px 4px 0 rgba(0,0,0,0.04)' }}
               >
                 <img
-                  src="/assets/to_go.png"
+                  src="/assets/common/to_go.png"
                   alt="store"
                   width={59}
                   height={58}
@@ -76,7 +76,7 @@ export default function KioskIntro({
           </div>
         ) : (
           <img
-            src="/assets/kiosk_initial.svg"
+            src="/assets/common/kiosk_initial.svg"
             alt="kiosk_bg"
             className="w-[319px] h-[574.5px] -mt-[2.5px] object-cover select-none cursor-pointer"
             onClick={introPhase !== 'modal' ? onBgClick : undefined}
@@ -99,7 +99,7 @@ export default function KioskIntro({
               exit={{ x: '-50%', y: '100%' }}
               transition={{ type: 'spring', stiffness: 100, damping: 20 }}
             >
-              <img src="/assets/menu.png" alt="주문 리스트" className="mx-auto w-[120px] h-[120px] mb-4" />
+              <img src="/assets/common/menu.png" alt="주문 리스트" className="mx-auto w-[120px] h-[120px] mb-4" />
               <h4 className="text-lg text-black mb-5 font-semibold leading-[140%]">매장 식사</h4>
               <ul className="text-sm text-[#444444] mb-5 font-medium leading-[160%] text-left">
                 {testLoading && <li>• 불러오는 중...</li>}

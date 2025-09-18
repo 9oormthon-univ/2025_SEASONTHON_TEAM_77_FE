@@ -205,7 +205,7 @@ const MenuOrder: React.FC = () => {
                   transition={{ type: 'spring', stiffness: 100, damping: 20 }}
                 >
                   <img
-                    src="/assets/menu.png"
+                    src="/assets/common/menu.png"
                     alt="주문 리스트"
                     className="mx-auto w-[120px] h-[120px] mb-7"
                   />
@@ -276,7 +276,7 @@ const MenuOrder: React.FC = () => {
                 <NavigationButtons
                   onPrev={prevStep}
                   onNext={nextStep}
-                  prevIcon="/assets/before.png"
+                  prevIcon="/assets/common/before.png"
                   className="flex justify-center gap-6"
                 />
               </motion.div>

@@ -44,7 +44,7 @@ export default function OptionModal({
                 {(item.price ?? 0).toLocaleString()}원
               </div>
               <button aria-label="닫기" onClick={onCancel} className="absolute right-0 top-0 w-6 h-6 grid place-items-center">
-                <img src="/assets/cancel_icon.png" alt="닫기" className="w-6 h-6 opacity-40" />
+                <img src="/assets/common/cancel_icon.png" alt="닫기" className="w-6 h-6 opacity-40" />
               </button>
             </div>
 

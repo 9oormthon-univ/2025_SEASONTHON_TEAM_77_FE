@@ -10,7 +10,7 @@ export const AnalysisTooltip: React.FC<AnalysisTooltipProps> = ({ showTooltip })
     <AnimatePresence>
       {showTooltip && (
         <motion.img
-          src="/assets/analysis_tts.svg"
+          src="/assets/analysis/analysis_tts.svg"
           alt="Tooltip"
           className="fixed right-[60px] bottom-[70px] pointer-events-none z-[100]"
           initial={{ x: "0%", y: "0%" }}

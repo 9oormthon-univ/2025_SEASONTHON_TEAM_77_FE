@@ -158,7 +158,7 @@ const Payment: React.FC = () => {
                       <div className="flex flex-col items-center">
                         {/* 카드 아이콘 애니메이션 */}
                         <motion.img
-                          src="/assets/payment/card.png"
+                          src="/assets/payment/pay_card.png"
                           className="w-[40px] h-[40px]"
                           animate={substep === 1 ? { rotate: [0, -20, 0] } : { rotate: 0 }}
                           transition={substep === 1 ? { duration: 1.2, repeat: Infinity, ease: "easeInOut" } : {}}

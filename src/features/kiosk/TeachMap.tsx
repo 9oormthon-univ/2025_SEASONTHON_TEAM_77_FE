@@ -14,7 +14,7 @@ const stepsData = [
     step: '1',
     title: "키오스크 구성 학습",
     description: "전체 구성, 주문 시작, 장소 선택",
-    image: "kiosk.png",
+    image: "/home/kiosk.png",
     substeps: [
       {
         id: '1',
@@ -34,7 +34,7 @@ const stepsData = [
     step: '2',
     title: "메뉴 선택 학습",
     description: "음료 카테고리, 메뉴 주문",
-    image: "menu_learn.png",
+    image: "/home/menu_learn.png",
     substeps: [
       {
         id: '3',
@@ -60,7 +60,7 @@ const stepsData = [
     step: '3',
     title: "결제 학습",
     description: "포인트 적립, 결제 수단 선택",
-    image: "card.png",
+    image: "common/card.png",
     substeps: [
       {
         id: '6',

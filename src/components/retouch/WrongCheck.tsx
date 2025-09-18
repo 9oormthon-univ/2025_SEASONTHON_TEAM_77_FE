@@ -63,7 +63,7 @@ export default function WrongCheck({ expectedProducts, resultData, onRetryWrong,
         <div className="space-y-3 mb-[67px]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <img src="/assets/check_icon.png" alt="정답" className="w-6 h-6" />
+              <img src="/assets/retouch/check_icon.png" alt="정답" className="w-6 h-6" />
               <span className="text-[16px] font-bold text-[#111]">정답</span>
             </div>
             <span className="text-[16px] font-bold text-[#111]">{correctChecks}개</span>
@@ -71,7 +71,7 @@ export default function WrongCheck({ expectedProducts, resultData, onRetryWrong,
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <img src="/assets/warning_icon.png" alt="오답" className="w-6 h-6" />
+              <img src="/assets/retouch/warning_icon.png" alt="오답" className="w-6 h-6" />
               <span className="text-[16px] font-bold text-[#111]">오답</span>
             </div>
             <span className="text-[16px] text-[#111] font-bold">{wrongChecks}개</span>
@@ -79,7 +79,7 @@ export default function WrongCheck({ expectedProducts, resultData, onRetryWrong,
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <img src="/assets/time_icon.png" alt="소요시간" className="w-6 h-6" />
+              <img src="/assets/retouch/time_icon.png" alt="소요시간" className="w-6 h-6" />
               <span className="text-[16px] font-bold text-[#111]">소요시간</span>
             </div>
             <span className="text-[16px] font-bold text-[#111]">{fmtDuration(resultData?.duration)}</span>
@@ -108,13 +108,13 @@ export default function WrongCheck({ expectedProducts, resultData, onRetryWrong,
                   <div key={`exp-${exp.productName}-${i}`} className="grid grid-cols-[1.2fr,0.8fr,0.9fr,0.9fr] items-center text-[12px] font-normal pt-3">
                     <div className="truncate text-[#000000]">{exp.productName}</div>
                     <div className="grid place-items-center">
-                      <img src={menuOk ? '/assets/check_icon.png' : '/assets/warning_icon.png'} alt={menuOk ? '정답' : '오답'} className="w-5 h-5" />
+                      <img src={menuOk ? '/assets/retouch/check_icon.png' : '/assets/retouch/warning_icon.png'} alt={menuOk ? '정답' : '오답'} className="w-5 h-5" />
                     </div>
                     <div className="grid place-items-center">
-                      <img src={sizeOk ? '/assets/check_icon.png' : '/assets/warning_icon.png'} alt={sizeOk ? '정답' : '오답'} className="w-5 h-5" />
+                      <img src={sizeOk ? '/assets/retouch/check_icon.png' : '/assets/retouch/warning_icon.png'} alt={sizeOk ? '정답' : '오답'} className="w-5 h-5" />
                     </div>
                     <div className="grid place-items-center ml-3">
-                      <img src={qtyOk ? '/assets/check_icon.png' : '/assets/warning_icon.png'} alt={qtyOk ? '정답' : '오답'} className="w-5 h-5" />
+                      <img src={qtyOk ? '/assets/retouch/check_icon.png' : '/assets/retouch/warning_icon.png'} alt={qtyOk ? '정답' : '오답'} className="w-5 h-5" />
                     </div>
                   </div>
                 );

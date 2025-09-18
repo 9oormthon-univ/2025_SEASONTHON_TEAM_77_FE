@@ -9,17 +9,17 @@ const centers = [
   {
     name: "곰달래어르신복지센터",
     address: "서울특별시 강서구 강서로5길 50 (화곡동)",
-    image: "/assets/center1.png",
+    image: "/assets/home/center1.png",
   },
   {
     name: "창동아우르네",
     address: "서울특별시 강서구 강서로5길 50 (화곡동)",
-    image: "/assets/center2.png",
+    image: "/assets/home/center2.png",
   },
   {
     name: "성산1동 주민센터",
     address: "서울특별시 마포구 성산로4길 15 (성산동)",
-    image: "/assets/center3.png",
+    image: "/assets/home/center3.png",
   },
 ];
 
@@ -71,7 +71,7 @@ export default function Home() {
     <div className=" flex flex-col w-full h-full bg-gradient-to-r from-[#FFC845] to-[#FFAE4A]">
       {/* 상단 영역 */}
       <div className="bg-transparent px-6 pt-20 pb-8 relative z-10">
-        <img src="/assets/logo_white.svg" alt="logo" className="w-[157px] h-[19px] mb-[45px]" />
+        <img src="/assets/home/logo_white.svg" alt="logo" className="w-[157px] h-[19px] mb-[45px]" />
         <p className="text-base font-semibold leading-snug text-white">
           티처티치와 함께 쉽고
           <br />

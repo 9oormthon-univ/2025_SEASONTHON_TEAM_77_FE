@@ -64,7 +64,7 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ title, backTo }) => {
           aria-label="on/off"
         >
           <img
-            src={isTTSEnabled ? "/assets/on.png" : "/assets/off.png"}
+            src={isTTSEnabled ? "/assets/common/on.png" : "/assets/common/off.png"}
             alt={isTTSEnabled ? "on" : "off"}
             className="w-7 h-7"
           />

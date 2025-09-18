@@ -113,7 +113,7 @@ const SignupForm = () => {
               onClick={togglePasswordVisibility}
               className="absolute right-4 top-4 w-[20px] h-[20px]"
             >
-              {pwVisible ? <img src='/assets/eyeslash.svg' alt="eye-off" /> : <img src='/assets/eye.svg' alt="eye" />}
+              {pwVisible ? <img src='/assets/login/eyeslash.svg' alt="eye-off" /> : <img src='/assets/login/eye.svg' alt="eye" />}
             </button>
           </div>
             <ul className="text-sm flex flex-row gap-2 text-start w-full">
