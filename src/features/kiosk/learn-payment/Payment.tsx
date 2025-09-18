@@ -280,19 +280,29 @@ const Payment: React.FC = () => {
                     borderRadius: '36px',
                   }}
                 >
-                  <div className="text-center mb-5">
+                  <div className="text-center mb-5 -mt-[120px]">
                     <p className="text-[#FFC845] text-xl font-bold">신용카드를</p>
                     <p className="text-black text-xl mt-1 font-bold">투입구에 꽂아주세요</p>
                   </div>
                   <p className="text-sm text-black mb-10">결제 오류 시 마그네틱을 아래로 향하게 긁어주세요.</p>
+
                   <img src="/assets/payment/group1.svg" className="w-[30px] h-[30px] mb-10" />
                   <img src="/assets/payment/insert_frame.svg" className="w-[127px] h-[57px]" />
                   <img src="/assets/payment/insert.gif" className="w-[95px] h-[73px] z-20 -mt-[30px]" />
+
+                  <div className="fixed bottom-[160px] w-[315px] h-[120px] rounded-b-[34px] bg-[#444444] text-white px-6 pt-3 pb-[82px] shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
+                    <div className="flex flex-col w-full items-center justify-center">
+                        <div className="w-full flex flex-1 justify-between text-base font-semibold mb-4">
+                          <span className="opacity-90">총 결제금액</span>
+                          <span className="font-medium">11,400원</span>
+                        </div>
+                    </div>
+                  </div>
                 </div>
               )}
               {step === 3 && (
                 <div 
-                  className="flex flex-col items-center justify-center w-[319px] h-[569px] mt-[67px] py-[132px] px-[16px] border-2 border-gray-300 bg-black bg-opacity-20"
+                  className="flex flex-col items-center justify-center w-[319px] h-[569px] mt-[67px] py-[132px] px-[16px] border-2 border-gray-300 bg-black bg-opacity-10"
                   style={{
                     boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.02)',
                     borderRadius: '36px',
@@ -303,6 +313,15 @@ const Payment: React.FC = () => {
                     <p className="text-black text-xl mt-1 font-bold">투입구에 꽂아주세요</p>
                   </div>
                   <p className="text-sm text-black mb-[100px]">결제 오류 시 마그네틱을 아래로 향하게 긁어주세요.</p>
+
+                  <div className="fixed bottom-[160px] w-[315px] h-[120px] rounded-b-[34px] bg-[#444444] text-white px-6 pt-3 pb-[82px] shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
+                    <div className="flex flex-col w-full items-center justify-center">
+                        <div className="w-full flex flex-1 justify-between text-base font-semibold mb-4">
+                          <span className="opacity-90">총 결제금액</span>
+                          <span className="font-medium">11,400원</span>
+                        </div>
+                    </div>
+                  </div>
                   <img src="/assets/payment/pay.svg" className="w-[127px] h-[57px]" />
                 </div>
               )}
@@ -333,8 +352,6 @@ const Payment: React.FC = () => {
               )}
               <KioskHardware />
             </>
-
-            
           </div>
 
           <AnimatePresence>
