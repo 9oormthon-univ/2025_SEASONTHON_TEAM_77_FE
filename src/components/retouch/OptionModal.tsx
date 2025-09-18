@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import type { KioskItem } from '../../kiosk/learn-menu/KioskFrame';
+import type { KioskItem } from '../../features/kiosk/learn-menu/KioskFrame';
 
 type Props = {
   item: KioskItem | null;

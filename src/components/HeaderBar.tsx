@@ -2,7 +2,6 @@ import React from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTTS } from '../hooks/useTTS';
-import { useTTSPlayer } from '../hooks/useTTSPlayer';
 
 interface HeaderBarProps {
   title: string;
@@ -13,7 +12,6 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ title, backTo }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isTTSEnabled, setIsTTSEnabled } = useTTS();
-  const { playTTS } = useTTSPlayer();
 
   const handleBack = () => {
     if (backTo) {
