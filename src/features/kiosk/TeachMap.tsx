@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import toast from 'react-hot-toast';
 import NavBar from "../../components/NavBar";
 import { kioskAPI } from "../../shared/api";
-import SearchBar from "../../components/common/SearchBar";
-import StepCard from "./components/TeachMap/StepCard";
+import SearchBar from "../../components/teachmap/SearchBar";
+import StepCard from "../../components/teachmap/StepCard";
 
 interface SearchResult {
   title: string;

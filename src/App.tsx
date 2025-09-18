@@ -65,7 +65,7 @@ function App() {
           </ProtectedRoute>
         } />
         
-        <Route path="/teachmap/retouch" element={
+        <Route path="/retouch" element={
           <ProtectedRoute>
             <Retouch />
           </ProtectedRoute>

@@ -1,4 +1,5 @@
 import React from 'react';
+import toast from 'react-hot-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTTS } from '../hooks/useTTS';
 import { useTTSPlayer } from '../hooks/useTTSPlayer';
@@ -26,13 +27,14 @@ const HeaderBar: React.FC<HeaderBarProps> = ({ title, backTo }) => {
     const newState = !isTTSEnabled;
     setIsTTSEnabled(newState);
     
-    // TTS가 켜질 때 테스트 메시지 재생
     if (newState) {
-      playTTS('티치터치 음성 안내가 시작됩니다');
+      toast.success('음성 안내가 활성화되었습니다.');
+    } else {
+      toast('음성 안내가 비활성화되었습니다.');
     }
   };
 
-  const isRetouchPage = location.pathname.startsWith('/teachmap/retouch');
+  const isRetouchPage = location.pathname.startsWith('/retouch');
   const isAnalysisPage = location.pathname.startsWith('/order-analysis');
 
   return (

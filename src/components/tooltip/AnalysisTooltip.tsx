@@ -1,21 +1,21 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-interface SoundTooltipProps {
+interface AnalysisTooltipProps {
   showTooltip: boolean;
 }
 
-export const SoundTooltip: React.FC<SoundTooltipProps> = ({ showTooltip }) => {
+export const AnalysisTooltip: React.FC<AnalysisTooltipProps> = ({ showTooltip }) => {
   return (
     <AnimatePresence>
       {showTooltip && (
         <motion.img
-          src="/assets/tooltip.png"
+          src="/assets/analysis_tts.svg"
           alt="Tooltip"
-          className="absolute top-[54px] right-4 pointer-events-none z-[100]"
+          className="fixed right-[60px] bottom-[70px] pointer-events-none z-[100]"
           initial={{ x: "0%", y: "0%" }}
           animate={{
-            y: ["0%", "-10%", "0%"],
+            y: ["0%", "5%", "0%"],
           }}
           exit={{ 
             opacity: 0,

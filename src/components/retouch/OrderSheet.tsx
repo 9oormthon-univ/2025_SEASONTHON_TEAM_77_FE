@@ -1,6 +1,6 @@
 import React from 'react';
-import KioskFrame from '../../kiosk/learn-menu/KioskFrame';
-import { money } from '../retouchUtils';
+import KioskFrame from '../../features/kiosk/learn-menu/KioskFrame';
+import { money } from '../../features/retouch/retouchUtils';
 
 type CartItem = {
   productId?: number;

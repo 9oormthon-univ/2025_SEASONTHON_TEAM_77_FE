@@ -5,11 +5,11 @@ import { paymentSteps } from './PaymentData';
 import HeaderBar from '../../../components/HeaderBar';
 import PointInput from './PointInput';
 import { kioskAPI } from '../../../shared/api';
-import IntroScreen from '../../../components/common/IntroScreen';
-import CompleteScreen from '../../../components/common/CompleteScreen';
-import StepOverlay from '../../../components/common/StepOverlay';
-import KioskHardware from '../../../components/common/KioskHardware';
-import { SoundTooltip } from '../../../components/common/SoundTooltip';
+import IntroScreen from '../../../components/teachmap/IntroScreen';
+import CompleteScreen from '../../../components/teachmap/CompleteScreen';
+import StepOverlay from '../../../components/teachmap/StepOverlay';
+import KioskHardware from '../../../components/teachmap/KioskHardware';
+import { SoundTooltip } from '../../../components/tooltip/SoundTooltip';
 import { motion } from "framer-motion";
 
 const Payment: React.FC = () => {

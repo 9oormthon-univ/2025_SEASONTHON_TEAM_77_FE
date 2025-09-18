@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import NavigationButtons from '../common/NavigationButtons';
+import NavigationButtons from '../buttons/NavigationButtons';
 import { useTTSPlayer } from '../../hooks/useTTSPlayer';
 
 interface StepOverlayProps {
